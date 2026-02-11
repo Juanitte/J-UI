@@ -46,9 +46,9 @@ export function Badge({
 }: BadgeProps) {
   const radiusValues: Record<BadgeRadius, number | string> = {
     none: 0,
-    sm: 4,
-    md: 6,
-    lg: 12,
+    sm: '0.25rem',
+    md: '0.375rem',
+    lg: '0.75rem',
     full: 9999,
   }
 
@@ -56,9 +56,9 @@ export function Badge({
     {
       display: 'inline-flex',
       alignItems: 'center',
-      gap: 6,
-      padding: '4px 10px',
-      fontSize: 13,
+      gap: '0.375rem',
+      padding: '0.25rem 0.625rem',
+      fontSize: '0.8125rem',
       fontWeight: 500,
       borderRadius: radiusValues[radius],
       backgroundColor: bgColor,
@@ -74,7 +74,7 @@ export function Badge({
     <span style={rootStyle} className={mergeSemanticClassName(className, classNames?.root)}>
       {icon && (
         <span
-          style={{ display: 'inline-flex', fontSize: 14, ...styles?.icon }}
+          style={{ display: 'inline-flex', fontSize: '0.875rem', ...styles?.icon }}
           className={classNames?.icon}
         >
           {icon}

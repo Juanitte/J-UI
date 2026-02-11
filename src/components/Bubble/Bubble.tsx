@@ -124,10 +124,10 @@ function BubbleComponent({
     return undefined
   }
 
-  const sizeMap: Record<BubbleSize, { size: number; fontSize: number; iconSize: number }> = {
-    sm: { size: 40, fontSize: 12, iconSize: 16 },
-    md: { size: 48, fontSize: 14, iconSize: 20 },
-    lg: { size: 56, fontSize: 16, iconSize: 24 },
+  const sizeMap: Record<BubbleSize, { size: number; fontSize: string; iconSize: number }> = {
+    sm: { size: 40, fontSize: '0.75rem', iconSize: 16 },
+    md: { size: 48, fontSize: '0.875rem', iconSize: 20 },
+    lg: { size: 56, fontSize: '1rem', iconSize: 24 },
   }
 
   const positionStyles: Record<BubblePosition, React.CSSProperties> = {
@@ -169,7 +169,7 @@ function BubbleComponent({
     justifyContent: 'center',
     width: sizeMap[size].size,
     height: sizeMap[size].size,
-    borderRadius: shape === 'circle' ? '50%' : 8,
+    borderRadius: shape === 'circle' ? '50%' : '0.5rem',
     backgroundColor: ct.base,
     color: ct.contrast,
     border: bordered ? `1px solid ${tokens.colorBorder}` : 'none',
@@ -193,11 +193,11 @@ function BubbleComponent({
     right: -4,
     minWidth: typeof badge === 'number' ? 18 : 10,
     height: typeof badge === 'number' ? 18 : 10,
-    padding: typeof badge === 'number' ? '0 5px' : 0,
+    padding: typeof badge === 'number' ? '0 0.3125rem' : 0,
     borderRadius: '50%',
     backgroundColor: badgeCt.base,
     color: badgeCt.contrast,
-    fontSize: 11,
+    fontSize: '0.6875rem',
     fontWeight: 600,
     display: 'flex',
     alignItems: 'center',
@@ -222,27 +222,27 @@ function BubbleComponent({
   const tooltipPos = getTooltipPos()
 
   const tooltipPositionStyles: Record<'left' | 'right' | 'top' | 'bottom', React.CSSProperties> = {
-    top: { bottom: '100%', left: '50%', marginBottom: 8, transform: `translateX(-50%) translateY(${isHovered ? 0 : 6}px)` },
-    bottom: { top: '100%', left: '50%', marginTop: 8, transform: `translateX(-50%) translateY(${isHovered ? 0 : -6}px)` },
-    left: { right: '100%', top: '50%', marginRight: 8, transform: `translateY(-50%) translateX(${isHovered ? 0 : 6}px)` },
-    right: { left: '100%', top: '50%', marginLeft: 8, transform: `translateY(-50%) translateX(${isHovered ? 0 : -6}px)` },
+    top: { bottom: '100%', left: '50%', marginBottom: '0.5rem', transform: `translateX(-50%) translateY(${isHovered ? 0 : 6}px)` },
+    bottom: { top: '100%', left: '50%', marginTop: '0.5rem', transform: `translateX(-50%) translateY(${isHovered ? 0 : -6}px)` },
+    left: { right: '100%', top: '50%', marginRight: '0.5rem', transform: `translateY(-50%) translateX(${isHovered ? 0 : 6}px)` },
+    right: { left: '100%', top: '50%', marginLeft: '0.5rem', transform: `translateY(-50%) translateX(${isHovered ? 0 : -6}px)` },
   }
 
   const arrowStyles: Record<'left' | 'right' | 'top' | 'bottom', React.CSSProperties> = {
-    top: { bottom: -4, left: '50%', transform: 'translateX(-50%) rotate(45deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
-    bottom: { top: -4, left: '50%', transform: 'translateX(-50%) rotate(-135deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
-    left: { right: -4, top: '50%', transform: 'translateY(-50%) rotate(-45deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
-    right: { left: -4, top: '50%', transform: 'translateY(-50%) rotate(135deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
+    top: { bottom: '-0.25rem', left: '50%', transform: 'translateX(-50%) rotate(45deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
+    bottom: { top: '-0.25rem', left: '50%', transform: 'translateX(-50%) rotate(-135deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
+    left: { right: '-0.25rem', top: '50%', transform: 'translateY(-50%) rotate(-45deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
+    right: { left: '-0.25rem', top: '50%', transform: 'translateY(-50%) rotate(135deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
   }
 
   const tooltipStyle: React.CSSProperties = {
     position: 'absolute',
     zIndex: 1001,
-    padding: '8px 12px',
-    borderRadius: 6,
+    padding: '0.5rem 0.75rem',
+    borderRadius: '0.375rem',
     backgroundColor: tokens.colorBgMuted,
     color: tokens.colorText,
-    fontSize: 13,
+    fontSize: '0.8125rem',
     fontWeight: 500,
     whiteSpace: 'nowrap',
     boxShadow: tokens.shadowMd,
@@ -255,8 +255,8 @@ function BubbleComponent({
 
   const arrowStyle: React.CSSProperties = {
     position: 'absolute',
-    width: 8,
-    height: 8,
+    width: '0.5rem',
+    height: '0.5rem',
     backgroundColor: tokens.colorBgMuted,
     ...arrowStyles[tooltipPos],
   }
@@ -424,7 +424,7 @@ function BubbleGroup({
   const childrenArray = Children.toArray(children)
   const validChildren = childrenArray.filter(isValidElement)
   const totalChildren = validChildren.length
-  const radius = 8
+  const radius = '0.5rem'
 
   // Calcular border-radius para cada hijo según su posición visual
   const getBorderRadius = (index: number): string => {
@@ -432,7 +432,7 @@ function BubbleGroup({
     const isLast = index === totalChildren - 1
     const isOnly = totalChildren === 1
 
-    if (isOnly) return `${radius}px`
+    if (isOnly) return radius
 
     if (isVertical) {
       // column-reverse: index 0 está visualmente abajo, último arriba
@@ -440,16 +440,16 @@ function BubbleGroup({
       const isVisualTop = direction === 'top' ? isLast : isFirst
       const isVisualBottom = direction === 'top' ? isFirst : isLast
 
-      if (isVisualTop) return `${radius}px ${radius}px 0 0`
-      if (isVisualBottom) return `0 0 ${radius}px ${radius}px`
+      if (isVisualTop) return `${radius} ${radius} 0 0`
+      if (isVisualBottom) return `0 0 ${radius} ${radius}`
     } else {
       // row-reverse: index 0 está visualmente a la derecha, último a la izquierda
       // row: index 0 está visualmente a la izquierda, último a la derecha
       const isVisualLeft = direction === 'right' ? isLast : isFirst
       const isVisualRight = direction === 'right' ? isFirst : isLast
 
-      if (isVisualLeft) return `${radius}px 0 0 ${radius}px`
-      if (isVisualRight) return `0 ${radius}px ${radius}px 0`
+      if (isVisualLeft) return `${radius} 0 0 ${radius}`
+      if (isVisualRight) return `0 ${radius} ${radius} 0`
     }
 
     return '0'

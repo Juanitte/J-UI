@@ -48,10 +48,10 @@ export interface FlexProps {
   style?: CSSProperties
 }
 
-const gapMap: Record<'small' | 'middle' | 'large', number> = {
-  small: 8,
-  middle: 16,
-  large: 24,
+const gapMap: Record<'small' | 'middle' | 'large', string> = {
+  small: '0.5rem',
+  middle: '1rem',
+  large: '1.5rem',
 }
 
 export function Flex({

@@ -947,10 +947,10 @@ function NestedSelectComponent({
 
   // ---- Styles ----
 
-  const sizeConfig: Record<NestedSelectSize, { height: number; fontSize: number; padding: string }> = {
-    large: { height: 40, fontSize: 16, padding: '8px 12px' },
-    middle: { height: 36, fontSize: 14, padding: '6px 12px' },
-    small: { height: 28, fontSize: 14, padding: '2px 8px' },
+  const sizeConfig: Record<NestedSelectSize, { height: string; fontSize: string; padding: string; tagLineHeight: string }> = {
+    large: { height: '2.5rem', fontSize: '1rem', padding: '0.5rem 0.75rem', tagLineHeight: '1.75rem' },
+    middle: { height: '2.25rem', fontSize: '0.875rem', padding: '0.375rem 0.75rem', tagLineHeight: '1.5rem' },
+    small: { height: '1.75rem', fontSize: '0.875rem', padding: '0.125rem 0.5rem', tagLineHeight: '1rem' },
   }
   const sc = sizeConfig[size]
 
@@ -988,10 +988,10 @@ function NestedSelectComponent({
     height: multiple ? 'auto' : sc.height,
     minHeight: multiple ? sc.height : undefined,
     padding: sc.padding,
-    paddingRight: 32,
+    paddingRight: '2rem',
     fontSize: sc.fontSize,
     fontFamily: 'inherit',
-    borderRadius: 6,
+    borderRadius: '0.375rem',
     cursor: disabled ? 'not-allowed' : 'pointer',
     userSelect: 'none',
     outline: 'none',
@@ -1018,18 +1018,18 @@ function NestedSelectComponent({
     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     boxShadow: tokens.shadowMd,
     overflow: 'hidden',
     ...(flipUp
       ? {
           bottom: '100%',
-          marginBottom: 4,
+          marginBottom: '0.25rem',
           transform: isAnimating ? 'translateY(0)' : 'translateY(6px)',
         }
       : {
           top: '100%',
-          marginTop: 4,
+          marginTop: '0.25rem',
           transform: isAnimating ? 'translateY(0)' : 'translateY(-6px)',
         }),
   }
@@ -1037,32 +1037,32 @@ function NestedSelectComponent({
   const mergedDropdownStyle = mergeSemanticStyle(dropdownBaseStyle, styles?.dropdown)
 
   const menuBaseStyle: CSSProperties = {
-    minWidth: 120,
-    maxHeight: 256,
+    minWidth: '7.5rem',
+    maxHeight: '16rem',
     overflowY: 'auto',
-    padding: '4px 0',
+    padding: '0.25rem 0',
   }
 
   const optionBaseStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '6px 12px',
-    fontSize: 14,
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.875rem',
     cursor: 'pointer',
     transition: 'background-color 0.15s ease',
-    lineHeight: '22px',
+    lineHeight: '1.375rem',
     whiteSpace: 'nowrap',
   }
 
   const suffixStyle: CSSProperties = {
     position: 'absolute',
-    right: 8,
-    top: multiple ? 10 : '50%',
+    right: '0.5rem',
+    top: multiple ? '0.625rem' : '50%',
     transform: multiple ? undefined : 'translateY(-50%)',
     display: 'flex',
     alignItems: 'center',
-    gap: 4,
+    gap: '0.25rem',
     pointerEvents: 'none',
   }
 
@@ -1070,8 +1070,8 @@ function NestedSelectComponent({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 20,
-    height: 20,
+    width: '1.25rem',
+    height: '1.25rem',
     borderRadius: '50%',
     border: 'none',
     backgroundColor: 'transparent',
@@ -1084,8 +1084,8 @@ function NestedSelectComponent({
 
   const searchInputStyle: CSSProperties = {
     width: '100%',
-    padding: '6px 12px',
-    fontSize: 14,
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.875rem',
     fontFamily: 'inherit',
     border: 'none',
     borderBottom: `1px solid ${tokens.colorBorder}`,
@@ -1097,12 +1097,12 @@ function NestedSelectComponent({
   const tagStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    padding: '1px 8px',
-    fontSize: 12,
-    lineHeight: '20px',
+    padding: '1px 0.5rem',
+    fontSize: '0.75rem',
+    lineHeight: '1.25rem',
     backgroundColor: tokens.colorBgMuted,
-    borderRadius: 4,
-    maxWidth: 200,
+    borderRadius: '0.25rem',
+    maxWidth: '12.5rem',
     border: `1px solid ${tokens.colorBorder}`,
   }
 
@@ -1113,13 +1113,13 @@ function NestedSelectComponent({
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: 16,
-      height: 16,
-      borderRadius: 3,
+      width: '1rem',
+      height: '1rem',
+      borderRadius: '0.1875rem',
       border: `1.5px solid ${state !== 'unchecked' ? tokens.colorPrimary : tokens.colorBorder}`,
       backgroundColor: state !== 'unchecked' ? tokens.colorPrimary : 'transparent',
       color: '#fff',
-      marginRight: 8,
+      marginRight: '0.5rem',
       flexShrink: 0,
       transition: 'all 0.15s ease',
       cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -1135,7 +1135,7 @@ function NestedSelectComponent({
 
   const renderTags = () => {
     if (displayPaths.length === 0) {
-      return <span style={{ color: tokens.colorTextSubtle, flex: 1, lineHeight: `${sc.height - 12}px` }}>{placeholder}</span>
+      return <span style={{ color: tokens.colorTextSubtle, flex: 1, lineHeight: sc.tagLineHeight }}>{placeholder}</span>
     }
 
     const visibleCount = maxTagCount !== undefined ? Math.min(maxTagCount, displayPaths.length) : displayPaths.length
@@ -1143,7 +1143,7 @@ function NestedSelectComponent({
     const omittedPaths = displayPaths.slice(visibleCount)
 
     return (
-      <span style={{ display: 'flex', flexWrap: 'wrap', gap: 4, flex: 1, overflow: 'hidden', alignItems: 'center' }}>
+      <span style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', flex: 1, overflow: 'hidden', alignItems: 'center' }}>
         {visiblePaths.map((vp, idx) => {
           const opts = resolveValuePath(options, vp, fn)
           const labels = opts.map((o) => getLabelString(getOptionLabel(o, fn)))
@@ -1160,7 +1160,7 @@ function NestedSelectComponent({
               <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
               {closable && (
                 <span
-                  style={{ display: 'inline-flex', cursor: 'pointer', marginLeft: 4, color: tokens.colorTextMuted }}
+                  style={{ display: 'inline-flex', cursor: 'pointer', marginLeft: '0.25rem', color: tokens.colorTextMuted }}
                   onClick={(e) => { e.stopPropagation(); onClose() }}
                   onMouseDown={(e) => e.preventDefault()}
                 >
@@ -1237,7 +1237,7 @@ function NestedSelectComponent({
           {label}
         </span>
         {expandable && (
-          <span style={{ display: 'flex', marginLeft: 8, color: tokens.colorTextMuted, flexShrink: 0 }}>
+          <span style={{ display: 'flex', marginLeft: '0.5rem', color: tokens.colorTextMuted, flexShrink: 0 }}>
             {opt.loading ? <LoadingIcon /> : (expandIcon ?? <ChevronRightIcon />)}
           </span>
         )}
@@ -1266,7 +1266,7 @@ function NestedSelectComponent({
   const renderSearchResults = () => {
     if (searchPaths.length === 0) {
       return (
-        <div style={{ padding: '8px 12px', fontSize: 14, color: tokens.colorTextSubtle, textAlign: 'center' }}>
+        <div style={{ padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: tokens.colorTextSubtle, textAlign: 'center' }}>
           {notFoundContent}
         </div>
       )
@@ -1345,7 +1345,7 @@ function NestedSelectComponent({
         onBlur={() => setIsFocused(false)}
       >
         {prefix && (
-          <span style={{ display: 'flex', alignItems: 'center', marginRight: 8, flexShrink: 0 }}>{prefix}</span>
+          <span style={{ display: 'flex', alignItems: 'center', marginRight: '0.5rem', flexShrink: 0 }}>{prefix}</span>
         )}
         {multiple ? renderTags() : (
           displayValue ? (
@@ -1604,13 +1604,13 @@ function NestedSelectPanel({
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      width: 16,
-      height: 16,
-      borderRadius: 3,
+      width: '1rem',
+      height: '1rem',
+      borderRadius: '0.1875rem',
       border: `1.5px solid ${state !== 'unchecked' ? tokens.colorPrimary : tokens.colorBorder}`,
       backgroundColor: state !== 'unchecked' ? tokens.colorPrimary : 'transparent',
       color: '#fff',
-      marginRight: 8,
+      marginRight: '0.5rem',
       flexShrink: 0,
       transition: 'all 0.15s ease',
       cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -1626,21 +1626,21 @@ function NestedSelectPanel({
 
   // Styles
   const menuBaseStyle: CSSProperties = {
-    minWidth: 120,
-    maxHeight: 256,
+    minWidth: '7.5rem',
+    maxHeight: '16rem',
     overflowY: 'auto',
-    padding: '4px 0',
+    padding: '0.25rem 0',
   }
 
   const optionBaseStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '6px 12px',
-    fontSize: 14,
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.875rem',
     cursor: disabled ? 'not-allowed' : 'pointer',
     transition: 'background-color 0.15s ease',
-    lineHeight: '22px',
+    lineHeight: '1.375rem',
     whiteSpace: 'nowrap',
   }
 
@@ -1648,7 +1648,7 @@ function NestedSelectPanel({
     display: 'inline-flex',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     overflow: 'hidden',
     ...style,
   }
@@ -1710,7 +1710,7 @@ function NestedSelectPanel({
           {label}
         </span>
         {expandable && (
-          <span style={{ display: 'flex', marginLeft: 8, color: tokens.colorTextMuted, flexShrink: 0 }}>
+          <span style={{ display: 'flex', marginLeft: '0.5rem', color: tokens.colorTextMuted, flexShrink: 0 }}>
             {expandIcon ?? <ChevronRightIcon />}
           </span>
         )}

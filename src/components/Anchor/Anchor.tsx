@@ -214,6 +214,10 @@ function AnchorRoot({
       indicatorRef.current.style.width = `${linkRect.width}px`
     }
     indicatorRef.current.style.opacity = '1'
+
+    if (!isVertical) {
+      activeLinkEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }
   }, [activeLink, isVertical])
 
   // Click en un enlace
@@ -265,12 +269,14 @@ function AnchorRoot({
 
       const linkStyle: CSSProperties = isVertical
         ? {
-            display: 'block',
-            padding: `4px 0 4px ${16 * (depth + 1)}px`,
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '2.75rem',
+            padding: `0.25rem 0 0.25rem ${depth + 1}rem`,
             color: isActive ? tokens.colorPrimary : tokens.colorTextMuted,
             textDecoration: 'none',
-            fontSize: 14,
-            lineHeight: '22px',
+            fontSize: '0.875rem',
+            lineHeight: '1.375rem',
             transition: 'color 0.15s ease',
             cursor: 'pointer',
             whiteSpace: 'nowrap',
@@ -278,12 +284,14 @@ function AnchorRoot({
             textOverflow: 'ellipsis',
           }
         : {
-            display: 'inline-block',
-            padding: '4px 16px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            minHeight: '2.75rem',
+            padding: '0.25rem 1rem',
             color: isActive ? tokens.colorPrimary : tokens.colorTextMuted,
             textDecoration: 'none',
-            fontSize: 14,
-            lineHeight: '22px',
+            fontSize: '0.875rem',
+            lineHeight: '1.375rem',
             transition: 'color 0.15s ease',
             cursor: 'pointer',
             whiteSpace: 'nowrap',
@@ -317,13 +325,13 @@ function AnchorRoot({
         style,
       )
     : mergeSemanticStyle(
-        { position: 'relative', display: 'flex', paddingBottom: 2 },
+        { position: 'relative', display: 'flex', flexWrap: 'wrap', paddingBottom: 2 },
         styles?.root,
         style,
       )
 
-  // Track (línea de fondo vertical)
-  const trackStyle: CSSProperties | undefined = isVertical
+  // Track (línea de fondo)
+  const trackStyle: CSSProperties = isVertical
     ? {
         position: 'absolute',
         left: 0,
@@ -333,7 +341,15 @@ function AnchorRoot({
         backgroundColor: tokens.colorBorder,
         borderRadius: 1,
       }
-    : undefined
+    : {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 2,
+        backgroundColor: tokens.colorBorder,
+        borderRadius: 1,
+      }
 
   // Indicador activo
   const indicatorStyle: CSSProperties = isVertical
@@ -360,7 +376,7 @@ function AnchorRoot({
 
   return (
     <div ref={wrapperRef} style={wrapperStyle} className={mergeSemanticClassName(className, classNames?.root)}>
-      {isVertical && <div style={{ ...trackStyle, ...styles?.track }} className={classNames?.track} />}
+      <div style={{ ...trackStyle, ...styles?.track }} className={classNames?.track} />
       <div ref={indicatorRef} style={{ ...indicatorStyle, ...styles?.indicator }} className={classNames?.indicator} />
       {renderItems(items)}
     </div>

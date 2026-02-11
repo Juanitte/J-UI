@@ -118,12 +118,12 @@ export interface DropdownButtonProps {
 // ============================================================================
 
 const placementPositionStyles: Record<DropdownPlacement, CSSProperties> = {
-  bottom: { top: '100%', left: '50%', transform: 'translateX(-50%)', paddingTop: 4 },
-  bottomLeft: { top: '100%', left: 0, paddingTop: 4 },
-  bottomRight: { top: '100%', right: 0, paddingTop: 4 },
-  top: { bottom: '100%', left: '50%', transform: 'translateX(-50%)', paddingBottom: 4 },
-  topLeft: { bottom: '100%', left: 0, paddingBottom: 4 },
-  topRight: { bottom: '100%', right: 0, paddingBottom: 4 },
+  bottom: { top: '100%', left: '50%', transform: 'translateX(-50%)', paddingTop: '0.25rem' },
+  bottomLeft: { top: '100%', left: 0, paddingTop: '0.25rem' },
+  bottomRight: { top: '100%', right: 0, paddingTop: '0.25rem' },
+  top: { bottom: '100%', left: '50%', transform: 'translateX(-50%)', paddingBottom: '0.25rem' },
+  topLeft: { bottom: '100%', left: 0, paddingBottom: '0.25rem' },
+  topRight: { bottom: '100%', right: 0, paddingBottom: '0.25rem' },
 }
 
 const arrowPositionStyles: Record<DropdownPlacement, CSSProperties> = {
@@ -219,12 +219,12 @@ function DropdownMenu({
   const [hoveredSubmenu, setHoveredSubmenu] = useState<string | null>(null)
 
   const menuStyle: CSSProperties = {
-    minWidth: isSubmenu ? 140 : 160,
+    minWidth: isSubmenu ? '8.75rem' : '10rem',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     boxShadow: tokens.shadowMd,
-    padding: '4px 0',
+    padding: '0.25rem 0',
     ...(isSubmenu ? {} : styles?.overlay),
   }
 
@@ -245,7 +245,7 @@ function DropdownMenu({
               key={item.key}
               style={{
                 height: 1,
-                margin: '4px 0',
+                margin: '0.25rem 0',
                 backgroundColor: tokens.colorBorder,
               }}
             />
@@ -258,8 +258,8 @@ function DropdownMenu({
             <div key={item.key}>
               <div
                 style={{
-                  padding: '5px 12px',
-                  fontSize: 12,
+                  padding: '0.3125rem 0.75rem',
+                  fontSize: '0.75rem',
                   color: tokens.colorTextSubtle,
                   fontWeight: 600,
                 }}
@@ -330,9 +330,10 @@ function MenuItem({
   const itemStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 8,
-    padding: '6px 12px',
-    fontSize: 14,
+    gap: '0.5rem',
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.875rem',
+    minHeight: '2.75rem',
     cursor: item.disabled ? 'not-allowed' : 'pointer',
     color: item.danger ? tokens.colorError : item.disabled ? tokens.colorTextSubtle : tokens.colorText,
     opacity: item.disabled ? 0.5 : 1,
@@ -360,18 +361,18 @@ function MenuItem({
       }}
     >
       {item.icon && (
-        <span style={{ display: 'inline-flex', fontSize: 14 }}>{item.icon}</span>
+        <span style={{ display: 'inline-flex', fontSize: '0.875rem' }}>{item.icon}</span>
       )}
       <span style={{ flex: 1 }}>{item.label}</span>
       {hasChildren && (
-        <span style={{ display: 'inline-flex', marginLeft: 4 }}>
+        <span style={{ display: 'inline-flex', marginLeft: '0.25rem' }}>
           <ChevronRightIcon />
         </span>
       )}
 
       {/* Submenu */}
       {hasChildren && hoveredSubmenu === item.key && (
-        <div style={{ position: 'absolute', left: '100%', top: -4, paddingLeft: 4 }}>
+        <div style={{ position: 'absolute', left: '100%', top: -4, paddingLeft: '0.25rem' }}>
           <DropdownMenu
             items={item.children!}
             globalOnClick={globalOnClick}
@@ -628,8 +629,8 @@ function DropdownButton({
             borderBottomLeftRadius: 0,
             borderLeft: `1px solid rgba(255,255,255,0.2)`,
             minWidth: 'auto',
-            paddingLeft: 8,
-            paddingRight: 8,
+            paddingLeft: '0.5rem',
+            paddingRight: '0.5rem',
           }}
         />
       </DropdownComponent>

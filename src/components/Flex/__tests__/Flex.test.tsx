@@ -51,7 +51,7 @@ describe('Flex', () => {
 
   it('applies named gap values', () => {
     const { container } = render(<Flex gap="small">Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.gap).toBe('8px')
+    expect((container.firstChild as HTMLElement).style.gap).toBe('0.5rem')
   })
 
   it('applies numeric gap', () => {

@@ -2,6 +2,9 @@ import { vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Anchor } from '../Anchor'
 
+// jsdom doesn't implement scrollIntoView
+Element.prototype.scrollIntoView = vi.fn()
+
 describe('Anchor', () => {
   const items = [
     { key: '1', href: '#section1', title: 'Section 1' },

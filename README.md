@@ -28,6 +28,7 @@ A modern, lightweight React component library with built-in theming support.
   - [DatePicker](#datepicker)
   - [Divider](#divider)
   - [Dropdown](#dropdown)
+  - [Form](#form)
   - [Flex](#flex)
   - [Grid](#grid)
   - [Layout](#layout)
@@ -341,6 +342,8 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 | DatePicker | `root`, `input`, `popup`, `header`, `body`, `cell`, `footer` |
 | Divider | `root`, `line`, `text` |
 | Dropdown | `root`, `overlay`, `item`, `arrow` |
+| Form | `root` |
+| Form.Item | `root`, `label`, `control`, `help`, `extra` |
 | Layout.Sider | `root`, `content`, `trigger` |
 | Menu | `root`, `item`, `submenu`, `group`, `groupTitle`, `divider` |
 | NestedSelect | `root`, `selector`, `dropdown`, `menu`, `option` |
@@ -2549,6 +2552,398 @@ const [open, setOpen] = useState(false)
 >
   Publish
 </Dropdown.Button>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Form</strong> - Data collection with validation, layouts, and dynamic fields</summary>
+
+### Form
+
+A comprehensive form component with field-level validation (required, type, min/max, pattern, custom async validators), three layouts (horizontal, vertical, inline), `FormInstance` API for programmatic control, `Form.Item` for automatic value binding and error display, `Form.List` for dynamic field arrays, `Form.ErrorList`, `Form.Provider` for cross-form communication, and hooks (`useForm`, `useWatch`, `useFormInstance`).
+
+#### Import
+
+```tsx
+import { Form } from 'j-ui'
+```
+
+#### Form Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `form` | `FormInstance` | — | Form instance created by `Form.useForm()` |
+| `name` | `string` | — | Form name (used with `Form.Provider`) |
+| `layout` | `'horizontal' \| 'vertical' \| 'inline'` | `'horizontal'` | Form layout |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Input variant propagated to children |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Size propagated to children |
+| `initialValues` | `Record<string, any>` | — | Initial field values |
+| `onFinish` | `(values: Record<string, any>) => void` | — | Called on successful submit |
+| `onFinishFailed` | `(errorInfo: { values; errorFields }) => void` | — | Called when submit validation fails |
+| `onValuesChange` | `(changedValues, allValues) => void` | — | Called when any field value changes |
+| `onFieldsChange` | `(changedFields, allFields) => void` | — | Called when any field data changes |
+| `fields` | `FieldData[]` | — | Controlled field data |
+| `validateTrigger` | `string \| string[]` | `'onChange'` | Default validation trigger |
+| `colon` | `boolean` | `true` | Show colon after label |
+| `labelAlign` | `'left' \| 'right'` | `'left'` | Label text alignment (requires fixed width via `styles.label`) |
+| `labelWrap` | `boolean` | `false` | Allow label text wrapping |
+| `requiredMark` | `boolean \| 'optional' \| { position } \| function` | `true` | Required mark configuration |
+| `disabled` | `boolean` | `false` | Disable all form fields |
+| `scrollToFirstError` | `boolean \| ScrollIntoViewOptions` | `false` | Scroll to first error on submit |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline styles |
+| `classNames` | `FormClassNames` | — | Semantic slot CSS classes |
+| `styles` | `FormStyles` | — | Semantic slot inline styles |
+
+#### Form.Item Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `name` | `NamePath` | — | Field name (binds to form values) |
+| `label` | `ReactNode` | — | Field label |
+| `layout` | `FormLayout` | Inherited | Override layout per item (mix layouts) |
+| `rules` | `FormRule[]` | — | Validation rules |
+| `dependencies` | `NamePath[]` | — | Re-validate when these fields change |
+| `validateTrigger` | `string \| string[]` | Inherited | Validation trigger override |
+| `validateFirst` | `boolean` | `false` | Stop on first rule error |
+| `validateDebounce` | `number` | — | Debounce validation (ms) |
+| `valuePropName` | `string` | `'value'` | Child prop for value (e.g. `'checked'`) |
+| `trigger` | `string` | `'onChange'` | Child prop for change event |
+| `getValueFromEvent` | `(...args) => any` | — | Custom value extraction from event |
+| `getValueProps` | `(value) => Record<string, any>` | — | Custom value-to-props mapping |
+| `normalize` | `(value, prevValue, allValues) => any` | — | Normalize value before storing |
+| `shouldUpdate` | `boolean \| ((prev, cur) => boolean)` | — | Force re-render on any value change |
+| `noStyle` | `boolean` | `false` | Render without wrapper (just bind props) |
+| `hidden` | `boolean` | `false` | Hide the field |
+| `required` | `boolean` | Auto | Override required indicator |
+| `colon` | `boolean` | Inherited | Override colon per item |
+| `labelAlign` | `'left' \| 'right'` | Inherited | Override label alignment per item (requires fixed width via `styles.label`) |
+| `hasFeedback` | `boolean` | `false` | Show validation status icon |
+| `help` | `ReactNode` | Auto | Help text (overrides validation messages) |
+| `extra` | `ReactNode` | — | Extra content below field |
+| `validateStatus` | `FormValidateStatus` | Auto | Override validation status |
+| `initialValue` | `any` | — | Initial value for this field |
+| `children` | `ReactNode \| (control, meta, form) => ReactNode` | — | Field content or render prop |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline styles |
+| `classNames` | `FormItemClassNames` | — | Semantic slot CSS classes |
+| `styles` | `FormItemStyles` | — | Semantic slot inline styles |
+
+#### Form.List Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `name` | `NamePath` | — | Array field name |
+| `children` | `(fields, operations, meta) => ReactNode` | — | Render function |
+| `initialValue` | `any[]` | — | Initial array values |
+
+#### Form.ErrorList Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `errors` | `ReactNode[]` | — | Error messages to display |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline styles |
+
+#### Form.Provider Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onFormFinish` | `(name, info: { values, forms }) => void` | — | Called when any child form finishes |
+| `onFormChange` | `(name, info: { changedFields, forms }) => void` | — | Called when any child form changes |
+
+#### Hooks
+
+| Hook | Signature | Description |
+|------|-----------|-------------|
+| `Form.useForm` | `(form?) => [FormInstance]` | Creates a form instance for programmatic control |
+| `useWatch` | `(name, form?) => value` | Subscribes to a field value reactively |
+| `useFormInstance` | `() => FormInstance` | Access form instance from any child component |
+
+#### Types
+
+```typescript
+type NamePath = string | number | (string | number)[]
+type FormLayout = 'horizontal' | 'vertical' | 'inline'
+type FormValidateStatus = 'success' | 'warning' | 'error' | 'validating' | ''
+type FormVariant = 'outlined' | 'filled' | 'borderless' | 'underlined'
+type FormSize = 'small' | 'middle' | 'large'
+type FormRequiredMark =
+  | boolean
+  | 'optional'
+  | { position: 'prefix' | 'suffix' }
+  | ((label: ReactNode, info: { required: boolean }) => ReactNode)
+
+interface FormRule {
+  required?: boolean
+  message?: string | ReactNode
+  type?: 'string' | 'number' | 'boolean' | 'url' | 'email' | 'integer' | 'float'
+  min?: number
+  max?: number
+  len?: number
+  pattern?: RegExp
+  whitespace?: boolean
+  enum?: any[]
+  validator?: (rule: FormRule, value: any) => Promise<void>
+  transform?: (value: any) => any
+  validateTrigger?: string | string[]
+  warningOnly?: boolean
+}
+
+interface FormInstance {
+  getFieldValue(name: NamePath): any
+  getFieldsValue(nameList?: NamePath[] | true): Record<string, any>
+  setFieldValue(name: NamePath, value: any): void
+  setFieldsValue(values: Record<string, any>): void
+  validateFields(nameList?, options?): Promise<Record<string, any>>
+  resetFields(nameList?: NamePath[]): void
+  isFieldTouched(name: NamePath): boolean
+  isFieldsTouched(nameList?, allFieldsTouched?): boolean
+  getFieldError(name: NamePath): string[]
+  getFieldsError(nameList?): FieldError[]
+  submit(): void
+  scrollToField(name: NamePath, options?: ScrollIntoViewOptions): void
+  isFieldValidating(name: NamePath): boolean
+}
+
+interface FieldError {
+  name: (string | number)[]
+  errors: string[]
+  warnings: string[]
+}
+
+interface FormListField { name: number; key: number }
+interface FormListOperations {
+  add(defaultValue?, insertIndex?): void
+  remove(index: number | number[]): void
+  move(from: number, to: number): void
+}
+
+// Semantic slot types
+type FormSemanticSlot = 'root'
+type FormItemSemanticSlot = 'root' | 'label' | 'control' | 'help' | 'extra'
+```
+
+#### Semantic DOM
+
+**Form:**
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<form>` | Root form element |
+
+**Form.Item:**
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Item wrapper with layout (horizontal/vertical) |
+| `label` | `<label>` | Label with required mark and colon |
+| `control` | `<div>` | Control area wrapping the field |
+| `help` | `<div>` | Validation messages or custom help text |
+| `extra` | `<div>` | Extra content below the field |
+
+#### Examples
+
+```tsx
+// Basic form
+const [form] = Form.useForm()
+
+<Form form={form} onFinish={(values) => console.log(values)}>
+  <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+    <input />
+  </Form.Item>
+  <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
+    <input />
+  </Form.Item>
+  <button type="submit">Submit</button>
+</Form>
+
+// Vertical layout
+<Form layout="vertical">
+  <Form.Item label="Name" name="name">
+    <input />
+  </Form.Item>
+</Form>
+
+// Inline layout
+<Form layout="inline">
+  <Form.Item name="search">
+    <input placeholder="Search..." />
+  </Form.Item>
+  <button type="submit">Go</button>
+</Form>
+
+// Mix layouts (per-item override)
+<Form layout="horizontal">
+  <Form.Item label="Name" name="name">
+    <input />
+  </Form.Item>
+  <Form.Item layout="vertical" label="Bio" name="bio">
+    <textarea />
+  </Form.Item>
+</Form>
+
+// Validation rules
+<Form.Item
+  label="Password"
+  name="password"
+  rules={[
+    { required: true, message: 'Password is required' },
+    { min: 8, message: 'At least 8 characters' },
+    { pattern: /[A-Z]/, message: 'Must contain uppercase' },
+  ]}
+>
+  <input type="password" />
+</Form.Item>
+
+// Custom async validator
+<Form.Item
+  label="Username"
+  name="username"
+  rules={[{
+    validator: async (_, value) => {
+      const exists = await checkUsername(value)
+      if (exists) throw new Error('Username taken')
+    },
+  }]}
+>
+  <input />
+</Form.Item>
+
+// Dependencies (confirm password)
+<Form.Item label="Password" name="password" rules={[{ required: true }]}>
+  <input type="password" />
+</Form.Item>
+<Form.Item
+  label="Confirm"
+  name="confirm"
+  dependencies={['password']}
+  rules={[{
+    validator: async (_, value) => {
+      if (value !== form.getFieldValue('password')) {
+        throw new Error('Passwords do not match')
+      }
+    },
+  }]}
+>
+  <input type="password" />
+</Form.Item>
+
+// hasFeedback (status icons)
+<Form.Item label="Email" name="email" hasFeedback rules={[{ type: 'email' }]}>
+  <input />
+</Form.Item>
+
+// Checkbox with valuePropName
+<Form.Item name="agree" valuePropName="checked">
+  <Checkbox>I agree to the terms</Checkbox>
+</Form.Item>
+
+// Form.List (dynamic fields)
+<Form.List name="users">
+  {(fields, { add, remove }) => (
+    <>
+      {fields.map(({ key, name }) => (
+        <div key={key} style={{ display: 'flex', gap: 8 }}>
+          <Form.Item name={[name, 'name']} rules={[{ required: true }]}>
+            <input placeholder="Name" />
+          </Form.Item>
+          <button type="button" onClick={() => remove(name)}>Remove</button>
+        </div>
+      ))}
+      <button type="button" onClick={() => add()}>Add User</button>
+    </>
+  )}
+</Form.List>
+
+// useWatch
+function PriceDisplay() {
+  const price = Form.useWatch('price')
+  return <span>Current: ${price ?? 0}</span>
+}
+
+// Programmatic control
+form.setFieldsValue({ username: 'john', email: 'john@example.com' })
+form.resetFields()
+form.validateFields(['username'])
+form.scrollToField('email')
+
+// Disabled form
+<Form disabled>
+  <Form.Item label="Name" name="name"><input /></Form.Item>
+</Form>
+
+// Required mark variations
+<Form requiredMark="optional">...</Form>
+<Form requiredMark={{ position: 'prefix' }}>...</Form>
+<Form requiredMark={false}>...</Form>
+
+// Form.Provider (cross-form communication)
+// Main form collects a project name + a contacts list.
+// Clicking "Add contact" opens a modal with its own form.
+// When the contact form submits, Form.Provider catches it
+// via onFormFinish, adds the contact, resets the form & closes the modal.
+function ProjectForm() {
+  const [mainForm] = Form.useForm()
+  const [contactForm] = Form.useForm()
+  const [showModal, setShowModal] = useState(false)
+  const [contacts, setContacts] = useState([])
+
+  return (
+    <Form.Provider
+      onFormFinish={(name, { values }) => {
+        if (name === 'contactForm') {
+          setContacts(prev => [...prev, values])
+          contactForm.resetFields()
+          setShowModal(false)
+        }
+      }}
+    >
+      <Form form={mainForm} name="mainForm" layout="vertical"
+        onFinish={(v) => console.log({ ...v, contacts })}>
+        <Form.Item name="project" label="Project name" rules={[{ required: true }]}>
+          <input />
+        </Form.Item>
+        <Form.Item label="Contacts">
+          {contacts.map((c, i) => <div key={i}>{c.name} — {c.phone}</div>)}
+          <button type="button" onClick={() => setShowModal(true)}>+ Add contact</button>
+        </Form.Item>
+        <Form.Item><button type="submit">Submit all</button></Form.Item>
+      </Form>
+
+      {/* Modal with its own form */}
+      {showModal && (
+        <div className="modal-overlay">
+          <Form form={contactForm} name="contactForm" layout="vertical">
+            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+              <input />
+            </Form.Item>
+            <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+              <input />
+            </Form.Item>
+            <button type="button" onClick={() => contactForm.submit()}>Add</button>
+          </Form>
+        </div>
+      )}
+    </Form.Provider>
+  )
+}
+
+// Semantic styling
+<Form.Item
+  label="Name"
+  name="name"
+  styles={{
+    label: { fontWeight: 700 },
+    control: { maxWidth: 300 },
+    help: { fontStyle: 'italic' },
+  }}
+>
+  <input />
+</Form.Item>
 ```
 
 </details>

@@ -240,7 +240,8 @@ function CheckboxComponent({
   const rootStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 8,
+    gap: '0.5rem',
+    minHeight: '2.75rem',
     cursor: mergedDisabled ? 'not-allowed' : 'pointer',
     userSelect: 'none',
     lineHeight: 1,
@@ -252,9 +253,9 @@ function CheckboxComponent({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 16,
-    height: 16,
-    borderRadius: 4,
+    width: '1rem',
+    height: '1rem',
+    borderRadius: '0.25rem',
     border: `2px solid ${isActive ? tokens.colorPrimary : tokens.colorBorder}`,
     backgroundColor: isActive ? tokens.colorPrimary : 'transparent',
     color: '#fff',
@@ -276,8 +277,8 @@ function CheckboxComponent({
   }
 
   const labelStyle: CSSProperties = {
-    fontSize: 14,
-    lineHeight: '22px',
+    fontSize: '0.875rem',
+    lineHeight: '1.375rem',
     color: mergedDisabled ? tokens.colorTextSubtle : tokens.colorText,
   }
 
@@ -386,7 +387,7 @@ function CheckboxGroupComponent({
         role="group"
         className={mergeSemanticClassName(className, classNames?.root)}
         style={mergeSemanticStyle(
-          { display: 'inline-flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
+          { display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' },
           styles?.root,
           style,
         )}

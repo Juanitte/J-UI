@@ -39,7 +39,7 @@ describe('Layout.Header', () => {
 
   it('has default height of 64px', () => {
     const { container } = render(<Layout.Header>H</Layout.Header>)
-    expect((container.firstChild as HTMLElement).style.height).toBe('64px')
+    expect((container.firstChild as HTMLElement).style.height).toBe('4rem')
   })
 })
 
@@ -58,7 +58,7 @@ describe('Layout.Content', () => {
 
   it('has padding of 24px', () => {
     const { container } = render(<Layout.Content>M</Layout.Content>)
-    expect((container.firstChild as HTMLElement).style.padding).toBe('24px')
+    expect((container.firstChild as HTMLElement).style.padding).toBe('1.5rem')
   })
 })
 

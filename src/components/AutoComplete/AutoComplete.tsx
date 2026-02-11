@@ -429,14 +429,14 @@ export function AutoComplete({
 
   const inputBaseStyle: CSSProperties = {
     width: '100%',
-    height: 36,
-    padding: '6px 12px',
-    paddingLeft: prefix ? 32 : 12,
-    paddingRight: allowClear && currentValue ? (suffix ? 56 : 36) : (suffix ? 32 : 12),
-    fontSize: 14,
+    minHeight: '2.75rem',
+    padding: '0.375rem 0.75rem',
+    paddingLeft: prefix ? '2rem' : '0.75rem',
+    paddingRight: allowClear && currentValue ? (suffix ? '3.5rem' : '2.25rem') : (suffix ? '2rem' : '0.75rem'),
+    fontSize: '1rem',
     fontFamily: 'inherit',
-    lineHeight: '22px',
-    borderRadius: 6,
+    lineHeight: '1.5',
+    borderRadius: '0.375rem',
     outline: 'none',
     color: disabled ? tokens.colorTextSubtle : statusBorderColor || tokens.colorText,
     cursor: disabled ? 'not-allowed' : undefined,
@@ -463,24 +463,25 @@ export function AutoComplete({
     zIndex: 1050,
     width: dropdownWidth || (popupMatchSelectWidth === true ? '100%' : undefined),
     minWidth: popupMatchSelectWidth === false ? 120 : undefined,
-    maxHeight: 256,
+    maxHeight: 'min(16rem, 40vh)',
     overflowY: 'auto',
+    overscrollBehavior: 'contain',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     boxShadow: tokens.shadowMd,
-    padding: '4px 0',
+    padding: '0.25rem 0',
     opacity: isAnimating ? 1 : 0,
     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
     ...(flipUp
       ? {
           bottom: '100%',
-          marginBottom: 4,
+          marginBottom: '0.25rem',
           transform: isAnimating ? 'translateY(0)' : 'translateY(6px)',
         }
       : {
           top: '100%',
-          marginTop: 4,
+          marginTop: '0.25rem',
           transform: isAnimating ? 'translateY(0)' : 'translateY(-6px)',
         }),
   }
@@ -489,13 +490,15 @@ export function AutoComplete({
 
   // Option base
   const optionBaseStyle: CSSProperties = {
-    padding: '6px 12px',
-    fontSize: 14,
+    padding: '0.625rem 0.75rem',
+    minHeight: '2.75rem',
+    fontSize: '0.875rem',
     cursor: 'pointer',
     transition: 'background-color 0.15s ease',
     display: 'flex',
     alignItems: 'center',
-    lineHeight: '22px',
+    lineHeight: '1.375rem',
+    boxSizing: 'border-box',
   }
 
   // Suffix area
@@ -510,13 +513,14 @@ export function AutoComplete({
     pointerEvents: 'none',
   }
 
-  // Clear button
+  // Clear button — 28px touch target with 14px icon centered
   const clearBtnStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
+    margin: -4,
     borderRadius: '50%',
     border: 'none',
     backgroundColor: 'transparent',
@@ -524,7 +528,7 @@ export function AutoComplete({
     cursor: 'pointer',
     padding: 0,
     pointerEvents: 'auto',
-    transition: 'color 0.15s ease, background-color 0.15s ease',
+    transition: 'color 0.15s ease',
   }
 
   // ---- Render helpers ----
@@ -578,7 +582,7 @@ export function AutoComplete({
     if (flatFiltered.length === 0) {
       if (notFoundContent === null) return null
       return (
-        <div style={{ padding: '8px 12px', fontSize: 14, color: tokens.colorTextSubtle, textAlign: 'center' }}>
+        <div style={{ padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: tokens.colorTextSubtle, textAlign: 'center' }}>
           {notFoundContent}
         </div>
       )
@@ -591,8 +595,8 @@ export function AutoComplete({
           <div key={`group-${opt.value}`}>
             <div
               style={{
-                padding: '5px 12px',
-                fontSize: 12,
+                padding: '0.3125rem 0.75rem',
+                fontSize: '0.75rem',
                 color: tokens.colorTextSubtle,
                 fontWeight: 600,
                 userSelect: 'none',

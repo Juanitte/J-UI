@@ -175,8 +175,9 @@ export function Button({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    borderRadius: 8,
+    gap: '0.5rem',
+    borderRadius: '0.5rem',
+    minHeight: '2.75rem',
     fontWeight: 500,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? 0.6 : 1,
@@ -189,9 +190,9 @@ export function Button({
   }
 
   const sizeStyles: Record<ButtonSize, React.CSSProperties> = {
-    sm: { padding: '6px 12px', fontSize: 13 },
-    md: { padding: '10px 18px', fontSize: 14 },
-    lg: { padding: '14px 24px', fontSize: 16 },
+    sm: { padding: '0.375rem 0.75rem', fontSize: '0.8125rem' },
+    md: { padding: '0.625rem 1.125rem', fontSize: '0.875rem' },
+    lg: { padding: '0.875rem 1.5rem', fontSize: '1rem' },
   }
 
   const ct = colorTokens[color]
@@ -605,8 +606,8 @@ function createFirecracker(button: HTMLButtonElement, color: ButtonColor) {
 function Spinner() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="1em"
+      height="1em"
       viewBox="0 0 24 24"
       fill="none"
       style={{ animation: 'j-spin 1s linear infinite' }}

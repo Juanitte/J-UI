@@ -25,6 +25,8 @@ import { NestedSelectSection } from './sections/NestedSelectSection'
 import { CheckboxSection } from './sections/CheckboxSection'
 import { ColorPickerSection } from './sections/ColorPickerSection'
 import { DatePickerSection } from './sections/DatePickerSection'
+import { FormSection } from './sections/FormSection'
+import { InputSection } from './sections/InputSection'
 import { ThemeSection } from './sections/ThemeSection'
 
 export function Playground() {
@@ -205,6 +207,16 @@ function PlaygroundContent() {
               active={activeSection === 'datepicker'}
               onClick={() => setActiveSection('datepicker')}
             />
+            <NavItem
+              label="Form"
+              active={activeSection === 'form'}
+              onClick={() => setActiveSection('form')}
+            />
+            <NavItem
+              label="Input"
+              active={activeSection === 'input'}
+              onClick={() => setActiveSection('input')}
+            />
           </ul>
         </nav>
       </aside>
@@ -235,6 +247,8 @@ function PlaygroundContent() {
         {activeSection === 'checkbox' && <CheckboxSection />}
         {activeSection === 'colorpicker' && <ColorPickerSection />}
         {activeSection === 'datepicker' && <DatePickerSection />}
+        {activeSection === 'form' && <FormSection />}
+        {activeSection === 'input' && <InputSection />}
         {activeSection === 'theme' && <ThemeSection />}
       </main>
     </div>
