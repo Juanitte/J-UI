@@ -45,5 +45,14 @@ export default defineConfig(() => {
   // Configuracion para el playground (desarrollo)
   return {
     plugins: [react()],
+    server: {
+      proxy: {
+        '/api/upload': {
+          target: 'https://httpbin.org',
+          changeOrigin: true,
+          rewrite: (path: string) => path.replace(/^\/api\/upload/, '/post'),
+        },
+      },
+    },
   }
 })

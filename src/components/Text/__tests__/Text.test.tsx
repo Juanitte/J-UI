@@ -14,7 +14,7 @@ describe('Text', () => {
 
   it('applies size styles', () => {
     const { container } = render(<Text size="xs">Small</Text>)
-    expect((container.firstChild as HTMLElement).style.fontSize).toBe('10px')
+    expect((container.firstChild as HTMLElement).style.fontSize).toBe('0.625rem')
   })
 
   it('applies disabled styles', () => {

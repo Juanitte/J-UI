@@ -24,7 +24,7 @@ describe('ColorPicker', () => {
   it('does not show panel initially', () => {
     const { container } = render(<ColorPicker />)
     // Panel has width 280
-    expect(container.querySelector('div[style*="width: 280px"]')).not.toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).not.toBeInTheDocument()
   })
 
   // ---------- Open / close ----------
@@ -32,25 +32,25 @@ describe('ColorPicker', () => {
   it('opens panel on trigger click', () => {
     const { container } = render(<ColorPicker />)
     clickTrigger()
-    expect(container.querySelector('div[style*="width: 280px"]')).toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).toBeInTheDocument()
   })
 
   it('closes panel on second trigger click', () => {
     const { container } = render(<ColorPicker />)
     clickTrigger()
-    expect(container.querySelector('div[style*="width: 280px"]')).toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).toBeInTheDocument()
 
     clickTrigger()
-    expect(container.querySelector('div[style*="width: 280px"]')).not.toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).not.toBeInTheDocument()
   })
 
   it('closes panel on outside mousedown', () => {
     const { container } = render(<ColorPicker />)
     clickTrigger()
-    expect(container.querySelector('div[style*="width: 280px"]')).toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).toBeInTheDocument()
 
     fireEvent.mouseDown(document.body)
-    expect(container.querySelector('div[style*="width: 280px"]')).not.toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).not.toBeInTheDocument()
   })
 
   it('calls onOpenChange when opening and closing', () => {
@@ -68,13 +68,13 @@ describe('ColorPicker', () => {
 
   it('shows panel when open=true', () => {
     const { container } = render(<ColorPicker open />)
-    expect(container.querySelector('div[style*="width: 280px"]')).toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).toBeInTheDocument()
   })
 
   it('hides panel when open=false regardless of click', () => {
     const { container } = render(<ColorPicker open={false} />)
     clickTrigger()
-    expect(container.querySelector('div[style*="width: 280px"]')).not.toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).not.toBeInTheDocument()
   })
 
   // ---------- Disabled ----------
@@ -100,17 +100,17 @@ describe('ColorPicker', () => {
 
   it('renders small size', () => {
     render(<ColorPicker size="sm" />)
-    expect(screen.getByRole('button').style.height).toBe('24px')
+    expect(screen.getByRole('button').style.height).toBe('1.5rem')
   })
 
   it('renders medium size (default)', () => {
     render(<ColorPicker />)
-    expect(screen.getByRole('button').style.height).toBe('32px')
+    expect(screen.getByRole('button').style.height).toBe('2rem')
   })
 
   it('renders large size', () => {
     render(<ColorPicker size="lg" />)
-    expect(screen.getByRole('button').style.height).toBe('40px')
+    expect(screen.getByRole('button').style.height).toBe('2.5rem')
   })
 
   // ---------- showText ----------
@@ -284,8 +284,8 @@ describe('ColorPicker', () => {
     expect(screen.getByText('Recommended')).toBeInTheDocument()
     // 3 preset color buttons + trigger button + format dropdown button + clear button = NO
     // Just the 3 preset buttons inside the panel
-    const panel = document.querySelector('div[style*="width: 280px"]')!
-    const presetBtns = panel.querySelectorAll('button[style*="width: 20px"]')
+    const panel = document.querySelector('div[style*="width: 17.5rem"]')!
+    const presetBtns = panel.querySelectorAll('button[style*="width: 1.25rem"]')
     expect(presetBtns).toHaveLength(3)
   })
 
@@ -296,8 +296,8 @@ describe('ColorPicker', () => {
     ]
     render(<ColorPicker open presets={presets} onChange={onChange} />)
 
-    const panel = document.querySelector('div[style*="width: 280px"]')!
-    const presetBtn = panel.querySelector('button[style*="width: 20px"]')!
+    const panel = document.querySelector('div[style*="width: 17.5rem"]')!
+    const presetBtn = panel.querySelector('button[style*="width: 1.25rem"]')!
     fireEvent.click(presetBtn)
 
     expect(onChange).toHaveBeenCalled()
@@ -335,7 +335,7 @@ describe('ColorPicker', () => {
       </ColorPicker>,
     )
     fireEvent.click(screen.getByTestId('custom-trigger'))
-    expect(container.querySelector('div[style*="width: 280px"]')).toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).toBeInTheDocument()
   })
 
   // ---------- Hover trigger ----------
@@ -344,13 +344,13 @@ describe('ColorPicker', () => {
     const { container } = render(<ColorPicker trigger="hover" />)
     const root = container.firstChild as HTMLElement
     fireEvent.mouseEnter(root)
-    expect(container.querySelector('div[style*="width: 280px"]')).toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).toBeInTheDocument()
   })
 
   it('does not open on click when trigger="hover"', () => {
     const { container } = render(<ColorPicker trigger="hover" />)
     clickTrigger()
-    expect(container.querySelector('div[style*="width: 280px"]')).not.toBeInTheDocument()
+    expect(container.querySelector('div[style*="width: 17.5rem"]')).not.toBeInTheDocument()
   })
 
   // ---------- Controlled value ----------
@@ -433,7 +433,7 @@ describe('ColorPicker', () => {
 
   it('positions panel below by default (bottomLeft)', () => {
     const { container } = render(<ColorPicker open />)
-    const panel = container.querySelector('div[style*="width: 280px"]') as HTMLElement
+    const panel = container.querySelector('div[style*="width: 17.5rem"]') as HTMLElement
     expect(panel.style.top).toBe('100%')
     expect(panel.style.left).toBe('0px')
   })

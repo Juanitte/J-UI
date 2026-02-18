@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
 import type { ReactNode, CSSProperties, MouseEvent as ReactMouseEvent } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
@@ -235,34 +235,6 @@ function interpolateGradientColor(stops: GradientStopInternal[], percent: number
     b: Math.round(left.color.b + (right.color.b - left.color.b) * t),
     a: Math.round((left.color.a + (right.color.a - left.color.a) * t) * 100) / 100,
   }
-}
-
-// ============================================================================
-// Smart Flip Positioning
-// ============================================================================
-
-function flipPlacement(p: ColorPickerPlacement): ColorPickerPlacement {
-  const map: Record<ColorPickerPlacement, ColorPickerPlacement> = {
-    bottomLeft: 'topLeft', bottomRight: 'topRight',
-    topLeft: 'bottomLeft', topRight: 'bottomRight',
-  }
-  return map[p]
-}
-
-function resolveAutoPlacement(placement: ColorPickerPlacement, rootEl: HTMLElement | null): ColorPickerPlacement {
-  if (!rootEl) return placement
-  const rect = rootEl.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
-  const estimatedPanelHeight = 380
-  const isBottom = placement.startsWith('bottom')
-  if (isBottom) {
-    const spaceBelow = viewportHeight - rect.bottom
-    if (spaceBelow < estimatedPanelHeight && rect.top > spaceBelow) return flipPlacement(placement)
-  } else {
-    const spaceAbove = rect.top
-    if (spaceAbove < estimatedPanelHeight && (viewportHeight - rect.bottom) > spaceAbove) return flipPlacement(placement)
-  }
-  return placement
 }
 
 // ============================================================================
@@ -505,23 +477,23 @@ function FormatInputs({ color, format, disabledAlpha, onColorChange, onFormatCha
   }, [dropdownOpen])
 
   const inputBase: CSSProperties = {
-    height: 24, border: `1px solid ${tokens.colorBorder}`, borderRadius: 4,
-    padding: '0 4px', fontSize: 12, fontFamily: 'monospace', textAlign: 'center',
+    height: '1.5rem', border: `1px solid ${tokens.colorBorder}`, borderRadius: '0.25rem',
+    padding: '0 0.25rem', fontSize: '0.75rem', fontFamily: 'monospace', textAlign: 'center',
     outline: 'none', color: tokens.colorText, backgroundColor: 'transparent',
     flex: 1, minWidth: 0,
   }
 
   return (
-    <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+    <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
       <div ref={dropdownRef} style={{ position: 'relative', flexShrink: 0 }}>
         <button
           type="button"
           onClick={() => setDropdownOpen(!dropdownOpen)}
           style={{
-            height: 24, padding: '0 4px 0 6px', border: `1px solid ${tokens.colorBorder}`,
-            borderRadius: 4, backgroundColor: 'transparent', color: tokens.colorText,
-            cursor: 'pointer', fontSize: 11, fontWeight: 600, display: 'flex',
-            alignItems: 'center', gap: 2, fontFamily: 'inherit', outline: 'none',
+            height: '1.5rem', padding: '0 0.25rem 0 0.375rem', border: `1px solid ${tokens.colorBorder}`,
+            borderRadius: '0.25rem', backgroundColor: 'transparent', color: tokens.colorText,
+            cursor: 'pointer', fontSize: '0.6875rem', fontWeight: 600, display: 'flex',
+            alignItems: 'center', gap: '0.125rem', fontFamily: 'inherit', outline: 'none',
             transition: 'border-color 0.15s ease',
           }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = tokens.colorBorderHover }}
@@ -534,8 +506,8 @@ function FormatInputs({ color, format, disabledAlpha, onColorChange, onFormatCha
         </button>
         {dropdownOpen && (
           <div style={{
-            position: 'absolute', top: '100%', left: 0, marginTop: 2, zIndex: 10,
-            minWidth: '100%', padding: 2, borderRadius: 6,
+            position: 'absolute', top: '100%', left: 0, marginTop: '0.125rem', zIndex: 10,
+            minWidth: '100%', padding: '0.125rem', borderRadius: '0.375rem',
             border: `1px solid ${tokens.colorBorder}`,
             backgroundColor: tokens.colorBg,
             boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
@@ -548,10 +520,10 @@ function FormatInputs({ color, format, disabledAlpha, onColorChange, onFormatCha
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = tokens.colorBgMuted }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent' }}
                 style={{
-                  display: 'block', width: '100%', padding: '4px 8px', border: 'none',
-                  borderRadius: 4, backgroundColor: 'transparent',
+                  display: 'block', width: '100%', padding: '0.25rem 0.5rem', border: 'none',
+                  borderRadius: '0.25rem', backgroundColor: 'transparent',
                   color: f === format ? tokens.colorPrimary : tokens.colorText,
-                  cursor: 'pointer', fontSize: 11, fontWeight: f === format ? 700 : 500,
+                  cursor: 'pointer', fontSize: '0.6875rem', fontWeight: f === format ? 700 : 500,
                   fontFamily: 'inherit', textAlign: 'left',
                   transition: 'background-color 0.1s ease',
                 }}
@@ -587,12 +559,12 @@ function FormatInputs({ color, format, disabledAlpha, onColorChange, onFormatCha
 
       {!disabledAlpha && (<>
         <input
-          style={{ ...inputBase, width: 36, flex: 'none' }}
+          style={{ ...inputBase, width: '2.25rem', flex: 'none' }}
           inputMode="numeric"
           value={Math.round(color.a * 100)}
           onChange={(e) => { const v = e.target.value; if (/^\d*$/.test(v)) handleAlpha(v === '' ? 0 : Math.min(+v, 100)) }}
         />
-        <span style={{ fontSize: 11, color: tokens.colorTextMuted, flexShrink: 0 }}>%</span>
+        <span style={{ fontSize: '0.6875rem', color: tokens.colorTextMuted, flexShrink: 0 }}>%</span>
       </>)}
     </div>
   )
@@ -606,22 +578,22 @@ function PresetsPanel({ presets, onSelect }: {
   presets: ColorPickerPreset[]; onSelect: (color: string) => void
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       {presets.map((preset, i) => (
         <div key={i}>
           {preset.label && (
-            <div style={{ fontSize: 12, color: tokens.colorTextMuted, marginBottom: 4, fontWeight: 500 }}>
+            <div style={{ fontSize: '0.75rem', color: tokens.colorTextMuted, marginBottom: '0.25rem', fontWeight: 500 }}>
               {preset.label}
             </div>
           )}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
             {preset.colors.map((c, j) => (
               <button
                 key={j}
                 type="button"
                 onClick={() => onSelect(c)}
                 style={{
-                  width: 20, height: 20, borderRadius: 4, padding: 0, cursor: 'pointer',
+                  width: '1.25rem', height: '1.25rem', borderRadius: '0.25rem', padding: 0, cursor: 'pointer',
                   border: `1px solid ${tokens.colorBorder}`, backgroundColor: c,
                 }}
               />
@@ -702,12 +674,12 @@ function GradientBar({ stops, activeIndex, angle, onSelectStop, onMoveStop, onAd
   ].join(', ')
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       {/* Gradient bar */}
       <div
         ref={barRef}
         onMouseDown={handleBarClick}
-        style={{ position: 'relative', height: 12, borderRadius: 6, cursor: 'pointer', marginTop: 4, marginBottom: 4 }}
+        style={{ position: 'relative', height: 12, borderRadius: 6, cursor: 'pointer', marginTop: '0.25rem', marginBottom: '0.25rem' }}
       >
         <div style={{
           position: 'absolute', inset: 0, borderRadius: 6,
@@ -737,18 +709,18 @@ function GradientBar({ stops, activeIndex, angle, onSelectStop, onMoveStop, onAd
         ))}
       </div>
       {/* Controls row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <span style={{ fontSize: 11, color: tokens.colorTextMuted, flexShrink: 0 }}>Angle</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        <span style={{ fontSize: '0.6875rem', color: tokens.colorTextMuted, flexShrink: 0 }}>Angle</span>
         <input
           type="number" min={0} max={360} value={angle}
           onChange={(e) => onAngleChange(clamp(+e.target.value, 0, 360))}
           style={{
-            height: 24, width: 48, border: `1px solid ${tokens.colorBorder}`, borderRadius: 4,
-            padding: '0 4px', fontSize: 12, fontFamily: 'monospace', textAlign: 'center',
+            height: '1.5rem', width: '3rem', border: `1px solid ${tokens.colorBorder}`, borderRadius: '0.25rem',
+            padding: '0 0.25rem', fontSize: '0.75rem', fontFamily: 'monospace', textAlign: 'center',
             outline: 'none', color: tokens.colorText, backgroundColor: 'transparent',
           }}
         />
-        <span style={{ fontSize: 11, color: tokens.colorTextMuted }}>°</span>
+        <span style={{ fontSize: '0.6875rem', color: tokens.colorTextMuted }}>°</span>
         <div style={{ flex: 1 }} />
         {stops.length > 2 && (
           <button
@@ -756,8 +728,8 @@ function GradientBar({ stops, activeIndex, angle, onSelectStop, onMoveStop, onAd
             onClick={() => onRemoveStop(activeIndex)}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: 24, height: 24, padding: 0, border: `1px solid ${tokens.colorBorder}`,
-              borderRadius: 4, backgroundColor: 'transparent', cursor: 'pointer',
+              width: '1.5rem', height: '1.5rem', padding: 0, border: `1px solid ${tokens.colorBorder}`,
+              borderRadius: '0.25rem', backgroundColor: 'transparent', cursor: 'pointer',
               color: tokens.colorTextMuted,
             }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = '#ff4d4f' }}
@@ -781,17 +753,17 @@ function ModeTabs({ modes, activeMode, onModeChange }: {
   onModeChange: (m: ColorPickerMode) => void
 }) {
   return (
-    <div style={{ display: 'flex', borderRadius: 4, overflow: 'hidden', border: `1px solid ${tokens.colorBorder}` }}>
+    <div style={{ display: 'flex', borderRadius: '0.25rem', overflow: 'hidden', border: `1px solid ${tokens.colorBorder}` }}>
       {modes.map(m => (
         <button
           key={m}
           type="button"
           onClick={() => onModeChange(m)}
           style={{
-            flex: 1, padding: '4px 0', border: 'none',
+            flex: 1, padding: '0.25rem 0', border: 'none',
             backgroundColor: m === activeMode ? tokens.colorPrimary : 'transparent',
             color: m === activeMode ? '#fff' : tokens.colorText,
-            cursor: 'pointer', fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
+            cursor: 'pointer', fontSize: '0.6875rem', fontWeight: 600, fontFamily: 'inherit',
             transition: 'background-color 0.15s ease, color 0.15s ease',
           }}
         >
@@ -806,10 +778,10 @@ function ModeTabs({ modes, activeMode, onModeChange }: {
 // ColorPicker Component
 // ============================================================================
 
-const sizeConfig: Record<ColorPickerSize, { height: number; swatch: number; radius: number; fontSize: number }> = {
-  sm: { height: 24, swatch: 16, radius: 4, fontSize: 12 },
-  md: { height: 32, swatch: 20, radius: 6, fontSize: 13 },
-  lg: { height: 40, swatch: 28, radius: 8, fontSize: 14 },
+const sizeConfig: Record<ColorPickerSize, { height: string; swatch: number; radius: string; fontSize: string; paddingText: string; paddingIcon: string }> = {
+  sm: { height: '1.5rem', swatch: 16, radius: '0.25rem', fontSize: '0.75rem', paddingText: '0 0.6rem 0 0.375rem', paddingIcon: '0.1875rem' },
+  md: { height: '2rem', swatch: 20, radius: '0.375rem', fontSize: '0.8125rem', paddingText: '0 0.8rem 0 0.5rem', paddingIcon: '0.3125rem' },
+  lg: { height: '2.5rem', swatch: 28, radius: '0.5rem', fontSize: '0.875rem', paddingText: '0 1rem 0 0.625rem', paddingIcon: '0.3125rem' },
 }
 
 export function ColorPicker({
@@ -942,10 +914,31 @@ export function ColorPicker({
     return () => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current) }
   }, [])
 
+  // ---- Auto-flip: measure real DOM and flip if it overflows ----
+  useLayoutEffect(() => {
+    if (!isOpen || !panelRef.current || !rootRef.current) return
+    const panelRect = panelRef.current.getBoundingClientRect()
+    const rootRect = rootRef.current.getBoundingClientRect()
+    const spaceAbove = rootRect.top
+    const spaceBelow = window.innerHeight - rootRect.bottom
+    const isTop = resolvedPlacement.startsWith('top')
+
+    if (!isTop && panelRect.bottom > window.innerHeight) {
+      if (spaceAbove > spaceBelow) {
+        setResolvedPlacement(p => p.replace('bottom', 'top') as ColorPickerPlacement)
+      }
+    } else if (isTop && panelRect.top < 0) {
+      if (spaceBelow > spaceAbove) {
+        setResolvedPlacement(p => p.replace('top', 'bottom') as ColorPickerPlacement)
+      }
+    }
+  })
+
   // ---- Helpers ----
   const setOpen = useCallback((v: boolean) => {
     if (disabled) return
-    if (v) setResolvedPlacement(resolveAutoPlacement(placement, rootRef.current))
+    // Set initial direction from placement prop; useLayoutEffect will auto-correct if it overflows
+    if (v) setResolvedPlacement(placement)
     if (!isOpenControlled) setInternalOpen(v)
     onOpenChange?.(v)
   }, [disabled, isOpenControlled, onOpenChange, placement])
@@ -1073,7 +1066,7 @@ export function ColorPicker({
   const panelPositionStyle: CSSProperties = {
     position: 'absolute',
     zIndex: 1050,
-    ...(isTop ? { bottom: '100%', marginBottom: 4 } : { top: '100%', marginTop: 4 }),
+    ...(isTop ? { bottom: '100%', marginBottom: '0.25rem' } : { top: '100%', marginTop: '0.25rem' }),
     ...(isRight ? { right: 0 } : { left: 0 }),
   }
 
@@ -1112,7 +1105,7 @@ export function ColorPicker({
 
   // ---- Build panel content ----
   const panelContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {showModeTabs && (
         <ModeTabs modes={modeArray} activeMode={activeMode} onModeChange={handleModeChange} />
       )}
@@ -1134,13 +1127,13 @@ export function ColorPicker({
         onChange={(s, b) => updateColor({ ...editingColor, s, b })}
         onDragEnd={fireComplete}
       />
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
         <div style={{
-          width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+          width: '1.75rem', height: '1.75rem', borderRadius: '50%', flexShrink: 0,
           border: `1px solid ${tokens.colorBorder}`,
           backgroundColor: editingSolidColor,
         }} />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
           <HueBar hue={editingColor.h} onChange={(h) => updateColor({ ...editingColor, h })} onDragEnd={fireComplete} />
           {!disabledAlpha && (
             <AlphaBar color={editingColor} alpha={editingColor.a} onChange={(a) => updateColor({ ...editingColor, a })} onDragEnd={fireComplete} />
@@ -1167,9 +1160,9 @@ export function ColorPicker({
             type="button"
             onClick={handleClear}
             style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
-              padding: '4px 0', border: 'none', backgroundColor: 'transparent',
-              color: tokens.colorTextMuted, cursor: 'pointer', fontSize: 12, fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem',
+              padding: '0.25rem 0', border: 'none', backgroundColor: 'transparent',
+              color: tokens.colorTextMuted, cursor: 'pointer', fontSize: '0.75rem', fontFamily: 'inherit',
             }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = tokens.colorText }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = tokens.colorTextMuted }}
@@ -1201,9 +1194,9 @@ export function ColorPicker({
       onClick={handleTriggerClick}
       className={classNames?.trigger}
       style={mergeSemanticStyle({
-        display: 'inline-flex', alignItems: 'center', gap: 8,
+        display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
         height: sc.height,
-        padding: showText ? `0 ${sc.height / 2.5}px 0 ${sc.height / 4}px` : (sc.height - sc.swatch) / 2 - 1,
+        padding: showText ? sc.paddingText : sc.paddingIcon,
         border: `1px solid ${tokens.colorBorder}`, borderRadius: sc.radius,
         backgroundColor: tokens.colorBg, cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.5 : 1,
@@ -1219,7 +1212,7 @@ export function ColorPicker({
       {/* Swatch */}
       <span style={{
         position: 'relative', width: sc.swatch, height: sc.swatch,
-        borderRadius: Math.min(sc.radius - 2, 3), overflow: 'hidden',
+        borderRadius: 3, overflow: 'hidden',
         boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)',
       }}>
         <span style={{
@@ -1278,9 +1271,9 @@ export function ColorPicker({
           className={classNames?.panel}
           style={mergeSemanticStyle({
             ...panelPositionStyle,
-            width: 280,
-            padding: 12,
-            borderRadius: 8,
+            width: '17.5rem',
+            padding: '0.75rem',
+            borderRadius: '0.5rem',
             border: `1px solid ${tokens.colorBorder}`,
             boxShadow: tokens.shadowMd,
             backgroundColor: tokens.colorBg,

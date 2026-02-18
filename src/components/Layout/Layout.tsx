@@ -147,8 +147,8 @@ function Header({
 }: HeaderProps) {
   const headerStyles: CSSProperties = {
     flex: '0 0 auto',
-    height: 64,
-    padding: '0 24px',
+    height: '4rem',
+    padding: '0 1.5rem',
     backgroundColor: tokens.colorBgMuted,
     display: 'flex',
     alignItems: 'center',
@@ -173,7 +173,7 @@ function Footer({
 }: FooterProps) {
   const footerStyles: CSSProperties = {
     flex: '0 0 auto',
-    padding: '24px 50px',
+    padding: '1.5rem 3.125rem',
     backgroundColor: tokens.colorBgMuted,
     ...style,
   }
@@ -197,7 +197,7 @@ function Content({
   const contentStyles: CSSProperties = {
     flex: 'auto',
     minHeight: 0,
-    padding: 24,
+    padding: '1.5rem',
     ...style,
   }
 
@@ -310,7 +310,7 @@ function Sider({
       bottom: 0,
       left: 0,
       right: 0,
-      height: 48,
+      height: '3rem',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -323,16 +323,16 @@ function Sider({
     if (collapsedWidth === 0 && collapsed) {
       const zeroWidthTriggerStyles: CSSProperties = {
         position: 'absolute',
-        bottom: 48,
-        right: -36,
-        width: 36,
-        height: 42,
+        bottom: '3rem',
+        right: '-2.25rem',
+        width: '2.25rem',
+        height: '2.625rem',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
         backgroundColor: theme === 'dark' ? '#2a2a2a' : tokens.colorBgMuted,
-        borderRadius: '0 4px 4px 0',
+        borderRadius: '0 0.25rem 0.25rem 0',
         boxShadow: tokens.shadowMd,
       }
 

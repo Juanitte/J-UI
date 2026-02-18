@@ -73,10 +73,10 @@ export interface TabsProps {
 const SCROLL_STEP = 200
 
 const SIZE_CONFIG = {
-  large: { paddingH: '20px 16px', paddingV: '12px 24px', fontSize: 16, cardHeight: 44 },
-  middle: { paddingH: '12px 16px', paddingV: '12px 24px', fontSize: 14, cardHeight: 40 },
-  small: { paddingH: '8px 12px', paddingV: '8px 16px', fontSize: 14, cardHeight: 36 },
-} as const
+  large: { paddingH: '1.25rem 1rem', paddingV: '0.75rem 1.5rem', fontSize: '1rem', cardHeight: '2.75rem' },
+  middle: { paddingH: '0.75rem 1rem', paddingV: '0.75rem 1.5rem', fontSize: '0.875rem', cardHeight: '2.5rem' },
+  small: { paddingH: '0.5rem 0.75rem', paddingV: '0.5rem 1rem', fontSize: '0.875rem', cardHeight: '2.25rem' },
+}
 
 // ============================================================================
 // Icons
@@ -493,8 +493,8 @@ export function Tabs({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: isVertical ? '100%' : 32,
-    height: isVertical ? 32 : '100%',
+    width: isVertical ? '100%' : '2rem',
+    height: isVertical ? '2rem' : '100%',
     border: 'none',
     background: 'none',
     color: tokens.colorTextMuted,
@@ -510,12 +510,12 @@ export function Tabs({
       ? {
           border: `1px solid ${tokens.colorBorder}`,
           ...(tabPosition === 'top'
-            ? { borderTop: 'none', borderRadius: '0 0 8px 8px' }
+            ? { borderTop: 'none', borderRadius: '0 0 0.5rem 0.5rem' }
             : tabPosition === 'bottom'
-              ? { borderBottom: 'none', borderRadius: '8px 8px 0 0' }
+              ? { borderBottom: 'none', borderRadius: '0.5rem 0.5rem 0 0' }
               : tabPosition === 'left'
-                ? { borderLeft: 'none', borderRadius: '0 8px 8px 0' }
-                : { borderRight: 'none', borderRadius: '8px 0 0 8px' }),
+                ? { borderLeft: 'none', borderRadius: '0 0.5rem 0.5rem 0' }
+                : { borderRight: 'none', borderRadius: '0.5rem 0 0 0.5rem' }),
         }
       : {}),
   }
@@ -530,7 +530,7 @@ export function Tabs({
     const base: CSSProperties = {
       display: 'flex',
       alignItems: 'center',
-      gap: 8,
+      gap: '0.5rem',
       padding,
       fontSize: sizeConfig.fontSize,
       cursor: item.disabled ? 'not-allowed' : 'pointer',
@@ -558,12 +558,12 @@ export function Tabs({
       const isBottom = tabPosition === 'bottom'
       const isLeft = tabPosition === 'left'
 
-      const radius = 8
+      const cardRadius = '0.5rem'
       const borderRadiusMap: Record<TabsPosition, string> = {
-        top: `${radius}px ${radius}px 0 0`,
-        bottom: `0 0 ${radius}px ${radius}px`,
-        left: `${radius}px 0 0 ${radius}px`,
-        right: `0 ${radius}px ${radius}px 0`,
+        top: `${cardRadius} ${cardRadius} 0 0`,
+        bottom: `0 0 ${cardRadius} ${cardRadius}`,
+        left: `${cardRadius} 0 0 ${cardRadius}`,
+        right: `0 ${cardRadius} ${cardRadius} 0`,
       }
 
       Object.assign(base, {
@@ -588,13 +588,13 @@ export function Tabs({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 4,
-    padding: 2,
+    marginLeft: '0.25rem',
+    padding: '0.125rem',
     border: 'none',
     background: 'none',
     color: tokens.colorTextMuted,
     cursor: 'pointer',
-    borderRadius: 4,
+    borderRadius: '0.25rem',
     transition: 'color 0.2s, background-color 0.2s',
     lineHeight: 0,
   }
@@ -607,13 +607,13 @@ export function Tabs({
     width: sizeConfig.cardHeight,
     height: sizeConfig.cardHeight,
     border: `1px dashed ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     background: 'none',
     color: tokens.colorTextMuted,
     cursor: 'pointer',
     flexShrink: 0,
-    marginLeft: isVertical ? 0 : 4,
-    marginTop: isVertical ? 4 : 0,
+    marginLeft: isVertical ? 0 : '0.25rem',
+    marginTop: isVertical ? '0.25rem' : 0,
     transition: 'color 0.2s, border-color 0.2s',
   }
 
@@ -630,7 +630,7 @@ export function Tabs({
 
       const paneStyle: CSSProperties = {
         ...(isActive ? {} : { display: 'none' }),
-        padding: 16,
+        padding: '1rem',
       }
 
       if (tabPaneAnimated && isActive) {

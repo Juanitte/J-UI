@@ -9,6 +9,7 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { Tooltip } from '../Tooltip'
 
 // ============================================================================
 // Types
@@ -136,8 +137,9 @@ function PaginationItem({
   const isSmall = size === 'small'
   const isEllipsis = type === 'jump-prev' || type === 'jump-next'
 
-  const dim = isSmall ? 24 : 32
-  const fontSize = isSmall ? 12 : 14
+  const dim = isSmall ? '1.5rem' : '2rem'
+  const fontSize = isSmall ? '0.75rem' : '0.875rem'
+  const iconSize = isSmall ? 12 : 14
 
   const baseStyle: CSSProperties = {
     display: 'inline-flex',
@@ -147,14 +149,14 @@ function PaginationItem({
     height: dim,
     fontSize,
     lineHeight: 1,
-    padding: '0 4px',
+    padding: '0 0.25rem',
     border: isEllipsis ? 'none' : '1px solid',
     borderColor: isEllipsis
       ? 'transparent'
       : isActive
         ? tokens.colorPrimary
         : tokens.colorBorder,
-    borderRadius: 6,
+    borderRadius: '0.375rem',
     backgroundColor: isEllipsis
       ? 'transparent'
       : isActive
@@ -187,27 +189,28 @@ function PaginationItem({
   let content: ReactNode
   if (type === 'prev') {
     content = (
-      <svg width={fontSize} height={fontSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="15 18 9 12 15 6" />
       </svg>
     )
   } else if (type === 'next') {
     content = (
-      <svg width={fontSize} height={fontSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="9 6 15 12 9 18" />
       </svg>
     )
   } else if (isEllipsis) {
-    content = <span style={{ letterSpacing: 2, fontWeight: 700 }}>•••</span>
+    content = <span style={{ letterSpacing: '0.125rem', fontWeight: 700 }}>•••</span>
   } else {
     content = page
   }
+
+  const isNavButton = type === 'prev' || type === 'next' || type === 'jump-prev' || type === 'jump-next'
 
   const originalElement = (
     <button
       type="button"
       disabled={disabled}
-      title={titleText}
       aria-label={type === 'prev' ? 'Previous' : type === 'next' ? 'Next' : undefined}
       aria-current={isActive ? 'page' : undefined}
       style={baseStyle}
@@ -244,7 +247,11 @@ function PaginationItem({
       style={{ listStyle: 'none', cursor: disabled ? 'not-allowed' : 'pointer' }}
       onClick={disabled ? undefined : onClick}
     >
-      {rendered}
+      {titleText && isNavButton ? (
+        <Tooltip content={titleText} delay={300}>
+          {rendered}
+        </Tooltip>
+      ) : rendered}
     </li>
   )
 }
@@ -270,8 +277,8 @@ function SizeChanger({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const isSmall = size === 'small'
-  const dim = isSmall ? 24 : 32
-  const fontSize = isSmall ? 12 : 14
+  const dim = isSmall ? '1.5rem' : '2rem'
+  const fontSize = isSmall ? '0.75rem' : '0.875rem'
 
   // Close on click outside
   useEffect(() => {
@@ -288,15 +295,15 @@ function SizeChanger({
   const triggerStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 6,
+    gap: '0.375rem',
     height: dim,
     border: '1px solid',
     borderColor: open ? tokens.colorPrimary : tokens.colorBorder,
-    borderRadius: 6,
+    borderRadius: '0.375rem',
     backgroundColor: tokens.colorBg,
     color: tokens.colorText,
     fontSize,
-    padding: `0 ${isSmall ? 8 : 12}px`,
+    padding: isSmall ? '0 0.5rem' : '0 0.75rem',
     cursor: disabled ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
     transition: 'border-color 0.2s',
@@ -308,13 +315,13 @@ function SizeChanger({
     position: 'absolute',
     top: '100%',
     left: 0,
-    marginTop: 4,
+    marginTop: '0.25rem',
     minWidth: '100%',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     boxShadow: tokens.shadowMd,
-    padding: '4px 0',
+    padding: '0.25rem 0',
     zIndex: 1050,
   }
 
@@ -366,7 +373,7 @@ function SizeChanger({
             <div
               key={opt}
               style={{
-                padding: '6px 12px',
+                padding: '0.375rem 0.75rem',
                 fontSize,
                 cursor: 'pointer',
                 color: opt === value ? tokens.colorPrimary : tokens.colorText,
@@ -505,9 +512,9 @@ export function Pagination({
   // ── Styles ───────────────────────────────────────────────────────────
 
   const isSmall = size === 'small'
-  const dim = isSmall ? 24 : 32
-  const fontSize = isSmall ? 12 : 14
-  const gap = isSmall ? 4 : 8
+  const dim = isSmall ? '1.5rem' : '2rem'
+  const fontSize = isSmall ? '0.75rem' : '0.875rem'
+  const gap = isSmall ? '0.25rem' : '0.5rem'
 
   const rootBaseStyle: CSSProperties = {
     display: 'flex',
@@ -520,10 +527,10 @@ export function Pagination({
   const rootStyle = mergeSemanticStyle(rootBaseStyle, styles?.root, style)
 
   const inputBaseStyle: CSSProperties = {
-    width: 50,
+    width: '3.125rem',
     height: dim,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 6,
+    borderRadius: '0.375rem',
     textAlign: 'center',
     backgroundColor: tokens.colorBg,
     color: tokens.colorText,
@@ -562,7 +569,7 @@ export function Pagination({
             itemClassName={classNames?.item}
             onClick={() => goToPage(safeCurrent - 1)}
           />
-          <li style={{ display: 'flex', alignItems: 'center', gap: 4, listStyle: 'none' }}>
+          <li style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', listStyle: 'none' }}>
             <input
               type="text"
               value={simpleInputValue}
@@ -613,7 +620,7 @@ export function Pagination({
     >
       {/* showTotal */}
       {showTotal && (
-        <span style={{ color: tokens.colorTextMuted, fontSize, marginRight: 4 }}>
+        <span style={{ color: tokens.colorTextMuted, fontSize, marginRight: '0.25rem' }}>
           {showTotal(total, [rangeStart, rangeEnd])}
         </span>
       )}
@@ -713,7 +720,7 @@ export function Pagination({
           )}
 
           {showQuickJumper && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: tokens.colorText, fontSize }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: tokens.colorText, fontSize }}>
               Go to
               <input
                 type="text"

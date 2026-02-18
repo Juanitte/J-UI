@@ -413,7 +413,7 @@ describe('Menu', () => {
     ]
     const { container } = render(<Menu items={iconItems} mode="inline" inlineCollapsed />)
     const ul = container.querySelector('ul') as HTMLElement
-    expect(ul.style.width).toBe('48px')
+    expect(ul.style.width).toBe('3rem')
   })
 
   it('hides labels when collapsed and item has icon', () => {

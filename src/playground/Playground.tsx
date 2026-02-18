@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Text, ThemeProvider, useTheme, tokens } from '../index'
 import { NavItem } from './sections/shared'
 import { ButtonSection } from './sections/ButtonSection'
@@ -24,7 +24,28 @@ import { AutoCompleteSection } from './sections/AutoCompleteSection'
 import { NestedSelectSection } from './sections/NestedSelectSection'
 import { CheckboxSection } from './sections/CheckboxSection'
 import { ColorPickerSection } from './sections/ColorPickerSection'
+import { CalendarSection } from './sections/CalendarSection'
+import { CardSection } from './sections/CardSection'
+import { CarouselSection } from './sections/CarouselSection'
+import { CollapseSection } from './sections/CollapseSection'
+import { EmptySection } from './sections/EmptySection'
+import { ImageSection } from './sections/ImageSection'
+import { DataDisplaySection } from './sections/DataDisplaySection'
 import { DatePickerSection } from './sections/DatePickerSection'
+import { FormSection } from './sections/FormSection'
+import { InputSection } from './sections/InputSection'
+import { InputNumberSection } from './sections/InputNumberSection'
+import { MentionSection } from './sections/MentionSection'
+import { RadioSection } from './sections/RadioSection'
+import { RateSection } from './sections/RateSection'
+import { SelectSection } from './sections/SelectSection'
+import { SliderSection } from './sections/SliderSection'
+import { SwitchSection } from './sections/SwitchSection'
+import { TimePickerSection } from './sections/TimePickerSection'
+import { TransferSection } from './sections/TransferSection'
+import { TreeSelectSection } from './sections/TreeSelectSection'
+import { UploadSection } from './sections/UploadSection'
+import { AvatarSection } from './sections/AvatarSection'
 import { ThemeSection } from './sections/ThemeSection'
 
 export function Playground() {
@@ -35,34 +56,36 @@ export function Playground() {
   )
 }
 
+const MOBILE_BREAKPOINT = 768
+
 function PlaygroundContent() {
   const [activeSection, setActiveSection] = useState<string>('button')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < MOBILE_BREAKPOINT : false
+  )
   const { mode, toggleMode } = useTheme()
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        minHeight: '100vh',
-        backgroundColor: tokens.colorBg,
-        color: tokens.colorText,
-      }}
-    >
-      {/* Sidebar */}
-      <aside
-        style={{
-          width: 240,
-          borderRight: `1px solid ${tokens.colorBorder}`,
-          padding: 16,
-          backgroundColor: tokens.colorBgSubtle,
-          position: 'sticky',
-          top: 0,
-          height: '100vh',
-          overflowY: 'auto',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text size="lg" weight="semibold">J-UI</Text>
+  useEffect(() => {
+    const handle = () => {
+      const mobile = window.innerWidth < MOBILE_BREAKPOINT
+      setIsMobile(mobile)
+      if (!mobile) setSidebarOpen(false)
+    }
+    window.addEventListener('resize', handle)
+    return () => window.removeEventListener('resize', handle)
+  }, [])
+
+  const handleNavClick = (section: string) => {
+    setActiveSection(section)
+    if (isMobile) setSidebarOpen(false)
+  }
+
+  const sidebarContent = (
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <Text size="lg" weight="semibold">J-UI</Text>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <button
             onClick={toggleMode}
             style={{
@@ -77,140 +100,348 @@ function PlaygroundContent() {
           >
             {mode === 'light' ? '🌙' : '☀️'}
           </button>
+          {isMobile && (
+            <button
+              onClick={() => setSidebarOpen(false)}
+              style={{
+                padding: '4px 8px',
+                border: `1px solid ${tokens.colorBorder}`,
+                borderRadius: 4,
+                backgroundColor: tokens.colorBgMuted,
+                color: tokens.colorText,
+                cursor: 'pointer',
+                fontSize: 14,
+                lineHeight: 1,
+              }}
+            >
+              ✕
+            </button>
+          )}
         </div>
-        <nav>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+      </div>
+      <nav>
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             <NavItem
               label="Theme"
               active={activeSection === 'theme'}
-              onClick={() => setActiveSection('theme')}
+              onClick={() => handleNavClick('theme')}
             />
             <NavItem
               label="Button"
               active={activeSection === 'button'}
-              onClick={() => setActiveSection('button')}
+              onClick={() => handleNavClick('button')}
             />
             <NavItem
               label="Tooltip"
               active={activeSection === 'tooltip'}
-              onClick={() => setActiveSection('tooltip')}
+              onClick={() => handleNavClick('tooltip')}
             />
             <NavItem
               label="Badge"
               active={activeSection === 'badge'}
-              onClick={() => setActiveSection('badge')}
+              onClick={() => handleNavClick('badge')}
             />
             <NavItem
               label="Bubble"
               active={activeSection === 'bubble'}
-              onClick={() => setActiveSection('bubble')}
+              onClick={() => handleNavClick('bubble')}
             />
             <NavItem
               label="Text"
               active={activeSection === 'text'}
-              onClick={() => setActiveSection('text')}
+              onClick={() => handleNavClick('text')}
             />
             <NavItem
               label="Divider"
               active={activeSection === 'divider'}
-              onClick={() => setActiveSection('divider')}
+              onClick={() => handleNavClick('divider')}
             />
             <NavItem
               label="Flex"
               active={activeSection === 'flex'}
-              onClick={() => setActiveSection('flex')}
+              onClick={() => handleNavClick('flex')}
             />
             <NavItem
               label="Grid"
               active={activeSection === 'grid'}
-              onClick={() => setActiveSection('grid')}
+              onClick={() => handleNavClick('grid')}
             />
             <NavItem
               label="Layout"
               active={activeSection === 'layout'}
-              onClick={() => setActiveSection('layout')}
+              onClick={() => handleNavClick('layout')}
             />
             <NavItem
               label="Space"
               active={activeSection === 'space'}
-              onClick={() => setActiveSection('space')}
+              onClick={() => handleNavClick('space')}
             />
             <NavItem
               label="Splitter"
               active={activeSection === 'splitter'}
-              onClick={() => setActiveSection('splitter')}
+              onClick={() => handleNavClick('splitter')}
             />
             <NavItem
               label="Anchor"
               active={activeSection === 'anchor'}
-              onClick={() => setActiveSection('anchor')}
+              onClick={() => handleNavClick('anchor')}
             />
             <NavItem
               label="Breadcrumb"
               active={activeSection === 'breadcrumb'}
-              onClick={() => setActiveSection('breadcrumb')}
+              onClick={() => handleNavClick('breadcrumb')}
             />
             <NavItem
               label="Dropdown"
               active={activeSection === 'dropdown'}
-              onClick={() => setActiveSection('dropdown')}
+              onClick={() => handleNavClick('dropdown')}
             />
             <NavItem
               label="Menu"
               active={activeSection === 'menu'}
-              onClick={() => setActiveSection('menu')}
+              onClick={() => handleNavClick('menu')}
             />
             <NavItem
               label="Pagination"
               active={activeSection === 'pagination'}
-              onClick={() => setActiveSection('pagination')}
+              onClick={() => handleNavClick('pagination')}
             />
             <NavItem
               label="Steps"
               active={activeSection === 'steps'}
-              onClick={() => setActiveSection('steps')}
+              onClick={() => handleNavClick('steps')}
             />
             <NavItem
               label="Tabs"
               active={activeSection === 'tabs'}
-              onClick={() => setActiveSection('tabs')}
+              onClick={() => handleNavClick('tabs')}
             />
             <NavItem
               label="AutoComplete"
               active={activeSection === 'autocomplete'}
-              onClick={() => setActiveSection('autocomplete')}
+              onClick={() => handleNavClick('autocomplete')}
             />
             <NavItem
               label="Waterfall"
               active={activeSection === 'waterfall'}
-              onClick={() => setActiveSection('waterfall')}
+              onClick={() => handleNavClick('waterfall')}
             />
             <NavItem
               label="NestedSelect"
               active={activeSection === 'nestedselect'}
-              onClick={() => setActiveSection('nestedselect')}
+              onClick={() => handleNavClick('nestedselect')}
             />
             <NavItem
               label="Checkbox"
               active={activeSection === 'checkbox'}
-              onClick={() => setActiveSection('checkbox')}
+              onClick={() => handleNavClick('checkbox')}
             />
             <NavItem
               label="ColorPicker"
               active={activeSection === 'colorpicker'}
-              onClick={() => setActiveSection('colorpicker')}
+              onClick={() => handleNavClick('colorpicker')}
+            />
+            <NavItem
+              label="Calendar"
+              active={activeSection === 'calendar'}
+              onClick={() => handleNavClick('calendar')}
+            />
+            <NavItem
+              label="Card"
+              active={activeSection === 'card'}
+              onClick={() => handleNavClick('card')}
+            />
+            <NavItem
+              label="Carousel"
+              active={activeSection === 'carousel'}
+              onClick={() => handleNavClick('carousel')}
+            />
+            <NavItem
+              label="Collapse"
+              active={activeSection === 'collapse'}
+              onClick={() => handleNavClick('collapse')}
+            />
+            <NavItem
+              label="DataDisplay"
+              active={activeSection === 'datadisplay'}
+              onClick={() => handleNavClick('datadisplay')}
+            />
+            <NavItem
+              label="Empty"
+              active={activeSection === 'empty'}
+              onClick={() => handleNavClick('empty')}
+            />
+            <NavItem
+              label="Image"
+              active={activeSection === 'image'}
+              onClick={() => handleNavClick('image')}
             />
             <NavItem
               label="DatePicker"
               active={activeSection === 'datepicker'}
-              onClick={() => setActiveSection('datepicker')}
+              onClick={() => handleNavClick('datepicker')}
+            />
+            <NavItem
+              label="Form"
+              active={activeSection === 'form'}
+              onClick={() => handleNavClick('form')}
+            />
+            <NavItem
+              label="Input"
+              active={activeSection === 'input'}
+              onClick={() => handleNavClick('input')}
+            />
+            <NavItem
+              label="InputNumber"
+              active={activeSection === 'inputnumber'}
+              onClick={() => handleNavClick('inputnumber')}
+            />
+            <NavItem
+              label="Mention"
+              active={activeSection === 'mention'}
+              onClick={() => handleNavClick('mention')}
+            />
+            <NavItem
+              label="Radio"
+              active={activeSection === 'radio'}
+              onClick={() => handleNavClick('radio')}
+            />
+            <NavItem
+              label="Rate"
+              active={activeSection === 'rate'}
+              onClick={() => handleNavClick('rate')}
+            />
+            <NavItem
+              label="Select"
+              active={activeSection === 'select'}
+              onClick={() => handleNavClick('select')}
+            />
+            <NavItem
+              label="Slider"
+              active={activeSection === 'slider'}
+              onClick={() => handleNavClick('slider')}
+            />
+            <NavItem
+              label="Switch"
+              active={activeSection === 'switch'}
+              onClick={() => handleNavClick('switch')}
+            />
+            <NavItem
+              label="TimePicker"
+              active={activeSection === 'timepicker'}
+              onClick={() => handleNavClick('timepicker')}
+            />
+            <NavItem
+              label="Transfer"
+              active={activeSection === 'transfer'}
+              onClick={() => handleNavClick('transfer')}
+            />
+            <NavItem
+              label="TreeSelect"
+              active={activeSection === 'treeselect'}
+              onClick={() => handleNavClick('treeselect')}
+            />
+            <NavItem
+              label="Upload"
+              active={activeSection === 'upload'}
+              onClick={() => handleNavClick('upload')}
+            />
+            <NavItem
+              label="Avatar"
+              active={activeSection === 'avatar'}
+              onClick={() => handleNavClick('avatar')}
             />
           </ul>
         </nav>
+    </>
+  )
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        backgroundColor: tokens.colorBg,
+        color: tokens.colorText,
+        overflowX: 'hidden' as const,
+      }}
+    >
+      {/* Mobile top bar */}
+      {isMobile && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 48,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '0 16px',
+            backgroundColor: tokens.colorBgSubtle,
+            borderBottom: `1px solid ${tokens.colorBorder}`,
+            zIndex: 1000,
+          }}
+        >
+          <button
+            onClick={() => setSidebarOpen(true)}
+            style={{
+              padding: '4px 8px',
+              border: `1px solid ${tokens.colorBorder}`,
+              borderRadius: 4,
+              backgroundColor: tokens.colorBgMuted,
+              color: tokens.colorText,
+              cursor: 'pointer',
+              fontSize: 16,
+              lineHeight: 1,
+            }}
+          >
+            ☰
+          </button>
+          <Text size="md" weight="semibold">J-UI</Text>
+        </div>
+      )}
+
+      {/* Sidebar overlay backdrop (mobile) */}
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            zIndex: 1001,
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        style={{
+          width: 240,
+          borderRight: `1px solid ${tokens.colorBorder}`,
+          padding: 16,
+          backgroundColor: tokens.colorBgSubtle,
+          scrollbarColor: `${tokens.colorSecondaryHover} transparent`,
+          position: 'fixed',
+          top: 0,
+          bottom: 0,
+          overflowY: 'auto',
+          ...(isMobile ? {
+            left: sidebarOpen ? 0 : -260,
+            zIndex: 1002,
+            transition: 'left 200ms ease',
+          } : {
+            left: 0,
+          }),
+        }}
+      >
+        {sidebarContent}
       </aside>
 
       {/* Content */}
-      <main style={{ flex: 1, padding: 32, minWidth: 0 }}>
+      <main style={{ flex: 1, padding: isMobile ? '64px 16px 16px' : 32, minWidth: 0, marginLeft: isMobile ? 0 : 240 }}>
         {activeSection === 'button' && <ButtonSection />}
         {activeSection === 'tooltip' && <TooltipSection />}
         {activeSection === 'badge' && <BadgeSection />}
@@ -234,7 +465,28 @@ function PlaygroundContent() {
         {activeSection === 'nestedselect' && <NestedSelectSection />}
         {activeSection === 'checkbox' && <CheckboxSection />}
         {activeSection === 'colorpicker' && <ColorPickerSection />}
+        {activeSection === 'calendar' && <CalendarSection />}
+        {activeSection === 'card' && <CardSection />}
+        {activeSection === 'carousel' && <CarouselSection />}
+        {activeSection === 'collapse' && <CollapseSection />}
+        {activeSection === 'datadisplay' && <DataDisplaySection />}
+        {activeSection === 'empty' && <EmptySection />}
+        {activeSection === 'image' && <ImageSection />}
         {activeSection === 'datepicker' && <DatePickerSection />}
+        {activeSection === 'form' && <FormSection />}
+        {activeSection === 'input' && <InputSection />}
+        {activeSection === 'inputnumber' && <InputNumberSection />}
+        {activeSection === 'mention' && <MentionSection />}
+        {activeSection === 'radio' && <RadioSection />}
+        {activeSection === 'rate' && <RateSection />}
+        {activeSection === 'select' && <SelectSection />}
+        {activeSection === 'slider' && <SliderSection />}
+        {activeSection === 'switch' && <SwitchSection />}
+        {activeSection === 'timepicker' && <TimePickerSection />}
+        {activeSection === 'transfer' && <TransferSection />}
+        {activeSection === 'treeselect' && <TreeSelectSection />}
+        {activeSection === 'upload' && <UploadSection />}
+        {activeSection === 'avatar' && <AvatarSection />}
         {activeSection === 'theme' && <ThemeSection />}
       </main>
     </div>

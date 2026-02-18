@@ -5,6 +5,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
 } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
@@ -118,12 +119,12 @@ export interface DropdownButtonProps {
 // ============================================================================
 
 const placementPositionStyles: Record<DropdownPlacement, CSSProperties> = {
-  bottom: { top: '100%', left: '50%', transform: 'translateX(-50%)', paddingTop: 4 },
-  bottomLeft: { top: '100%', left: 0, paddingTop: 4 },
-  bottomRight: { top: '100%', right: 0, paddingTop: 4 },
-  top: { bottom: '100%', left: '50%', transform: 'translateX(-50%)', paddingBottom: 4 },
-  topLeft: { bottom: '100%', left: 0, paddingBottom: 4 },
-  topRight: { bottom: '100%', right: 0, paddingBottom: 4 },
+  bottom: { top: '100%', left: '50%', transform: 'translateX(-50%)', paddingTop: '0.25rem' },
+  bottomLeft: { top: '100%', left: 0, paddingTop: '0.25rem' },
+  bottomRight: { top: '100%', right: 0, paddingTop: '0.25rem' },
+  top: { bottom: '100%', left: '50%', transform: 'translateX(-50%)', paddingBottom: '0.25rem' },
+  topLeft: { bottom: '100%', left: 0, paddingBottom: '0.25rem' },
+  topRight: { bottom: '100%', right: 0, paddingBottom: '0.25rem' },
 }
 
 const arrowPositionStyles: Record<DropdownPlacement, CSSProperties> = {
@@ -141,40 +142,6 @@ function getAnimationTransform(placement: DropdownPlacement, isAnimating: boolea
   const isTop = placement.startsWith('top')
   const baseTransform = placement === 'bottom' || placement === 'top' ? 'translateX(-50%) ' : ''
   return `${baseTransform}translateY(${isTop ? offset : -offset}px)`
-}
-
-// Flip placement if not enough space in viewport
-function flipPlacement(placement: DropdownPlacement): DropdownPlacement {
-  const flipMap: Record<DropdownPlacement, DropdownPlacement> = {
-    bottom: 'top',
-    bottomLeft: 'topLeft',
-    bottomRight: 'topRight',
-    top: 'bottom',
-    topLeft: 'bottomLeft',
-    topRight: 'bottomRight',
-  }
-  return flipMap[placement]
-}
-
-function resolveAutoPlacement(placement: DropdownPlacement, rootEl: HTMLElement | null): DropdownPlacement {
-  if (!rootEl) return placement
-  const rect = rootEl.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
-  const estimatedMenuHeight = 200 // approximate max menu height for flip decision
-  const isBottomPlacement = placement.startsWith('bottom')
-
-  if (isBottomPlacement) {
-    const spaceBelow = viewportHeight - rect.bottom
-    if (spaceBelow < estimatedMenuHeight && rect.top > spaceBelow) {
-      return flipPlacement(placement)
-    }
-  } else {
-    const spaceAbove = rect.top
-    if (spaceAbove < estimatedMenuHeight && (viewportHeight - rect.bottom) > spaceAbove) {
-      return flipPlacement(placement)
-    }
-  }
-  return placement
 }
 
 // ============================================================================
@@ -219,12 +186,12 @@ function DropdownMenu({
   const [hoveredSubmenu, setHoveredSubmenu] = useState<string | null>(null)
 
   const menuStyle: CSSProperties = {
-    minWidth: isSubmenu ? 140 : 160,
+    minWidth: isSubmenu ? '8.75rem' : '10rem',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     boxShadow: tokens.shadowMd,
-    padding: '4px 0',
+    padding: '0.25rem 0',
     ...(isSubmenu ? {} : styles?.overlay),
   }
 
@@ -245,7 +212,7 @@ function DropdownMenu({
               key={item.key}
               style={{
                 height: 1,
-                margin: '4px 0',
+                margin: '0.25rem 0',
                 backgroundColor: tokens.colorBorder,
               }}
             />
@@ -258,8 +225,8 @@ function DropdownMenu({
             <div key={item.key}>
               <div
                 style={{
-                  padding: '5px 12px',
-                  fontSize: 12,
+                  padding: '0.3125rem 0.75rem',
+                  fontSize: '0.75rem',
                   color: tokens.colorTextSubtle,
                   fontWeight: 600,
                 }}
@@ -330,9 +297,10 @@ function MenuItem({
   const itemStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 8,
-    padding: '6px 12px',
-    fontSize: 14,
+    gap: '0.5rem',
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.875rem',
+    minHeight: '2.75rem',
     cursor: item.disabled ? 'not-allowed' : 'pointer',
     color: item.danger ? tokens.colorError : item.disabled ? tokens.colorTextSubtle : tokens.colorText,
     opacity: item.disabled ? 0.5 : 1,
@@ -360,18 +328,18 @@ function MenuItem({
       }}
     >
       {item.icon && (
-        <span style={{ display: 'inline-flex', fontSize: 14 }}>{item.icon}</span>
+        <span style={{ display: 'inline-flex', fontSize: '0.875rem' }}>{item.icon}</span>
       )}
       <span style={{ flex: 1 }}>{item.label}</span>
       {hasChildren && (
-        <span style={{ display: 'inline-flex', marginLeft: 4 }}>
+        <span style={{ display: 'inline-flex', marginLeft: '0.25rem' }}>
           <ChevronRightIcon />
         </span>
       )}
 
       {/* Submenu */}
       {hasChildren && hoveredSubmenu === item.key && (
-        <div style={{ position: 'absolute', left: '100%', top: -4, paddingLeft: 4 }}>
+        <div style={{ position: 'absolute', left: '100%', top: -4, paddingLeft: '0.25rem' }}>
           <DropdownMenu
             items={item.children!}
             globalOnClick={globalOnClick}
@@ -410,6 +378,7 @@ export function DropdownComponent({
   const [resolvedPlacement, setResolvedPlacement] = useState(placement)
   const timeoutRef = useRef<number | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
 
   const isControlled = controlledOpen !== undefined
   const isOpen = isControlled ? controlledOpen : internalOpen
@@ -426,8 +395,8 @@ export function DropdownComponent({
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-    // Resolve auto-flip before opening
-    setResolvedPlacement(resolveAutoPlacement(placement, rootRef.current))
+    // Set initial direction from placement; useLayoutEffect will auto-correct if it overflows
+    setResolvedPlacement(placement)
     timeoutRef.current = window.setTimeout(() => {
       setOpen(true)
       requestAnimationFrame(() => {
@@ -457,6 +426,26 @@ export function DropdownComponent({
       show()
     }
   }
+
+  // Auto-flip: measure real DOM and flip if it overflows
+  useLayoutEffect(() => {
+    if (!isOpen || !overlayRef.current || !rootRef.current) return
+    const overlayRect = overlayRef.current.getBoundingClientRect()
+    const rootRect = rootRef.current.getBoundingClientRect()
+    const spaceAbove = rootRect.top
+    const spaceBelow = window.innerHeight - rootRect.bottom
+    const isTop = resolvedPlacement.startsWith('top')
+
+    if (!isTop && overlayRect.bottom > window.innerHeight) {
+      if (spaceAbove > spaceBelow) {
+        setResolvedPlacement(p => p.replace('bottom', 'top').replace('Bottom', 'Top') as DropdownPlacement)
+      }
+    } else if (isTop && overlayRect.top < 0) {
+      if (spaceBelow > spaceAbove) {
+        setResolvedPlacement(p => p.replace('top', 'bottom').replace('Top', 'Bottom') as DropdownPlacement)
+      }
+    }
+  })
 
   // Sync resolvedPlacement when placement prop changes
   useEffect(() => {
@@ -560,7 +549,7 @@ export function DropdownComponent({
       </span>
 
       {isOpen && (
-        <div style={overlayContainerStyle}>
+        <div ref={overlayRef} style={overlayContainerStyle}>
           {arrow && <div style={arrowBaseStyle} className={classNames?.arrow} />}
           {overlayContent}
         </div>
@@ -628,8 +617,8 @@ function DropdownButton({
             borderBottomLeftRadius: 0,
             borderLeft: `1px solid rgba(255,255,255,0.2)`,
             minWidth: 'auto',
-            paddingLeft: 8,
-            paddingRight: 8,
+            paddingLeft: '0.5rem',
+            paddingRight: '0.5rem',
           }}
         />
       </DropdownComponent>

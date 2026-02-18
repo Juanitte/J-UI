@@ -81,7 +81,7 @@ export function Divider({
       {
         display: 'inline-block',
         height: '0.9em',
-        margin: '0 8px',
+        margin: '0 0.5rem',
         verticalAlign: 'middle',
         borderTop: 0,
         borderInlineStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
@@ -101,7 +101,7 @@ export function Divider({
         clear: 'both',
         width: '100%',
         minWidth: '100%',
-        margin: '24px 0',
+        margin: '1.5rem 0',
         borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
       },
       styles?.root,
@@ -149,7 +149,7 @@ export function Divider({
       clear: 'both',
       width: '100%',
       minWidth: '100%',
-      margin: '24px 0',
+      margin: '1.5rem 0',
     },
     styles?.root,
     style,
@@ -207,8 +207,8 @@ export function Divider({
 
   const textStyle: CSSProperties = {
     display: 'inline-block',
-    padding: '0 16px',
-    fontSize: plain ? 14 : 16,
+    padding: '0 1rem',
+    fontSize: plain ? '0.875rem' : '1rem',
     fontWeight: plain ? 400 : 500,
     color: colors.text,
     whiteSpace: 'nowrap',

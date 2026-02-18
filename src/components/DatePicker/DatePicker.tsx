@@ -246,10 +246,10 @@ function SeparatorIcon() {
 // Config & Utilities
 // ============================================================================
 
-const sizeConfig: Record<DatePickerSize, { height: number; fontSize: number; iconSize: number; radius: number; paddingH: number }> = {
-  sm: { height: 28, fontSize: 12, iconSize: 14, radius: 4, paddingH: 8 },
-  md: { height: 36, fontSize: 14, iconSize: 16, radius: 6, paddingH: 12 },
-  lg: { height: 44, fontSize: 16, iconSize: 18, radius: 8, paddingH: 14 },
+const sizeConfig: Record<DatePickerSize, { height: string; fontSize: string; iconSize: number; radius: string; paddingH: string; inputFontSize: string; tagFontSize: string }> = {
+  sm: { height: '1.75rem', fontSize: '0.75rem', iconSize: 14, radius: '0.25rem', paddingH: '0.5rem', inputFontSize: '1rem', tagFontSize: '0.625rem' },
+  md: { height: '2.25rem', fontSize: '0.875rem', iconSize: 16, radius: '0.375rem', paddingH: '0.75rem', inputFontSize: '1rem', tagFontSize: '0.75rem' },
+  lg: { height: '2.75rem', fontSize: '1rem', iconSize: 18, radius: '0.5rem', paddingH: '0.875rem', inputFontSize: '1rem', tagFontSize: '0.875rem' },
 }
 
 function flipPlacement(p: DatePickerPlacement): DatePickerPlacement {
@@ -350,7 +350,7 @@ function MaskInput({ format, value, onComplete, placeholder, fontSize, color, di
   value: string
   onComplete: (value: string) => void
   placeholder?: string
-  fontSize: number
+  fontSize: string
   color: string
   disabled?: boolean
   readOnly?: boolean
@@ -552,7 +552,7 @@ function PanelHeader({ title, onPrevYear, onNextYear, onPrevMonth, onNextMonth, 
 }) {
   const navBtnStyle: CSSProperties = {
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-    width: 28, height: 28, padding: 0, border: 'none', borderRadius: 4,
+    width: '1.75rem', height: '1.75rem', padding: 0, border: 'none', borderRadius: '0.25rem',
     backgroundColor: 'transparent', cursor: 'pointer', color: tokens.colorTextMuted,
     transition: 'background-color 0.15s ease, color 0.15s ease',
   }
@@ -571,10 +571,10 @@ function PanelHeader({ title, onPrevYear, onNextYear, onPrevMonth, onNextMonth, 
       className={panelClassNames?.header}
       style={mergeSemanticStyle({
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 8px 4px', userSelect: 'none',
+        padding: '0.5rem 0.5rem 0.25rem', userSelect: 'none',
       }, panelStyles?.header)}
     >
-      <div style={{ display: 'flex', gap: 2 }}>
+      <div style={{ display: 'flex', gap: '0.125rem' }}>
         <button type="button" style={navBtnStyle} onClick={onPrevYear} onMouseEnter={handleHoverIn} onMouseLeave={handleHoverOut}><DoubleLeftIcon /></button>
         {showMonthNav && onPrevMonth && (
           <button type="button" style={navBtnStyle} onClick={onPrevMonth} onMouseEnter={handleHoverIn} onMouseLeave={handleHoverOut}><ChevronLeftIcon /></button>
@@ -585,8 +585,8 @@ function PanelHeader({ title, onPrevYear, onNextYear, onPrevMonth, onNextMonth, 
         onClick={onTitleClick}
         style={{
           border: 'none', backgroundColor: 'transparent', cursor: onTitleClick ? 'pointer' : 'default',
-          fontSize: 14, fontWeight: 600, fontFamily: 'inherit', color: tokens.colorText,
-          padding: '2px 8px', borderRadius: 4,
+          fontSize: '0.875rem', fontWeight: 600, fontFamily: 'inherit', color: tokens.colorText,
+          padding: '0.125rem 0.5rem', borderRadius: '0.25rem',
           transition: 'background-color 0.15s ease',
         }}
         onMouseEnter={(e) => { if (onTitleClick) (e.currentTarget as HTMLElement).style.backgroundColor = tokens.colorBgMuted }}
@@ -594,7 +594,7 @@ function PanelHeader({ title, onPrevYear, onNextYear, onPrevMonth, onNextMonth, 
       >
         {title}
       </button>
-      <div style={{ display: 'flex', gap: 2 }}>
+      <div style={{ display: 'flex', gap: '0.125rem' }}>
         {showMonthNav && onNextMonth && (
           <button type="button" style={navBtnStyle} onClick={onNextMonth} onMouseEnter={handleHoverIn} onMouseLeave={handleHoverOut}><ChevronRightIcon /></button>
         )}
@@ -638,15 +638,15 @@ function DatePanel<TDate>({ adapter, viewDate, value, selectedDates, onSelect, o
   // Reorder from Sunday-first to Monday-first
   const orderedDays = [...dayNames.slice(1), dayNames[0]]
 
-  const CELL_SIZE = 32
-  const CIRCLE_SIZE = 28
+  const CELL_SIZE = '2rem'
+  const CIRCLE_SIZE = '1.75rem'
 
   return (
-    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0 8px 8px' }, panelStyles?.body)}>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${CELL_SIZE}px)`, gridAutoRows: `${CELL_SIZE}px`, placeItems: 'center' }}>
+    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0 0.5rem 0.5rem' }, panelStyles?.body)}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${CELL_SIZE})`, gridAutoRows: CELL_SIZE, placeItems: 'center' }}>
         {/* Day names header */}
         {orderedDays.map((name, i) => (
-          <div key={`h-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: CELL_SIZE, height: CELL_SIZE, fontSize: 12, fontWeight: 600, color: tokens.colorTextMuted }}>
+          <div key={`h-${i}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: CELL_SIZE, height: CELL_SIZE, fontSize: '0.75rem', fontWeight: 600, color: tokens.colorTextMuted }}>
             {name}
           </div>
         ))}
@@ -682,7 +682,7 @@ function DatePanel<TDate>({ adapter, viewDate, value, selectedDates, onSelect, o
             const cellStyle: CSSProperties = {
               display: 'grid', placeContent: 'center',
               width: CIRCLE_SIZE, height: CIRCLE_SIZE,
-              fontSize: 13, borderRadius: '50%',
+              fontSize: '0.8125rem', borderRadius: '50%',
               cursor: disabled ? 'not-allowed' : 'pointer',
               color: isSelected ? '#fff'
                 : disabled ? tokens.colorTextSubtle
@@ -763,18 +763,18 @@ function WeekPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate: _d
   const dayNames = adapter.getDayNames('narrow')
   const orderedDays = [...dayNames.slice(1), dayNames[0]]
 
-  const CELL_SIZE = 32
-  const CIRCLE_SIZE = 28
+  const CELL_SIZE = '2rem'
+  const CIRCLE_SIZE = '1.75rem'
 
   // The selected week is identified by its start-of-week
   const selectedWeekStart = value && adapter.isValid(value) ? adapter.startOfWeek(value, 1) : null
 
   return (
-    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0 8px 8px' }, panelStyles?.body)}>
+    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0 0.5rem 0.5rem' }, panelStyles?.body)}>
       {/* Header */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${CELL_SIZE}px)`, gridAutoRows: `${CELL_SIZE}px`, placeItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(7, ${CELL_SIZE})`, gridAutoRows: CELL_SIZE, placeItems: 'center' }}>
         {orderedDays.map((name, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: CELL_SIZE, height: CELL_SIZE, fontSize: 12, fontWeight: 600, color: tokens.colorTextMuted }}>
+          <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: CELL_SIZE, height: CELL_SIZE, fontSize: '0.75rem', fontWeight: 600, color: tokens.colorTextMuted }}>
             {name}
           </div>
         ))}
@@ -788,9 +788,9 @@ function WeekPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate: _d
           <div
             key={rowIdx}
             style={{
-              display: 'grid', gridTemplateColumns: `repeat(7, ${CELL_SIZE}px)`, gridAutoRows: `${CELL_SIZE}px`,
+              display: 'grid', gridTemplateColumns: `repeat(7, ${CELL_SIZE})`, gridAutoRows: CELL_SIZE,
               placeItems: 'center',
-              borderRadius: 4, cursor: 'pointer',
+              borderRadius: '0.25rem', cursor: 'pointer',
               backgroundColor: isSelectedWeek ? tokens.colorPrimaryBg : 'transparent',
               transition: 'background-color 0.1s ease',
             }}
@@ -805,7 +805,7 @@ function WeekPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate: _d
                 <div key={colIdx} style={{
                   display: 'grid', placeContent: 'center',
                   width: CIRCLE_SIZE, height: CIRCLE_SIZE,
-                  fontSize: 13,
+                  fontSize: '0.8125rem',
                   color: !inView ? tokens.colorTextSubtle : isSelectedWeek ? tokens.colorPrimary : tokens.colorText,
                   fontWeight: isToday ? 700 : 400,
                   boxShadow: isToday ? `inset 0 0 0 1.5px ${tokens.colorPrimary}` : 'none',
@@ -843,7 +843,7 @@ function MonthPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate, m
   const currentYear = adapter.getYear(viewDate)
 
   return (
-    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }, panelStyles?.body)}>
+    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }, panelStyles?.body)}>
       {monthNames.map((name, monthIdx) => {
         const date = adapter.setMonth(adapter.setDate(adapter.setYear(adapter.today(), currentYear), 1), monthIdx)
         const isCurrentMonth = adapter.isSameMonth(date, today)
@@ -861,11 +861,11 @@ function MonthPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate, m
             onClick={() => onSelect(date)}
             className={panelClassNames?.cell}
             style={{
-              height: 40, border: isCurrentMonth && !isSelected ? `1px solid ${tokens.colorPrimary}` : '1px solid transparent',
-              borderRadius: 6, cursor: disabled ? 'not-allowed' : 'pointer',
+              height: '2.5rem', border: isCurrentMonth && !isSelected ? `1px solid ${tokens.colorPrimary}` : '1px solid transparent',
+              borderRadius: '0.375rem', cursor: disabled ? 'not-allowed' : 'pointer',
               backgroundColor: isSelected ? tokens.colorPrimary : 'transparent',
               color: isSelected ? '#fff' : disabled ? tokens.colorTextSubtle : tokens.colorText,
-              fontSize: 13, fontWeight: isCurrentMonth ? 600 : 400, fontFamily: 'inherit',
+              fontSize: '0.8125rem', fontWeight: isCurrentMonth ? 600 : 400, fontFamily: 'inherit',
               transition: 'background-color 0.1s ease',
               opacity: disabled ? 0.4 : 1,
             }}
@@ -904,7 +904,7 @@ function YearPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate, mi
   const years = Array.from({ length: 12 }, (_, i) => decadeStart - 1 + i)
 
   return (
-    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }, panelStyles?.body)}>
+    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }, panelStyles?.body)}>
       {years.map((yr) => {
         const date = adapter.setYear(adapter.today(), yr)
         const inDecade = yr >= decadeStart && yr < decadeStart + 10
@@ -923,11 +923,11 @@ function YearPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate, mi
             onClick={() => onSelect(date)}
             className={panelClassNames?.cell}
             style={{
-              height: 40, border: isThisYear && !isSelected ? `1px solid ${tokens.colorPrimary}` : '1px solid transparent',
-              borderRadius: 6, cursor: disabled ? 'not-allowed' : 'pointer',
+              height: '2.5rem', border: isThisYear && !isSelected ? `1px solid ${tokens.colorPrimary}` : '1px solid transparent',
+              borderRadius: '0.375rem', cursor: disabled ? 'not-allowed' : 'pointer',
               backgroundColor: isSelected ? tokens.colorPrimary : 'transparent',
               color: isSelected ? '#fff' : !inDecade ? tokens.colorTextSubtle : disabled ? tokens.colorTextSubtle : tokens.colorText,
-              fontSize: 13, fontWeight: isThisYear ? 600 : 400, fontFamily: 'inherit',
+              fontSize: '0.8125rem', fontWeight: isThisYear ? 600 : 400, fontFamily: 'inherit',
               transition: 'background-color 0.1s ease',
               opacity: disabled ? 0.4 : 1,
             }}
@@ -964,7 +964,7 @@ function QuarterPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate,
   const thisYear = adapter.getYear(today)
 
   return (
-    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }, panelStyles?.body)}>
+    <div className={panelClassNames?.body} style={mergeSemanticStyle({ padding: '0.5rem', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }, panelStyles?.body)}>
       {[1, 2, 3, 4].map((q) => {
         const monthIdx = (q - 1) * 3
         const date = adapter.setMonth(adapter.setDate(adapter.setYear(adapter.today(), currentYear), 1), monthIdx)
@@ -984,11 +984,11 @@ function QuarterPanel<TDate>({ adapter, viewDate, value, onSelect, disabledDate,
             onClick={() => onSelect(date)}
             className={panelClassNames?.cell}
             style={{
-              height: 48, border: isCurrentQ && !isSelected ? `1px solid ${tokens.colorPrimary}` : '1px solid transparent',
-              borderRadius: 6, cursor: disabled ? 'not-allowed' : 'pointer',
+              height: '3rem', border: isCurrentQ && !isSelected ? `1px solid ${tokens.colorPrimary}` : '1px solid transparent',
+              borderRadius: '0.375rem', cursor: disabled ? 'not-allowed' : 'pointer',
               backgroundColor: isSelected ? tokens.colorPrimary : 'transparent',
               color: isSelected ? '#fff' : disabled ? tokens.colorTextSubtle : tokens.colorText,
-              fontSize: 14, fontWeight: isCurrentQ ? 600 : 400, fontFamily: 'inherit',
+              fontSize: '0.875rem', fontWeight: isCurrentQ ? 600 : 400, fontFamily: 'inherit',
               transition: 'background-color 0.1s ease',
               opacity: disabled ? 0.4 : 1,
             }}
@@ -1038,14 +1038,14 @@ function TimePanel<TDate>({ adapter, value, onChange, config, disabledTime }: {
   const minutes = Array.from({ length: Math.ceil(60 / minuteStep) }, (_, i) => i * minuteStep).filter(m => m < 60)
   const seconds = Array.from({ length: Math.ceil(60 / secondStep) }, (_, i) => i * secondStep).filter(s => s < 60)
 
-  // Calendar grid: 7 rows × 32px = 224px + 8px body padding = 232px
-  // TimePanel padding: 8px top + 8px bottom = 16px → columns = 216px
-  const TIME_COL_HEIGHT = 216
+  // Calendar grid: 7 rows × 2rem = 14rem + 0.5rem body padding = 14.5rem
+  // TimePanel padding: 0.5rem top + 0.5rem bottom = 1rem → columns = 13.5rem
+  const TIME_COL_HEIGHT = '13.5rem'
 
   const scrollbarClass = 'j-dp-time-col'
   const colStyle: CSSProperties = {
     display: 'flex', flexDirection: 'column', alignItems: 'center',
-    height: TIME_COL_HEIGHT, overflowY: 'auto', width: 52,
+    height: TIME_COL_HEIGHT, overflowY: 'auto', width: '3.25rem',
     scrollbarWidth: 'thin',
     scrollbarColor: `${tokens.colorBorderHover} transparent`,
     borderRight: `1px solid ${tokens.colorBorder}`,
@@ -1063,11 +1063,11 @@ function TimePanel<TDate>({ adapter, value, onChange, config, disabledTime }: {
             disabled={isDis}
             onClick={() => { if (!isDis) onItemSelect(item) }}
             style={{
-              width: 44, height: 28, flexShrink: 0, border: 'none', borderRadius: 4,
+              width: '2.75rem', height: '1.75rem', flexShrink: 0, border: 'none', borderRadius: '0.25rem',
               backgroundColor: isSel ? tokens.colorPrimaryBg : 'transparent',
               color: isSel ? tokens.colorPrimary : isDis ? tokens.colorTextSubtle : tokens.colorText,
               cursor: isDis ? 'not-allowed' : 'pointer',
-              fontSize: 13, fontWeight: isSel ? 600 : 400, fontFamily: 'monospace',
+              fontSize: '0.8125rem', fontWeight: isSel ? 600 : 400, fontFamily: 'monospace',
               transition: 'background-color 0.1s ease',
               opacity: isDis ? 0.4 : 1,
             }}
@@ -1085,7 +1085,7 @@ function TimePanel<TDate>({ adapter, value, onChange, config, disabledTime }: {
   const isPM = currentH >= 12
 
   return (
-    <div style={{ display: 'flex', borderLeft: `1px solid ${tokens.colorBorder}`, padding: '8px 0' }}>
+    <div style={{ display: 'flex', borderLeft: `1px solid ${tokens.colorBorder}`, padding: '0.5rem 0' }}>
       <style>{`
         .${scrollbarClass}::-webkit-scrollbar { width: 4px; }
         .${scrollbarClass}::-webkit-scrollbar-track { background: transparent; }
@@ -1116,10 +1116,10 @@ function TimePanel<TDate>({ adapter, value, onChange, config, disabledTime }: {
                   onChange(adapter.setHour(value, newH))
                 }}
                 style={{
-                  width: 44, height: 28, flexShrink: 0, border: 'none', borderRadius: 4,
+                  width: '2.75rem', height: '1.75rem', flexShrink: 0, border: 'none', borderRadius: '0.25rem',
                   backgroundColor: isSel ? tokens.colorPrimaryBg : 'transparent',
                   color: isSel ? tokens.colorPrimary : tokens.colorText,
-                  cursor: 'pointer', fontSize: 12, fontWeight: isSel ? 600 : 400, fontFamily: 'inherit',
+                  cursor: 'pointer', fontSize: '0.75rem', fontWeight: isSel ? 600 : 400, fontFamily: 'inherit',
                   transition: 'background-color 0.1s ease',
                 }}
                 onMouseEnter={(e) => { if (!isSel) (e.currentTarget as HTMLElement).style.backgroundColor = tokens.colorBgMuted }}
@@ -1159,8 +1159,8 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
 
   const linkStyle: CSSProperties = {
     border: 'none', backgroundColor: 'transparent', cursor: 'pointer',
-    color: tokens.colorPrimary, fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
-    padding: '4px 0',
+    color: tokens.colorPrimary, fontSize: '0.8125rem', fontWeight: 500, fontFamily: 'inherit',
+    padding: '0.25rem 0',
   }
 
   return (
@@ -1168,12 +1168,12 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
       className={panelClassNames?.footer}
       style={mergeSemanticStyle({
         borderTop: `1px solid ${tokens.colorBorder}`,
-        padding: '8px 12px', display: 'flex', flexDirection: 'column', gap: 6,
+        padding: '0.5rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.375rem',
       }, panelStyles?.footer)}
     >
       {hasExtra && <div>{renderExtraFooter!()}</div>}
       {hasPresets && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
           {presets!.map((preset, i) => {
             const resolveValue = () => typeof preset.value === 'function' ? (preset.value as () => TDate)() : preset.value
             return (
@@ -1182,8 +1182,8 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
                 type="button"
                 onClick={() => onPresetSelect?.(resolveValue())}
                 style={{
-                  padding: '2px 10px', border: `1px solid ${tokens.colorBorder}`, borderRadius: 4,
-                  backgroundColor: 'transparent', cursor: 'pointer', fontSize: 12,
+                  padding: '0.125rem 0.625rem', border: `1px solid ${tokens.colorBorder}`, borderRadius: '0.25rem',
+                  backgroundColor: 'transparent', cursor: 'pointer', fontSize: '0.75rem',
                   fontFamily: 'inherit', color: tokens.colorText,
                   transition: 'border-color 0.15s ease, background-color 0.15s ease',
                 }}
@@ -1213,9 +1213,9 @@ function PanelFooter<TDate>({ showToday, showNow, showOk, presets, renderExtraFo
               type="button"
               onClick={onOk}
               style={{
-                padding: '3px 12px', border: 'none', borderRadius: 4,
+                padding: '0.1875rem 0.75rem', border: 'none', borderRadius: '0.25rem',
                 backgroundColor: tokens.colorPrimary, color: '#fff',
-                cursor: 'pointer', fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
+                cursor: 'pointer', fontSize: '0.8125rem', fontWeight: 500, fontFamily: 'inherit',
                 transition: 'filter 0.15s ease',
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.filter = 'brightness(1.1)' }}
@@ -1548,7 +1548,7 @@ function DatePickerComponent<TDate = any>({
   const isRight = resolvedPlacement.endsWith('Right')
   const panelPositionStyle: CSSProperties = {
     position: 'absolute', zIndex: 1050,
-    ...(isTop ? { bottom: '100%', marginBottom: 4 } : { top: '100%', marginTop: 4 }),
+    ...(isTop ? { bottom: '100%', marginBottom: '0.25rem' } : { top: '100%', marginTop: '0.25rem' }),
     ...(isRight ? { right: 0 } : { left: 0 }),
   }
 
@@ -1665,8 +1665,8 @@ function DatePickerComponent<TDate = any>({
         className={classNames?.input}
         onClick={() => { if (!disabled) { if (!isOpen) setOpen(true); inputRef.current?.focus() } }}
         style={mergeSemanticStyle({
-          display: 'flex', alignItems: 'center', gap: 8,
-          minHeight: sc.height, height: multiple ? 'auto' : sc.height, padding: multiple ? `4px ${sc.paddingH}px` : `0 ${sc.paddingH}px`,
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          minHeight: sc.height, height: multiple ? 'auto' : sc.height, padding: multiple ? `0.25rem ${sc.paddingH}` : `0 ${sc.paddingH}`,
           border: inputBorder, borderRadius: sc.radius,
           backgroundColor: inputBg, cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.5 : 1,
@@ -1692,10 +1692,10 @@ function DatePickerComponent<TDate = any>({
               <span
                 key={i}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 4,
-                  padding: '2px 8px', borderRadius: 4,
+                  display: 'inline-flex', alignItems: 'center', gap: '0.25rem',
+                  padding: '0.125rem 0.5rem', borderRadius: '0.25rem',
                   backgroundColor: tokens.colorBgMuted,
-                  fontSize: sc.fontSize - 2, color: tokens.colorText,
+                  fontSize: sc.tagFontSize, color: tokens.colorText,
                   lineHeight: 1.4, whiteSpace: 'nowrap',
                 }}
               >
@@ -1735,7 +1735,7 @@ function DatePickerComponent<TDate = any>({
               if (parsed && adapter.isValid(parsed)) commitValue(parsed)
             }}
             placeholder={resolvedPlaceholder}
-            fontSize={sc.fontSize}
+            fontSize={sc.inputFontSize}
             color={statusBorderColor ?? tokens.colorText}
             disabled={disabled}
             readOnly={inputReadOnly}
@@ -1754,7 +1754,7 @@ function DatePickerComponent<TDate = any>({
             onKeyDown={handleInputKeyDown}
             style={{
               flex: 1, minWidth: 0, border: 'none', outline: 'none', backgroundColor: 'transparent',
-              fontSize: sc.fontSize, fontFamily: 'inherit', color: statusBorderColor ?? tokens.colorText,
+              fontSize: sc.inputFontSize, fontFamily: 'inherit', color: statusBorderColor ?? tokens.colorText,
               cursor: disabled ? 'not-allowed' : undefined,
               padding: 0,
             }}
@@ -1780,7 +1780,7 @@ function DatePickerComponent<TDate = any>({
           className={classNames?.popup}
           style={mergeSemanticStyle({
             ...panelPositionStyle,
-            borderRadius: 8,
+            borderRadius: '0.5rem',
             border: `1px solid ${tokens.colorBorder}`,
             boxShadow: tokens.shadowMd,
             backgroundColor: tokens.colorBg,
@@ -2027,7 +2027,7 @@ function RangePickerComponent<TDate = any>({
   const isRight = resolvedPlacement.endsWith('Right')
   const panelPositionStyle: CSSProperties = {
     position: 'absolute', zIndex: 1050,
-    ...(isTop ? { bottom: '100%', marginBottom: 4 } : { top: '100%', marginTop: 4 }),
+    ...(isTop ? { bottom: '100%', marginBottom: '0.25rem' } : { top: '100%', marginTop: '0.25rem' }),
     ...(isRight ? { right: 0 } : { left: 0 }),
   }
 
@@ -2136,7 +2136,7 @@ function RangePickerComponent<TDate = any>({
 
   const inputStyle: CSSProperties = {
     flex: 1, minWidth: 0, border: 'none', outline: 'none', backgroundColor: 'transparent',
-    fontSize: sc.fontSize, fontFamily: 'inherit', color: statusBorderColor ?? tokens.colorText,
+    fontSize: sc.inputFontSize, fontFamily: 'inherit', color: statusBorderColor ?? tokens.colorText,
     cursor: anyDisabled ? 'not-allowed' : undefined,
     padding: 0, textAlign: 'center',
   }
@@ -2153,8 +2153,8 @@ function RangePickerComponent<TDate = any>({
         className={classNames?.input}
         onClick={() => { if (!anyDisabled && !isOpen) { setOpen(true); setActiveInput('start') } }}
         style={mergeSemanticStyle({
-          display: 'flex', alignItems: 'center', gap: 4,
-          height: sc.height, padding: `0 ${sc.paddingH}px`,
+          display: 'flex', alignItems: 'center', gap: '0.25rem',
+          height: sc.height, padding: `0 ${sc.paddingH}`,
           border: inputBorder, borderRadius: sc.radius,
           backgroundColor: inputBg, cursor: anyDisabled ? 'not-allowed' : 'pointer',
           opacity: anyDisabled ? 0.5 : 1,
@@ -2222,7 +2222,7 @@ function RangePickerComponent<TDate = any>({
           className={classNames?.popup}
           style={mergeSemanticStyle({
             ...panelPositionStyle,
-            borderRadius: 8,
+            borderRadius: '0.5rem',
             border: `1px solid ${tokens.colorBorder}`,
             boxShadow: tokens.shadowMd,
             backgroundColor: tokens.colorBg,

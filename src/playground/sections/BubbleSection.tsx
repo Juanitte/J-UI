@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon, Text, tokens } from '../../index'
+import { Badge, Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon, Text, tokens } from '../../index'
 import { Section } from './shared'
 
 function HelpIcon({ size = 20 }: { size?: number }) {
@@ -122,17 +122,17 @@ export function BubbleSection() {
       </Section>
 
       <Section title="Con Badge">
-        <Bubble icon={<BellIcon />} badge={5} style={{ position: 'relative' }} tooltip="5 notificaciones" />
-        <Bubble icon={<BellIcon />} badge={99} style={{ position: 'relative' }} tooltip="99 notificaciones" />
-        <Bubble icon={<BellIcon />} badge={150} style={{ position: 'relative' }} tooltip="99+ notificaciones" />
-        <Bubble icon={<ChatIcon />} badge style={{ position: 'relative' }} tooltip="Nuevo mensaje" />
+        <Badge count={5}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} tooltip="5 notificaciones" /></Badge>
+        <Badge count={99}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} tooltip="99 notificaciones" /></Badge>
+        <Badge count={150}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} tooltip="99+ notificaciones" /></Badge>
+        <Badge dot><Bubble icon={<ChatIcon />} style={{ position: 'relative' }} tooltip="Nuevo mensaje" /></Badge>
       </Section>
 
       <Section title="Badge con diferentes colores">
-        <Bubble icon={<BellIcon />} badge={3} badgeColor="error" style={{ position: 'relative' }} />
-        <Bubble icon={<BellIcon />} badge={3} badgeColor="success" style={{ position: 'relative' }} />
-        <Bubble icon={<BellIcon />} badge={3} badgeColor="warning" style={{ position: 'relative' }} />
-        <Bubble icon={<BellIcon />} badge={3} badgeColor="info" style={{ position: 'relative' }} />
+        <Badge count={3} color={tokens.colorError as string}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} /></Badge>
+        <Badge count={3} color={tokens.colorSuccess as string}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} /></Badge>
+        <Badge count={3} color={tokens.colorWarning as string}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} /></Badge>
+        <Badge count={3} color={tokens.colorInfo as string}><Bubble icon={<BellIcon />} style={{ position: 'relative' }} /></Badge>
       </Section>
 
       <Section title="Sin sombra">
@@ -193,7 +193,7 @@ export function BubbleSection() {
             offsetY={16}
           >
             <Bubble icon={<ChatIcon />} tooltip="Chat" />
-            <Bubble icon={<BellIcon />} tooltip="Notificaciones" badge={3} />
+            <Badge count={3}><Bubble icon={<BellIcon />} tooltip="Notificaciones" /></Badge>
           </Bubble.Group>
         </div>
         <Text size="sm" type="secondary" style={{ display: 'block', marginTop: 8 }}>
@@ -281,19 +281,22 @@ export function BubbleSection() {
             BubbleMenu slots: <Text code>root</Text>, <Text code>trigger</Text>, <Text code>menu</Text>
           </Text>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-            <Bubble
-              icon={<ChatIcon />}
-              badge={3}
-              tooltip="Personalizado"
-              style={{ position: 'relative' }}
-              styles={{
-                root: { background: 'linear-gradient(135deg, #667eea, #764ba2)', border: 'none' },
-                icon: { filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' },
-                badge: { backgroundColor: '#fbbf24', color: '#1f1f1f', border: '2px solid #764ba2' },
-                tooltip: { backgroundColor: '#764ba2', color: '#fff', borderColor: '#667eea' },
-                tooltipArrow: { backgroundColor: '#764ba2', borderColor: '#667eea' },
-              }}
-            />
+            <Badge
+              count={3}
+              styles={{ indicator: { backgroundColor: '#fbbf24', color: '#1f1f1f', border: '2px solid #764ba2' } }}
+            >
+              <Bubble
+                icon={<ChatIcon />}
+                tooltip="Personalizado"
+                style={{ position: 'relative' }}
+                styles={{
+                  root: { background: 'linear-gradient(135deg, #667eea, #764ba2)', border: 'none' },
+                  icon: { filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' },
+                  tooltip: { backgroundColor: '#764ba2', color: '#fff', borderColor: '#667eea' },
+                  tooltipArrow: { backgroundColor: '#764ba2', borderColor: '#667eea' },
+                }}
+              />
+            </Badge>
             <Bubble.Menu
               direction="right"
               icon={<EditIcon />}

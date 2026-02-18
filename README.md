@@ -18,27 +18,48 @@ A modern, lightweight React component library with built-in theming support.
   - [Theme Tokens](#theme-tokens)
 - [Components](#components)
   - [AutoComplete](#autocomplete)
+  - [Avatar](#avatar)
   - [Anchor](#anchor)
   - [Badge](#badge)
   - [Breadcrumb](#breadcrumb)
   - [Bubble](#bubble)
   - [Button](#button)
+  - [Card](#card)
+  - [Calendar](#calendar)
+  - [Carousel](#carousel)
   - [Checkbox](#checkbox)
   - [ColorPicker](#colorpicker)
+  - [Collapse](#collapse)
+  - [DataDisplay](#datadisplay)
   - [DatePicker](#datepicker)
   - [Divider](#divider)
   - [Dropdown](#dropdown)
+  - [Empty](#empty)
+  - [Form](#form)
+  - [Input](#input)
+  - [Image](#image)
+  - [InputNumber](#inputnumber)
   - [Flex](#flex)
   - [Grid](#grid)
   - [Layout](#layout)
   - [Menu](#menu)
+  - [Mention](#mention)
   - [NestedSelect](#nestedselect)
   - [Pagination](#pagination)
+  - [Radio](#radio)
+  - [Rate](#rate)
+  - [Select](#select)
+  - [Slider](#slider)
   - [Space](#space)
   - [Splitter](#splitter)
   - [Steps](#steps)
+  - [Switch](#switch)
   - [Tabs](#tabs)
   - [Text](#text)
+  - [TimePicker](#timepicker)
+  - [Transfer](#transfer)
+  - [TreeSelect](#treeselect)
+  - [Upload](#upload)
   - [Waterfall](#waterfall)
   - [Tooltip](#tooltip)
 
@@ -330,7 +351,8 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 |-----------|-------|
 | AutoComplete | `root`, `input`, `dropdown`, `option` |
 | Anchor | `root`, `track`, `indicator`, `link` |
-| Badge | `root`, `icon`, `content` |
+| Badge | `root`, `indicator` |
+| Badge.Ribbon | `wrapper`, `ribbon`, `content`, `corner` |
 | Breadcrumb | `root`, `list`, `item`, `separator`, `link`, `overlay` |
 | Bubble | `root`, `icon`, `badge`, `tooltip`, `tooltipArrow` |
 | Bubble.Menu | `root`, `trigger`, `menu` |
@@ -341,6 +363,8 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 | DatePicker | `root`, `input`, `popup`, `header`, `body`, `cell`, `footer` |
 | Divider | `root`, `line`, `text` |
 | Dropdown | `root`, `overlay`, `item`, `arrow` |
+| Form | `root` |
+| Form.Item | `root`, `label`, `control`, `help`, `extra` |
 | Layout.Sider | `root`, `content`, `trigger` |
 | Menu | `root`, `item`, `submenu`, `group`, `groupTitle`, `divider` |
 | NestedSelect | `root`, `selector`, `dropdown`, `menu`, `option` |
@@ -601,6 +625,202 @@ const [options, setOptions] = useState([])
 ---
 
 <details>
+<summary><strong>Avatar</strong> - User profile representation</summary>
+
+### Avatar
+
+`Avatar` displays a user's profile picture, icon, or initials. It supports images, custom icons, text fallbacks, and badge indicators. Includes `Avatar.Group` for displaying overlapping avatar lists.
+
+**Import:**
+```tsx
+import { Avatar } from 'j-ui';
+```
+
+#### Avatar Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `string` | `undefined` | Image source URL |
+| `srcSet` | `string` | `undefined` | Responsive image sources |
+| `alt` | `string` | `undefined` | Alternative text for image |
+| `icon` | `ReactNode` | `<UserIcon />` | Custom icon (shown when no image) |
+| `shape` | `'circle' \| 'square'` | `'circle'` | Avatar shape |
+| `size` | `'small' \| 'default' \| 'large' \| number \| AvatarResponsiveSize` | `'default'` | Avatar size |
+| `gap` | `number` | `4` | Gap between text and container edge (for auto-scaling) |
+| `count` | `number` | `undefined` | Badge count (shows as "99+" if > 99) |
+| `dot` | `boolean` | `false` | Show dot indicator |
+| `draggable` | `boolean \| 'true' \| 'false'` | `true` | Whether image is draggable |
+| `crossOrigin` | `'' \| 'anonymous' \| 'use-credentials'` | `undefined` | CORS setting for image |
+| `onError` | `() => boolean` | `undefined` | Callback when image fails to load (return false to prevent fallback) |
+| `children` | `ReactNode` | `undefined` | Text content (usually initials) |
+| `className` | `string` | `undefined` | Root element class name |
+| `style` | `CSSProperties` | `undefined` | Root element inline styles |
+| `classNames` | `SemanticClassNames<AvatarSemanticSlot>` | `undefined` | Semantic class names |
+| `styles` | `SemanticStyles<AvatarSemanticSlot>` | `undefined` | Semantic inline styles |
+
+#### Avatar.Group Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `max` | `{ count?: number; style?: CSSProperties }` | `undefined` | Maximum avatars to show (rest shown as "+N") |
+| `size` | `AvatarSize` | `'default'` | Size applied to all child avatars |
+| `shape` | `'circle' \| 'square'` | `'circle'` | Shape applied to all child avatars |
+| `children` | `ReactNode` | `undefined` | Avatar components |
+| `className` | `string` | `undefined` | Container class name |
+| `style` | `CSSProperties` | `undefined` | Container inline styles |
+
+#### AvatarResponsiveSize Type
+
+```typescript
+type AvatarResponsiveSize = Partial<Record<AvatarBreakpoint, number>>;
+type AvatarBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+// Breakpoint values:
+// xs: 0px, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1600px
+```
+
+#### Size Configuration
+
+| Size | Dimension |
+|------|-----------|
+| `small` | 24px (1.5rem) |
+| `default` | 32px (2rem) |
+| `large` | 40px (2.5rem) |
+| Custom number | Specified pixels |
+| Responsive object | Size based on viewport breakpoint |
+
+#### Semantic DOM Slots
+
+| Slot | Description |
+|------|-------------|
+| `root` | The root container element |
+| `image` | The image element (when src is provided) |
+| `icon` | The icon container (when icon is provided) |
+| `text` | The text container (when children text is provided) |
+
+#### Examples
+
+**Basic usage with image:**
+```tsx
+import { Avatar } from 'j-ui';
+
+<Avatar src="https://i.pravatar.cc/150?img=1" alt="User" />
+```
+
+**With initials:**
+```tsx
+<Avatar>JD</Avatar>
+```
+
+**With custom icon:**
+```tsx
+<Avatar icon={<UserIcon />} />
+```
+
+**Different shapes:**
+```tsx
+<Avatar src="user.jpg" shape="circle" />
+<Avatar src="user.jpg" shape="square" />
+```
+
+**Different sizes:**
+```tsx
+<Avatar src="user.jpg" size="small" />
+<Avatar src="user.jpg" size="default" />
+<Avatar src="user.jpg" size="large" />
+<Avatar src="user.jpg" size={64} />
+```
+
+**Responsive size:**
+```tsx
+<Avatar
+  src="user.jpg"
+  size={{
+    xs: 24,
+    sm: 32,
+    md: 40,
+    lg: 48,
+    xl: 64,
+  }}
+/>
+```
+
+**With badge count:**
+```tsx
+<Avatar src="user.jpg" count={5} />
+<Avatar src="user.jpg" count={99} />
+<Avatar src="user.jpg" count={100} /> {/* Shows "99+" */}
+```
+
+**With dot indicator:**
+```tsx
+<Avatar src="user.jpg" dot />
+```
+
+**Error handling:**
+```tsx
+<Avatar
+  src="invalid-url.jpg"
+  onError={() => {
+    console.log('Image failed to load');
+    return true; // Allow fallback to icon/text
+  }}
+>
+  FB
+</Avatar>
+```
+
+**Avatar Group:**
+```tsx
+<Avatar.Group>
+  <Avatar src="https://i.pravatar.cc/150?img=1" />
+  <Avatar src="https://i.pravatar.cc/150?img=2" />
+  <Avatar src="https://i.pravatar.cc/150?img=3" />
+  <Avatar src="https://i.pravatar.cc/150?img=4" />
+</Avatar.Group>
+```
+
+**Group with max count:**
+```tsx
+<Avatar.Group max={{ count: 3 }}>
+  <Avatar src="https://i.pravatar.cc/150?img=1" />
+  <Avatar src="https://i.pravatar.cc/150?img=2" />
+  <Avatar src="https://i.pravatar.cc/150?img=3" />
+  <Avatar src="https://i.pravatar.cc/150?img=4" />
+  <Avatar src="https://i.pravatar.cc/150?img=5" />
+</Avatar.Group>
+{/* Shows first 3 avatars + "+2" */}
+```
+
+**Group with custom size and shape:**
+```tsx
+<Avatar.Group size="large" shape="square">
+  <Avatar src="user1.jpg" />
+  <Avatar src="user2.jpg" />
+  <Avatar>AB</Avatar>
+  <Avatar icon={<UserIcon />} />
+</Avatar.Group>
+```
+
+**Custom styling for overflow avatar:**
+```tsx
+<Avatar.Group
+  max={{
+    count: 2,
+    style: { backgroundColor: '#f56a00', color: '#fff' }
+  }}
+>
+  <Avatar src="user1.jpg" />
+  <Avatar src="user2.jpg" />
+  <Avatar src="user3.jpg" />
+</Avatar.Group>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Anchor</strong> - Navigation links that track scroll position</summary>
 
 ### Anchor
@@ -730,87 +950,135 @@ interface AnchorLinkItemProps {
 ---
 
 <details>
-<summary><strong>Badge</strong> - Compact label for status and metadata</summary>
+<summary><strong>Badge</strong> - Numeric indicator and status dot</summary>
 
 ### Badge
 
-A compact label component for displaying status, categories, or metadata.
+A small numerical value or status indicator for UI elements. Wraps any content with a floating count badge, dot indicator, or displays standalone status dots.
 
 #### Import
 
 ```tsx
 import { Badge } from 'j-ui'
-// Optionally import tokens for type-safe colors
-import { Badge, tokens } from 'j-ui'
 ```
 
-#### Props
+#### Badge Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `children` | `ReactNode` | — | Badge content |
-| `bgColor` | `string` | `'var(--j-primary-light)'` | Background color (CSS color, CSS variable, or token) |
-| `color` | `string` | `'var(--j-primary)'` | Text and border color (CSS color, CSS variable, or token) |
-| `radius` | `'none' \| 'sm' \| 'md' \| 'lg' \| 'full'` | `'md'` | Border radius |
-| `icon` | `ReactNode` | — | Optional icon on the left |
-| `bordered` | `boolean` | `true` | Show border |
+| `children` | `ReactNode` | — | Content to wrap (badge floats at top-right) |
+| `count` | `ReactNode` | — | Number or custom content shown in the badge |
+| `overflowCount` | `number` | `99` | Max count before showing `{overflowCount}+` |
+| `dot` | `boolean` | `false` | Show a dot indicator instead of a count |
+| `showZero` | `boolean` | `false` | Show the badge when `count` is zero |
+| `size` | `'default' \| 'small'` | `'default'` | Badge size |
+| `status` | `'success' \| 'processing' \| 'default' \| 'error' \| 'warning'` | — | Status indicator (standalone or with child) |
+| `text` | `ReactNode` | — | Text shown next to the status dot (standalone mode only) |
+| `color` | `string` | — | Custom color (preset name or any CSS color) |
+| `offset` | `[number, number]` | — | `[right, top]` offset in pixels for the badge position |
+| `title` | `string` | — | Tooltip title for the badge indicator |
+| `className` | `string` | — | Class for the root element |
+| `style` | `CSSProperties` | — | Style for the root element |
+| `classNames` | `BadgeClassNames` | — | Semantic class names |
+| `styles` | `BadgeStyles` | — | Semantic styles |
 
-#### Radius Options
+#### Preset Colors
 
-| Radius | Value |
-|--------|-------|
-| `none` | 0 |
-| `sm` | 4px |
-| `md` | 6px |
-| `lg` | 12px |
-| `full` | 9999px (pill shape) |
+`pink` · `red` · `yellow` · `orange` · `cyan` · `green` · `blue` · `purple` · `geekblue` · `magenta` · `volcano` · `gold` · `lime`
 
-#### Semantic DOM
+#### Badge.Ribbon Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Content to wrap |
+| `text` | `ReactNode` | — | Text displayed inside the ribbon |
+| `color` | `string` | `tokens.colorPrimary` | Ribbon color (preset name or CSS color) |
+| `placement` | `'start' \| 'end'` | `'end'` | Which corner the ribbon appears on |
+| `className` | `string` | — | Class for the wrapper element |
+| `style` | `CSSProperties` | — | Style for the wrapper element |
+| `classNames` | `RibbonClassNames` | — | Semantic class names |
+| `styles` | `RibbonStyles` | — | Semantic styles |
+
+#### Semantic DOM – Badge
 
 | Slot | Description |
 |------|-------------|
 | `root` | Outer wrapper element |
-| `icon` | Icon element |
-| `content` | Text content element |
+| `indicator` | The count badge / dot element (`<sup>`) |
+
+#### Semantic DOM – Badge.Ribbon
+
+| Slot | Description |
+|------|-------------|
+| `wrapper` | Outer wrapper element |
+| `ribbon` | The ribbon strip |
+| `content` | Text content inside the ribbon |
+| `corner` | The folded corner triangle |
 
 #### Examples
 
 ```tsx
-// Basic
-<Badge>New</Badge>
-
-// Using tokens (recommended - type-safe with autocomplete)
-<Badge bgColor={tokens.colorSuccess100} color={tokens.colorSuccess}>
-  Active
+// Count badge wrapping content
+<Badge count={5}>
+  <Avatar shape="square" />
 </Badge>
 
-<Badge bgColor={tokens.colorError100} color={tokens.colorError}>
-  Expired
+// Overflow count (shows "99+")
+<Badge count={120}>
+  <Avatar shape="square" />
 </Badge>
 
-<Badge bgColor={tokens.colorWarning100} color={tokens.colorWarning}>
-  Pending
+// Show zero
+<Badge count={0} showZero>
+  <Avatar shape="square" />
 </Badge>
 
-// Using CSS variables directly
-<Badge bgColor="var(--j-info-light)" color="var(--j-info)">
-  Info
+// Dot indicator
+<Badge dot>
+  <NotificationIcon />
 </Badge>
 
-// Different radius
-<Badge radius="none">Square</Badge>
-<Badge radius="full">Pill</Badge>
-
-// With icon
-<Badge icon={<CheckIcon />}>Verified</Badge>
-
-// Without border
-<Badge bordered={false}>Subtle</Badge>
-
-// Custom colors (any CSS color)
-<Badge bgColor="#ffe4e6" color="#be123c">
-  Custom Pink
+// Small size
+<Badge count={5} size="small">
+  <Avatar shape="square" />
 </Badge>
+
+// Custom offset
+<Badge count={5} offset={[10, 10]}>
+  <Avatar shape="square" />
+</Badge>
+
+// Status dots (standalone, no children)
+<Badge status="success" text="Completed" />
+<Badge status="processing" text="In Progress" />
+<Badge status="error" text="Failed" />
+<Badge status="warning" text="Warning" />
+<Badge status="default" text="Inactive" />
+
+// Preset colors
+<Badge color="blue" count={8}>
+  <Avatar shape="square" />
+</Badge>
+<Badge color="volcano" count={3}>
+  <Avatar shape="square" />
+</Badge>
+
+// Custom CSS color
+<Badge color="#faad14" count={10}>
+  <Avatar shape="square" />
+</Badge>
+
+// Standalone count (no children)
+<Badge count={25} />
+
+// Badge.Ribbon
+<Badge.Ribbon text="Featured">
+  <Card>Card content</Card>
+</Badge.Ribbon>
+
+<Badge.Ribbon text="Sale" color="red" placement="start">
+  <Card>Card content</Card>
+</Badge.Ribbon>
 ```
 
 </details>
@@ -1443,6 +1711,827 @@ Also accepts all standard `<button>` HTML attributes.
 ---
 
 <details>
+<summary><strong>Card</strong> - Versatile content container</summary>
+
+### Card
+
+`Card` is a versatile container for grouping related information with optional header, cover image, actions, tabs, and loading states. Supports grid layouts and metadata components.
+
+#### Import
+
+```tsx
+import { Card } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `ReactNode` | - | Card title displayed in header |
+| `extra` | `ReactNode` | - | Extra content displayed in top-right corner of header |
+| `cover` | `ReactNode` | - | Cover image or content displayed at the top of the card |
+| `actions` | `ReactNode[]` | - | Array of action elements displayed at the bottom (evenly distributed) |
+| `loading` | `boolean` | `false` | Shows loading skeleton instead of children |
+| `hoverable` | `boolean` | `false` | Enables hover effect with shadow and lift animation |
+| `size` | `CardSize` | `'default'` | Card size: `'default'` (1.5rem padding) or `'small'` (0.75rem padding) |
+| `variant` | `CardVariant` | `'outlined'` | Card style: `'outlined'` (with border) or `'borderless'` (no border) |
+| `type` | `'inner'` | - | Nested card type with subtle background in header |
+| `tabList` | `CardTabItem[]` | - | Array of tab items to display in header |
+| `activeTabKey` | `string` | - | Current active tab key (controlled) |
+| `defaultActiveTabKey` | `string` | - | Initial active tab key (uncontrolled) |
+| `tabProps` | `Partial<TabsProps>` | - | Additional props to pass to the Tabs component |
+| `onTabChange` | `(key: string) => void` | - | Callback fired when tab changes |
+| `children` | `ReactNode` | - | Card content |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `CardClassNames` | - | Semantic class names for card slots |
+| `styles` | `CardStyles` | - | Semantic inline styles for card slots |
+
+#### CardTabItem
+
+```tsx
+interface CardTabItem {
+  key: string
+  label: ReactNode
+  disabled?: boolean
+}
+```
+
+#### Card.Meta Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `avatar` | `ReactNode` | - | Avatar element (typically an Avatar component) |
+| `title` | `ReactNode` | - | Meta title |
+| `description` | `ReactNode` | - | Meta description |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+
+#### Card.Grid Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `hoverable` | `boolean` | `true` | Enables hover effect with shadow |
+| `children` | `ReactNode` | - | Grid cell content |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+
+#### Size Config
+
+```tsx
+type CardSize = 'default' | 'small'
+
+// Padding values:
+// 'default': 1.5rem (24px)
+// 'small': 0.75rem (12px)
+```
+
+#### Semantic DOM
+
+The Card component uses semantic class names and styles for customization:
+
+```tsx
+type CardSemanticSlot = 'root' | 'header' | 'body' | 'extra' | 'title' | 'actions' | 'cover'
+
+interface CardClassNames {
+  root?: string
+  header?: string
+  body?: string
+  extra?: string
+  title?: string
+  actions?: string
+  cover?: string
+}
+
+interface CardStyles {
+  root?: CSSProperties
+  header?: CSSProperties
+  body?: CSSProperties
+  extra?: CSSProperties
+  title?: CSSProperties
+  actions?: CSSProperties
+  cover?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic card:**
+
+```tsx
+<Card title="Card Title">
+  <p>Card content goes here</p>
+</Card>
+```
+
+**Card with cover image:**
+
+```tsx
+<Card
+  cover={
+    <img
+      alt="example"
+      src="https://picsum.photos/400/200"
+      style={{ width: '100%', display: 'block' }}
+    />
+  }
+  title="Photo Card"
+>
+  <p>Card with a cover image displayed at the top</p>
+</Card>
+```
+
+**Card with actions:**
+
+```tsx
+<Card
+  title="Interactive Card"
+  actions={[
+    <HeartIcon size={18} />,
+    <EditIcon size={18} />,
+    <ShareIcon size={18} />
+  ]}
+>
+  <p>Card with action buttons at the bottom</p>
+</Card>
+```
+
+**Card with extra content:**
+
+```tsx
+<Card
+  title="Settings"
+  extra={<a href="#">More</a>}
+>
+  <p>Card with extra content in the top-right corner</p>
+</Card>
+```
+
+**Loading state:**
+
+```tsx
+<Card title="Loading Card" loading>
+  <p>This content is hidden while loading</p>
+</Card>
+```
+
+**Hoverable card:**
+
+```tsx
+<Card title="Hover Me" hoverable>
+  <p>This card has a hover effect with shadow and lift animation</p>
+</Card>
+```
+
+**Small size card:**
+
+```tsx
+<Card title="Small Card" size="small">
+  <p>Compact card with reduced padding</p>
+</Card>
+```
+
+**Borderless card:**
+
+```tsx
+<Card title="Borderless" variant="borderless">
+  <p>Card without a border</p>
+</Card>
+```
+
+**Inner card (nested):**
+
+```tsx
+<Card title="Outer Card">
+  <Card title="Inner Card" type="inner">
+    <p>Nested card with subtle header background</p>
+  </Card>
+</Card>
+```
+
+**Card with tabs:**
+
+```tsx
+<Card
+  title="Tabbed Card"
+  tabList={[
+    { key: 'tab1', label: 'Tab 1' },
+    { key: 'tab2', label: 'Tab 2' },
+    { key: 'tab3', label: 'Tab 3', disabled: true }
+  ]}
+  defaultActiveTabKey="tab1"
+  onTabChange={(key) => console.log('Active tab:', key)}
+>
+  <p>Content for the selected tab</p>
+</Card>
+```
+
+**Card.Meta with avatar:**
+
+```tsx
+import { Card, Avatar } from 'j-ui'
+
+<Card>
+  <Card.Meta
+    avatar={<Avatar src="https://i.pravatar.cc/40" />}
+    title="Card Title"
+    description="This is the description"
+  />
+</Card>
+```
+
+**Card.Grid layout:**
+
+```tsx
+<Card title="Grid Card">
+  <Card.Grid>Content 1</Card.Grid>
+  <Card.Grid>Content 2</Card.Grid>
+  <Card.Grid>Content 3</Card.Grid>
+  <Card.Grid>Content 4</Card.Grid>
+  <Card.Grid>Content 5</Card.Grid>
+  <Card.Grid>Content 6</Card.Grid>
+</Card>
+```
+
+**Controlled tabs:**
+
+```tsx
+const [activeTab, setActiveTab] = useState('photos')
+
+<Card
+  title="Gallery"
+  tabList={[
+    { key: 'photos', label: 'Photos' },
+    { key: 'videos', label: 'Videos' }
+  ]}
+  activeTabKey={activeTab}
+  onTabChange={setActiveTab}
+>
+  {activeTab === 'photos' ? <PhotoGrid /> : <VideoGrid />}
+</Card>
+```
+
+**Complex card with all features:**
+
+```tsx
+<Card
+  cover={<img src="https://picsum.photos/400/200" alt="cover" />}
+  title="Premium Product"
+  extra={<Tag color="gold">Featured</Tag>}
+  hoverable
+  actions={[
+    <HeartIcon size={18} />,
+    <ShoppingCartIcon size={18} />,
+    <ShareIcon size={18} />
+  ]}
+>
+  <Card.Meta
+    avatar={<Avatar>JD</Avatar>}
+    title="John Doe"
+    description="Product designer"
+  />
+  <Divider />
+  <p>This is a premium product with all available features.</p>
+</Card>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Calendar</strong> - Date selection calendar</summary>
+
+### Calendar
+
+`Calendar` displays a full calendar for date selection with month and year views. Supports fullscreen and card modes, custom cell rendering, week numbers, date range restrictions, and date adapters for different date libraries.
+
+**Import:**
+```tsx
+import { Calendar } from 'j-ui';
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `TDate` | `undefined` | Controlled selected date |
+| `defaultValue` | `TDate` | `today()` | Initial selected date (uncontrolled mode) |
+| `fullscreen` | `boolean` | `true` | Fullscreen mode (100% width) vs card mode (18.75rem) |
+| `mode` | `'month' \| 'year'` | `undefined` | Controlled calendar mode |
+| `defaultMode` | `'month' \| 'year'` | `'month'` | Initial calendar mode (uncontrolled) |
+| `showWeek` | `boolean` | `false` | Show week numbers |
+| `headerRender` | `(config: CalendarHeaderConfig) => ReactNode` | `undefined` | Custom header renderer |
+| `cellRender` | `(current: TDate, info: CalendarCellRenderInfo) => ReactNode` | `undefined` | Custom cell content (keeps default structure) |
+| `fullCellRender` | `(current: TDate, info: CalendarCellRenderInfo) => ReactNode` | `undefined` | Replace entire cell |
+| `validRange` | `[TDate, TDate]` | `undefined` | Valid date range [start, end] |
+| `disabledDate` | `(date: TDate) => boolean` | `undefined` | Function to disable specific dates |
+| `onChange` | `(date: TDate) => void` | `undefined` | Callback when date is selected |
+| `onPanelChange` | `(date: TDate, mode: CalendarMode) => void` | `undefined` | Callback when panel changes (mode toggle) |
+| `onSelect` | `(date: TDate, info: CalendarSelectInfo) => void` | `undefined` | Callback on selection with source info |
+| `adapter` | `DateAdapter<TDate>` | `NativeDateAdapter` | Custom date adapter |
+| `className` | `string` | `undefined` | Root element class name |
+| `style` | `CSSProperties` | `undefined` | Root element inline styles |
+| `classNames` | `SemanticClassNames<CalendarSemanticSlot>` | `undefined` | Semantic class names |
+| `styles` | `SemanticStyles<CalendarSemanticSlot>` | `undefined` | Semantic inline styles |
+
+#### CalendarHeaderConfig Interface
+
+```typescript
+interface CalendarHeaderConfig<TDate = any> {
+  value: TDate;                        // Current selected date
+  type: CalendarMode;                  // Current mode ('month' | 'year')
+  onChange: (date: TDate) => void;     // Change selected date
+  onTypeChange: (type: CalendarMode) => void; // Change mode
+}
+```
+
+#### CalendarCellRenderInfo Interface
+
+```typescript
+interface CalendarCellRenderInfo {
+  originNode: ReactNode;  // Default cell content
+  today: boolean;         // Whether this cell is today
+  type: 'date' | 'month'; // Type of cell
+}
+```
+
+#### CalendarSelectInfo Interface
+
+```typescript
+interface CalendarSelectInfo {
+  source: 'year' | 'month' | 'date' | 'customize'; // Selection source
+}
+```
+
+#### Calendar Modes
+
+- **`month`**: Displays a grid of days (6 weeks × 7 days)
+- **`year`**: Displays a grid of months (3 × 4 grid)
+
+#### Display Modes
+
+- **Fullscreen** (`fullscreen={true}`): 100% width, larger cells, suitable for main content area
+- **Card** (`fullscreen={false}`): 18.75rem (300px) width, compact, suitable for dropdowns/panels
+
+#### Semantic DOM Slots
+
+| Slot | Description |
+|------|-------------|
+| `root` | The root container element |
+| `header` | Header section with year/month selectors and mode toggle |
+| `body` | Body section containing the calendar grid |
+| `cell` | Individual date or month cell |
+
+#### Date Adapters
+
+Calendar uses date adapters for compatibility with different date libraries:
+- **NativeDateAdapter** (default): Uses native JavaScript Date
+- **DayJSAdapter**: For Day.js library
+- **DateFnsAdapter**: For date-fns library
+- **LuxonAdapter**: For Luxon library
+- **MomentAdapter**: For Moment.js library
+
+Use `CalendarAdapterProvider` to set adapter for all calendars in a subtree.
+
+#### Examples
+
+**Basic usage:**
+```tsx
+import { Calendar } from 'j-ui';
+
+<Calendar
+  onChange={(date) => console.log('Selected:', date)}
+/>
+```
+
+**Card mode (compact):**
+```tsx
+<Calendar
+  fullscreen={false}
+  onChange={(date) => console.log('Selected:', date)}
+/>
+```
+
+**Controlled value:**
+```tsx
+const [selectedDate, setSelectedDate] = useState(new Date());
+
+<Calendar
+  value={selectedDate}
+  onChange={setSelectedDate}
+/>
+```
+
+**Year view mode:**
+```tsx
+<Calendar
+  defaultMode="year"
+  onChange={(date) => console.log('Month selected:', date)}
+/>
+```
+
+**With week numbers:**
+```tsx
+<Calendar
+  showWeek
+  onChange={(date) => console.log('Selected:', date)}
+/>
+```
+
+**With valid date range:**
+```tsx
+const today = new Date();
+const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+<Calendar
+  validRange={[today, nextMonth]}
+  onChange={(date) => console.log('Selected:', date)}
+/>
+```
+
+**With disabled dates (disable weekends):**
+```tsx
+<Calendar
+  disabledDate={(date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6; // Sunday or Saturday
+  }}
+/>
+```
+
+**Custom cell rendering (add badges):**
+```tsx
+<Calendar
+  cellRender={(date, info) => {
+    const hasEvent = checkIfDateHasEvent(date);
+    return hasEvent ? (
+      <div>
+        {info.originNode}
+        <div style={{
+          width: 4,
+          height: 4,
+          borderRadius: '50%',
+          backgroundColor: '#1890ff',
+          margin: '0 auto'
+        }} />
+      </div>
+    ) : info.originNode;
+  }}
+/>
+```
+
+**Full cell rendering (custom content):**
+```tsx
+<Calendar
+  fullscreen
+  fullCellRender={(date, info) => {
+    const events = getEventsForDate(date);
+    return (
+      <div style={{ padding: '0.5rem' }}>
+        <div style={{
+          textAlign: 'right',
+          fontWeight: info.today ? 700 : 400,
+          color: info.today ? '#1890ff' : 'inherit'
+        }}>
+          {date.getDate()}
+        </div>
+        {events.map((event, idx) => (
+          <div
+            key={idx}
+            style={{
+              fontSize: '0.75rem',
+              padding: '0.125rem 0.25rem',
+              backgroundColor: '#e6f7ff',
+              borderRadius: '0.25rem',
+              marginTop: '0.25rem',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {event.title}
+          </div>
+        ))}
+      </div>
+    );
+  }}
+/>
+```
+
+**Custom header:**
+```tsx
+<Calendar
+  headerRender={({ value, type, onChange, onTypeChange }) => (
+    <div style={{ padding: '1rem', borderBottom: '1px solid #d9d9d9' }}>
+      <h3>Custom Calendar Header</h3>
+      <div>
+        Current: {value.toLocaleDateString()}
+      </div>
+      <button onClick={() => {
+        const prev = new Date(value);
+        prev.setMonth(prev.getMonth() - 1);
+        onChange(prev);
+      }}>
+        Previous Month
+      </button>
+      <button onClick={() => onTypeChange(type === 'month' ? 'year' : 'month')}>
+        Toggle: {type}
+      </button>
+    </div>
+  )}
+/>
+```
+
+**With Day.js adapter:**
+```tsx
+import { Calendar, CalendarAdapterProvider } from 'j-ui';
+import { DayJSAdapter } from 'j-ui/adapters';
+import dayjs from 'dayjs';
+
+const adapter = new DayJSAdapter();
+
+<CalendarAdapterProvider adapter={adapter}>
+  <Calendar
+    value={dayjs()}
+    onChange={(date) => console.log('Selected:', date.format('YYYY-MM-DD'))}
+  />
+</CalendarAdapterProvider>
+```
+
+**Panel change tracking:**
+```tsx
+<Calendar
+  onPanelChange={(date, mode) => {
+    console.log('Panel changed to:', mode, 'at', date);
+  }}
+  onSelect={(date, info) => {
+    console.log('Selected via:', info.source, 'date:', date);
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Carousel</strong> - Image and content slider</summary>
+
+### Carousel
+
+`Carousel` is a slideshow component for cycling through images or content with autoplay, arrows, dots navigation, fade/scroll effects, infinite loop, drag support, and progress indicators.
+
+#### Import
+
+```tsx
+import { Carousel } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `autoplay` | `boolean` | `false` | Enables automatic slide transitions |
+| `autoplaySpeed` | `number` | `3000` | Autoplay interval in milliseconds |
+| `arrows` | `boolean` | `false` | Shows previous/next navigation arrows |
+| `dots` | `boolean \| { className?: string }` | `true` | Shows dot indicators (can pass className for custom styling) |
+| `dotPlacement` | `CarouselDotPlacement` | `'bottom'` | Dot position: `'top'`, `'bottom'`, `'left'`, or `'right'` |
+| `effect` | `CarouselEffect` | `'scrollx'` | Transition effect: `'scrollx'` (slide) or `'fade'` (crossfade) |
+| `speed` | `number` | `500` | Transition duration in milliseconds |
+| `easing` | `string` | `'ease'` | CSS transition timing function |
+| `infinite` | `boolean` | `true` | Enables infinite loop (seamless wrap-around) |
+| `draggable` | `boolean` | `false` | Enables drag-to-navigate with pointer events |
+| `dragClamp` | `boolean` | `false` | Limits drag distance to ±1 slide from current |
+| `dotProgress` | `boolean` | `false` | Shows animated progress bar on active dot during autoplay |
+| `initialSlide` | `number` | `0` | Index of the initial slide to display |
+| `waitForAnimate` | `boolean` | `false` | Prevents navigation while transition is in progress |
+| `beforeChange` | `(current: number, next: number) => void` | - | Callback before slide change |
+| `afterChange` | `(current: number) => void` | - | Callback after slide change completes |
+| `children` | `ReactNode` | - | Slide content (each child becomes a slide) |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `CarouselClassNames` | - | Semantic class names for carousel slots |
+| `styles` | `CarouselStyles` | - | Semantic inline styles for carousel slots |
+
+#### CarouselRef
+
+```tsx
+interface CarouselRef {
+  goTo(index: number, animate?: boolean): void  // Navigate to specific slide
+  next(): void                                  // Go to next slide
+  prev(): void                                  // Go to previous slide
+}
+
+// Usage
+const carouselRef = useRef<CarouselRef>(null)
+carouselRef.current?.goTo(2)
+```
+
+#### Semantic DOM
+
+The Carousel component uses semantic class names and styles for customization:
+
+```tsx
+type CarouselSemanticSlot = 'root' | 'track' | 'slide' | 'dots' | 'arrow'
+
+interface CarouselClassNames {
+  root?: string
+  track?: string
+  slide?: string
+  dots?: string
+  arrow?: string
+}
+
+interface CarouselStyles {
+  root?: CSSProperties
+  track?: CSSProperties
+  slide?: CSSProperties
+  dots?: CSSProperties
+  arrow?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic carousel:**
+
+```tsx
+<Carousel>
+  <div style={{ height: '200px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Slide 1
+  </div>
+  <div style={{ height: '200px', backgroundColor: '#52c41a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Slide 2
+  </div>
+  <div style={{ height: '200px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Slide 3
+  </div>
+</Carousel>
+```
+
+**Autoplay with progress dots:**
+
+```tsx
+<Carousel autoplay autoplaySpeed={4000} dotProgress>
+  <img src="https://picsum.photos/800/400?random=1" alt="1" style={{ width: '100%', display: 'block' }} />
+  <img src="https://picsum.photos/800/400?random=2" alt="2" style={{ width: '100%', display: 'block' }} />
+  <img src="https://picsum.photos/800/400?random=3" alt="3" style={{ width: '100%', display: 'block' }} />
+</Carousel>
+```
+
+**Fade effect:**
+
+```tsx
+<Carousel effect="fade" autoplay>
+  <div style={{ height: '300px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
+  <div style={{ height: '300px', background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }} />
+  <div style={{ height: '300px', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }} />
+</Carousel>
+```
+
+**Vertical carousel:**
+
+```tsx
+<Carousel dotPlacement="right" style={{ height: '400px' }}>
+  <div style={{ height: '400px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Vertical Slide 1
+  </div>
+  <div style={{ height: '400px', backgroundColor: '#52c41a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Vertical Slide 2
+  </div>
+  <div style={{ height: '400px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Vertical Slide 3
+  </div>
+</Carousel>
+```
+
+**With arrows:**
+
+```tsx
+<Carousel arrows autoplay>
+  <img src="https://picsum.photos/800/400?random=4" alt="4" style={{ width: '100%', display: 'block' }} />
+  <img src="https://picsum.photos/800/400?random=5" alt="5" style={{ width: '100%', display: 'block' }} />
+  <img src="https://picsum.photos/800/400?random=6" alt="6" style={{ width: '100%', display: 'block' }} />
+</Carousel>
+```
+
+**Without dots:**
+
+```tsx
+<Carousel dots={false} arrows autoplay>
+  <div style={{ height: '200px', backgroundColor: '#722ed1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    No Dots 1
+  </div>
+  <div style={{ height: '200px', backgroundColor: '#eb2f96', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    No Dots 2
+  </div>
+</Carousel>
+```
+
+**Draggable carousel:**
+
+```tsx
+<Carousel draggable dragClamp>
+  <div style={{ height: '250px', backgroundColor: '#13c2c2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Drag me! Slide 1
+  </div>
+  <div style={{ height: '250px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Drag me! Slide 2
+  </div>
+  <div style={{ height: '250px', backgroundColor: '#722ed1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Drag me! Slide 3
+  </div>
+</Carousel>
+```
+
+**Non-infinite carousel:**
+
+```tsx
+<Carousel infinite={false} arrows>
+  <div style={{ height: '200px', backgroundColor: '#f5222d', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    First Slide
+  </div>
+  <div style={{ height: '200px', backgroundColor: '#fa541c', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Middle Slide
+  </div>
+  <div style={{ height: '200px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    Last Slide
+  </div>
+</Carousel>
+```
+
+**Controlled navigation with ref:**
+
+```tsx
+const carouselRef = useRef<CarouselRef>(null)
+
+<div>
+  <Carousel ref={carouselRef}>
+    <div style={{ height: '200px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 1</div>
+    <div style={{ height: '200px', backgroundColor: '#52c41a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 2</div>
+    <div style={{ height: '200px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 3</div>
+    <div style={{ height: '200px', backgroundColor: '#eb2f96', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 4</div>
+  </Carousel>
+
+  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+    <Button onClick={() => carouselRef.current?.prev()}>Previous</Button>
+    <Button onClick={() => carouselRef.current?.next()}>Next</Button>
+    <Button onClick={() => carouselRef.current?.goTo(2)}>Go to Slide 3</Button>
+  </div>
+</div>
+```
+
+**Before/after change callbacks:**
+
+```tsx
+<Carousel
+  autoplay
+  beforeChange={(current, next) => console.log(`Changing from ${current} to ${next}`)}
+  afterChange={(current) => console.log(`Now on slide ${current}`)}
+>
+  <div style={{ height: '200px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 1</div>
+  <div style={{ height: '200px', backgroundColor: '#52c41a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 2</div>
+  <div style={{ height: '200px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 3</div>
+</Carousel>
+```
+
+**Custom dot placement (top):**
+
+```tsx
+<Carousel dotPlacement="top" autoplay>
+  <img src="https://picsum.photos/800/400?random=7" alt="7" style={{ width: '100%', display: 'block' }} />
+  <img src="https://picsum.photos/800/400?random=8" alt="8" style={{ width: '100%', display: 'block' }} />
+  <img src="https://picsum.photos/800/400?random=9" alt="9" style={{ width: '100%', display: 'block' }} />
+</Carousel>
+```
+
+**Wait for animate (prevents rapid clicking):**
+
+```tsx
+<Carousel arrows waitForAnimate>
+  <div style={{ height: '200px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 1</div>
+  <div style={{ height: '200px', backgroundColor: '#52c41a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 2</div>
+  <div style={{ height: '200px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 3</div>
+</Carousel>
+```
+
+**Initial slide:**
+
+```tsx
+<Carousel initialSlide={2} arrows>
+  <div style={{ height: '200px', backgroundColor: '#1890ff', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 1</div>
+  <div style={{ height: '200px', backgroundColor: '#52c41a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 2</div>
+  <div style={{ height: '200px', backgroundColor: '#fa8c16', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 3 (starts here)</div>
+  <div style={{ height: '200px', backgroundColor: '#eb2f96', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Slide 4</div>
+</Carousel>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Checkbox</strong> - Selection control with group and indeterminate support</summary>
 
 ### Checkbox
@@ -1801,6 +2890,716 @@ const [color, setColor] = useState('#ff6b6b')
     panel: { borderRadius: 16 },
   }}
 />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Collapse</strong> - Expandable accordion panels</summary>
+
+### Collapse
+
+`Collapse` displays collapsible panels with smooth animations for hiding and showing content. Supports accordion mode, custom expand icons, different sizes, ghost style, and flexible collapsible behavior.
+
+#### Import
+
+```tsx
+import { Collapse } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `CollapseItem[]` | - | Array of panel items (alternative to using `Collapse.Panel` children) |
+| `accordion` | `boolean` | `false` | Accordion mode - only one panel can be open at a time |
+| `activeKey` | `string \| string[]` | - | Currently active panel key(s) - controlled mode |
+| `defaultActiveKey` | `string \| string[]` | - | Initial active panel key(s) - uncontrolled mode |
+| `bordered` | `boolean` | `true` | Shows border around the collapse |
+| `ghost` | `boolean` | `false` | Makes the collapse borderless with transparent background |
+| `size` | `CollapseSize` | `'middle'` | Panel size: `'small'`, `'middle'`, or `'large'` |
+| `collapsible` | `CollapseCollapsible` | - | Global collapsible behavior: `'header'` (full header clickable), `'icon'` (only icon clickable), or `'disabled'` |
+| `expandIcon` | `(props: { isActive: boolean }) => ReactNode` | - | Custom expand icon render function |
+| `expandIconPlacement` | `'start' \| 'end'` | `'start'` | Position of the expand icon |
+| `destroyOnHidden` | `boolean` | `false` | Unmount content when panel is closed |
+| `onChange` | `(key: string \| string[]) => void` | - | Callback when active panel(s) change |
+| `children` | `ReactNode` | - | Collapse.Panel components |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `CollapseClassNames` | - | Semantic class names for collapse slots |
+| `styles` | `CollapseStyles` | - | Semantic inline styles for collapse slots |
+
+#### CollapseItem
+
+```tsx
+interface CollapseItem {
+  key: string                      // Unique panel identifier
+  label?: ReactNode                // Panel header content
+  children?: ReactNode             // Panel content
+  extra?: ReactNode                // Extra content in header (right side)
+  showArrow?: boolean              // Show expand arrow icon
+  collapsible?: CollapseCollapsible // Panel-specific collapsible behavior
+  forceRender?: boolean            // Render content even when collapsed
+  className?: string               // Panel wrapper class name
+  style?: CSSProperties            // Panel wrapper inline styles
+}
+```
+
+#### Collapse.Panel Props
+
+```tsx
+interface CollapsePanelProps {
+  panelKey: string                 // Unique panel identifier (required)
+  header?: ReactNode               // Panel header content
+  children?: ReactNode             // Panel content
+  extra?: ReactNode                // Extra content in header (right side)
+  showArrow?: boolean              // Show expand arrow icon
+  collapsible?: CollapseCollapsible // Panel-specific collapsible behavior
+  forceRender?: boolean            // Render content even when collapsed
+  className?: string               // Panel wrapper class name
+  style?: CSSProperties            // Panel wrapper inline styles
+}
+```
+
+#### Size Config
+
+```tsx
+type CollapseSize = 'large' | 'middle' | 'small'
+
+// Size configurations:
+// small:  headerPadding: '0.375rem 0.75rem',  contentPadding: '0.75rem',  fontSize: '0.8125rem'
+// middle: headerPadding: '0.75rem 1rem',      contentPadding: '1rem',     fontSize: '0.875rem'
+// large:  headerPadding: '1rem 1.25rem',      contentPadding: '1.25rem',  fontSize: '1rem'
+```
+
+#### Semantic DOM
+
+The Collapse component uses semantic class names and styles for customization:
+
+```tsx
+type CollapseSemanticSlot = 'root' | 'header' | 'content' | 'arrow'
+
+interface CollapseClassNames {
+  root?: string
+  header?: string
+  content?: string
+  arrow?: string
+}
+
+interface CollapseStyles {
+  root?: CSSProperties
+  header?: CSSProperties
+  content?: CSSProperties
+  arrow?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic collapse:**
+
+```tsx
+<Collapse
+  items={[
+    {
+      key: '1',
+      label: 'Panel 1',
+      children: <p>Content of panel 1</p>,
+    },
+    {
+      key: '2',
+      label: 'Panel 2',
+      children: <p>Content of panel 2</p>,
+    },
+    {
+      key: '3',
+      label: 'Panel 3',
+      children: <p>Content of panel 3</p>,
+    },
+  ]}
+  defaultActiveKey={['1']}
+/>
+```
+
+**Accordion mode (only one panel open):**
+
+```tsx
+<Collapse
+  accordion
+  items={[
+    {
+      key: '1',
+      label: 'Accordion Panel 1',
+      children: <p>Only one panel can be open at a time</p>,
+    },
+    {
+      key: '2',
+      label: 'Accordion Panel 2',
+      children: <p>Opening this will close the other</p>,
+    },
+    {
+      key: '3',
+      label: 'Accordion Panel 3',
+      children: <p>Mutually exclusive panels</p>,
+    },
+  ]}
+  defaultActiveKey="1"
+/>
+```
+
+**Ghost style (no border, transparent background):**
+
+```tsx
+<Collapse
+  ghost
+  items={[
+    {
+      key: '1',
+      label: 'Ghost Panel 1',
+      children: <p>Borderless and transparent</p>,
+    },
+    {
+      key: '2',
+      label: 'Ghost Panel 2',
+      children: <p>Minimal styling</p>,
+    },
+  ]}
+/>
+```
+
+**Without border:**
+
+```tsx
+<Collapse
+  bordered={false}
+  items={[
+    {
+      key: '1',
+      label: 'Borderless Panel',
+      children: <p>No outer border</p>,
+    },
+  ]}
+/>
+```
+
+**Custom size (small):**
+
+```tsx
+<Collapse
+  size="small"
+  items={[
+    {
+      key: '1',
+      label: 'Small Panel',
+      children: <p>Compact size with reduced padding</p>,
+    },
+  ]}
+/>
+```
+
+**Custom size (large):**
+
+```tsx
+<Collapse
+  size="large"
+  items={[
+    {
+      key: '1',
+      label: 'Large Panel',
+      children: <p>Spacious size with increased padding</p>,
+    },
+  ]}
+/>
+```
+
+**Icon-only collapsible:**
+
+```tsx
+<Collapse
+  collapsible="icon"
+  items={[
+    {
+      key: '1',
+      label: 'Click the arrow only',
+      children: <p>The header text is not clickable, only the icon</p>,
+    },
+  ]}
+/>
+```
+
+**Disabled panel:**
+
+```tsx
+<Collapse
+  items={[
+    {
+      key: '1',
+      label: 'Active Panel',
+      children: <p>This panel can be toggled</p>,
+    },
+    {
+      key: '2',
+      label: 'Disabled Panel',
+      children: <p>This panel cannot be toggled</p>,
+      collapsible: 'disabled',
+    },
+  ]}
+/>
+```
+
+**Custom expand icon:**
+
+```tsx
+<Collapse
+  expandIcon={({ isActive }) => (
+    <span style={{ transform: isActive ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+      ▼
+    </span>
+  )}
+  items={[
+    {
+      key: '1',
+      label: 'Custom Icon Panel',
+      children: <p>Using a custom expand icon</p>,
+    },
+  ]}
+/>
+```
+
+**Expand icon at end:**
+
+```tsx
+<Collapse
+  expandIconPlacement="end"
+  items={[
+    {
+      key: '1',
+      label: 'Icon on Right',
+      children: <p>The expand icon is positioned at the end</p>,
+    },
+  ]}
+/>
+```
+
+**With extra content:**
+
+```tsx
+<Collapse
+  items={[
+    {
+      key: '1',
+      label: 'Panel with Extra',
+      extra: <a href="#" onClick={(e) => e.stopPropagation()}>Edit</a>,
+      children: <p>The header has extra content on the right</p>,
+    },
+  ]}
+/>
+```
+
+**Without arrow:**
+
+```tsx
+<Collapse
+  items={[
+    {
+      key: '1',
+      label: 'No Arrow Panel',
+      showArrow: false,
+      children: <p>This panel has no expand arrow</p>,
+    },
+  ]}
+/>
+```
+
+**Controlled collapse:**
+
+```tsx
+const [activeKeys, setActiveKeys] = useState<string[]>(['1'])
+
+<div>
+  <Button onClick={() => setActiveKeys(['1', '2'])}>Open All</Button>
+  <Button onClick={() => setActiveKeys([])}>Close All</Button>
+
+  <Collapse
+    activeKey={activeKeys}
+    onChange={(keys) => setActiveKeys(Array.isArray(keys) ? keys : [keys])}
+    items={[
+      {
+        key: '1',
+        label: 'Panel 1',
+        children: <p>Controlled panel 1</p>,
+      },
+      {
+        key: '2',
+        label: 'Panel 2',
+        children: <p>Controlled panel 2</p>,
+      },
+    ]}
+  />
+</div>
+```
+
+**Destroy on hidden (unmount content when closed):**
+
+```tsx
+<Collapse
+  destroyOnHidden
+  items={[
+    {
+      key: '1',
+      label: 'Destroys Content',
+      children: <p>This content is unmounted when the panel closes</p>,
+    },
+  ]}
+/>
+```
+
+**Force render (keep content mounted):**
+
+```tsx
+<Collapse
+  items={[
+    {
+      key: '1',
+      label: 'Always Rendered',
+      forceRender: true,
+      children: <p>This content stays mounted even when collapsed</p>,
+    },
+  ]}
+/>
+```
+
+**Using Collapse.Panel syntax:**
+
+```tsx
+<Collapse defaultActiveKey={['1']}>
+  <Collapse.Panel panelKey="1" header="Panel 1">
+    <p>Content using Collapse.Panel syntax</p>
+  </Collapse.Panel>
+  <Collapse.Panel panelKey="2" header="Panel 2" extra={<a href="#">More</a>}>
+    <p>Another panel with extra content</p>
+  </Collapse.Panel>
+  <Collapse.Panel panelKey="3" header="Panel 3" showArrow={false}>
+    <p>Panel without arrow icon</p>
+  </Collapse.Panel>
+</Collapse>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>DataDisplay</strong> - Structured data presentation table</summary>
+
+### DataDisplay
+
+`DataDisplay` displays structured data in a table format with label-value pairs. Supports horizontal and vertical layouts, responsive columns, custom spanning, bordered style, and flexible sizing.
+
+#### Import
+
+```tsx
+import { DataDisplay } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `DataDisplayItem[]` | - | Array of data items (alternative to using `DataDisplay.Item` children) |
+| `title` | `ReactNode` | - | Display title shown in header |
+| `extra` | `ReactNode` | - | Extra content in header (right side) |
+| `bordered` | `boolean` | `false` | Show borders and background on labels |
+| `column` | `number \| Responsive` | `3` | Number of columns per row (supports responsive breakpoints) |
+| `layout` | `DataDisplayLayout` | `'horizontal'` | Layout mode: `'horizontal'` (label-value pairs in same row) or `'vertical'` (labels in one row, values in another) |
+| `colon` | `boolean` | `true` | Show colon (`:`) after labels |
+| `size` | `DataDisplaySize` | `'middle'` | Display size: `'small'`, `'middle'`, or `'large'` |
+| `labelStyle` | `CSSProperties` | - | Global style for all labels |
+| `contentStyle` | `CSSProperties` | - | Global style for all content cells |
+| `children` | `ReactNode` | - | DataDisplay.Item components |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `DataDisplayClassNames` | - | Semantic class names for data display slots |
+| `styles` | `DataDisplayStyles` | - | Semantic inline styles for data display slots |
+
+#### DataDisplayItem
+
+```tsx
+interface DataDisplayItem {
+  key: string                                          // Unique item identifier
+  label?: ReactNode                                    // Label text
+  children?: ReactNode                                 // Content/value
+  span?: number | Partial<Record<Breakpoint, number>>  // Column span (supports responsive)
+  labelStyle?: CSSProperties                           // Item-specific label style
+  contentStyle?: CSSProperties                         // Item-specific content style
+}
+```
+
+#### DataDisplay.Item Props
+
+```tsx
+interface DataDisplayItemProps {
+  itemKey: string                                      // Unique item identifier (required)
+  label?: ReactNode                                    // Label text
+  children?: ReactNode                                 // Content/value
+  span?: number | Partial<Record<Breakpoint, number>>  // Column span (supports responsive)
+  labelStyle?: CSSProperties                           // Item-specific label style
+  contentStyle?: CSSProperties                         // Item-specific content style
+}
+```
+
+#### Responsive Breakpoints
+
+```tsx
+type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
+
+// Breakpoint values:
+// xs: 0px, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1600px
+
+// Usage example:
+column={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+span={{ xs: 1, md: 2 }}
+```
+
+#### Size Config
+
+```tsx
+type DataDisplaySize = 'large' | 'middle' | 'small'
+
+// Size configurations:
+// small:  headerPadding: '0.5rem 0',  cellPadding: '0.375rem 0.75rem', fontSize: '0.8125rem'
+// middle: headerPadding: '0.75rem 0', cellPadding: '0.75rem 1rem',     fontSize: '0.875rem'
+// large:  headerPadding: '1rem 0',    cellPadding: '1rem 1.5rem',      fontSize: '1rem'
+```
+
+#### Semantic DOM
+
+The DataDisplay component uses semantic class names and styles for customization:
+
+```tsx
+type DataDisplaySemanticSlot = 'root' | 'header' | 'title' | 'extra' | 'label' | 'content' | 'table' | 'row'
+
+interface DataDisplayClassNames {
+  root?: string
+  header?: string
+  title?: string
+  extra?: string
+  label?: string
+  content?: string
+  table?: string
+  row?: string
+}
+
+interface DataDisplayStyles {
+  root?: CSSProperties
+  header?: CSSProperties
+  title?: CSSProperties
+  extra?: CSSProperties
+  label?: CSSProperties
+  content?: CSSProperties
+  table?: CSSProperties
+  row?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic data display:**
+
+```tsx
+<DataDisplay
+  items={[
+    { key: '1', label: 'Name', children: 'John Doe' },
+    { key: '2', label: 'Email', children: 'john@example.com' },
+    { key: '3', label: 'Phone', children: '+1 234 567 890' },
+    { key: '4', label: 'Address', children: '123 Main St, City, Country' },
+    { key: '5', label: 'Status', children: 'Active' },
+    { key: '6', label: 'Role', children: 'Administrator' },
+  ]}
+/>
+```
+
+**With title and extra:**
+
+```tsx
+<DataDisplay
+  title="User Information"
+  extra={<a href="#">Edit</a>}
+  items={[
+    { key: '1', label: 'Username', children: 'johndoe' },
+    { key: '2', label: 'Email', children: 'john@example.com' },
+    { key: '3', label: 'Joined', children: '2024-01-15' },
+  ]}
+/>
+```
+
+**Bordered style:**
+
+```tsx
+<DataDisplay
+  bordered
+  items={[
+    { key: '1', label: 'Product', children: 'Laptop' },
+    { key: '2', label: 'Price', children: '$999' },
+    { key: '3', label: 'Stock', children: '15 units' },
+    { key: '4', label: 'Category', children: 'Electronics' },
+  ]}
+/>
+```
+
+**Vertical layout:**
+
+```tsx
+<DataDisplay
+  layout="vertical"
+  bordered
+  items={[
+    { key: '1', label: 'Q1', children: '$10,000' },
+    { key: '2', label: 'Q2', children: '$15,000' },
+    { key: '3', label: 'Q3', children: '$12,000' },
+    { key: '4', label: 'Q4', children: '$18,000' },
+  ]}
+/>
+```
+
+**Custom column count:**
+
+```tsx
+<DataDisplay
+  column={2}
+  items={[
+    { key: '1', label: 'First Name', children: 'John' },
+    { key: '2', label: 'Last Name', children: 'Doe' },
+    { key: '3', label: 'Age', children: '30' },
+    { key: '4', label: 'City', children: 'New York' },
+  ]}
+/>
+```
+
+**Responsive columns:**
+
+```tsx
+<DataDisplay
+  column={{ xs: 1, sm: 2, md: 3, lg: 4 }}
+  items={[
+    { key: '1', label: 'Field 1', children: 'Value 1' },
+    { key: '2', label: 'Field 2', children: 'Value 2' },
+    { key: '3', label: 'Field 3', children: 'Value 3' },
+    { key: '4', label: 'Field 4', children: 'Value 4' },
+    { key: '5', label: 'Field 5', children: 'Value 5' },
+    { key: '6', label: 'Field 6', children: 'Value 6' },
+  ]}
+/>
+```
+
+**Item with custom span:**
+
+```tsx
+<DataDisplay
+  column={3}
+  bordered
+  items={[
+    { key: '1', label: 'Name', children: 'John Doe' },
+    { key: '2', label: 'Email', children: 'john@example.com' },
+    { key: '3', label: 'Phone', children: '+1 234 567 890' },
+    { key: '4', label: 'Full Address', children: '123 Main Street, Apartment 4B, New York, NY 10001', span: 3 },
+    { key: '5', label: 'City', children: 'New York' },
+    { key: '6', label: 'Country', children: 'USA' },
+  ]}
+/>
+```
+
+**Responsive span:**
+
+```tsx
+<DataDisplay
+  column={{ xs: 1, md: 3 }}
+  bordered
+  items={[
+    { key: '1', label: 'Title', children: 'Product Description' },
+    { key: '2', label: 'SKU', children: 'ABC-123' },
+    { key: '3', label: 'Price', children: '$99.99' },
+    { key: '4', label: 'Description', children: 'This is a detailed product description that spans multiple columns on larger screens.', span: { xs: 1, md: 3 } },
+  ]}
+/>
+```
+
+**Without colon:**
+
+```tsx
+<DataDisplay
+  colon={false}
+  items={[
+    { key: '1', label: 'Temperature', children: '72°F' },
+    { key: '2', label: 'Humidity', children: '45%' },
+    { key: '3', label: 'Pressure', children: '1013 hPa' },
+  ]}
+/>
+```
+
+**Small size:**
+
+```tsx
+<DataDisplay
+  size="small"
+  bordered
+  items={[
+    { key: '1', label: 'Compact', children: 'Small size' },
+    { key: '2', label: 'Padding', children: 'Reduced' },
+    { key: '3', label: 'Font', children: 'Smaller' },
+  ]}
+/>
+```
+
+**Large size:**
+
+```tsx
+<DataDisplay
+  size="large"
+  bordered
+  items={[
+    { key: '1', label: 'Spacious', children: 'Large size' },
+    { key: '2', label: 'Padding', children: 'Increased' },
+    { key: '3', label: 'Font', children: 'Larger' },
+  ]}
+/>
+```
+
+**Custom label/content styles:**
+
+```tsx
+<DataDisplay
+  labelStyle={{ fontWeight: 'bold', color: '#1890ff' }}
+  contentStyle={{ fontStyle: 'italic' }}
+  items={[
+    { key: '1', label: 'Custom', children: 'Styled globally' },
+    { key: '2', label: 'Override', children: 'Item-specific style', contentStyle: { fontStyle: 'normal', color: '#52c41a' } },
+  ]}
+/>
+```
+
+**Using DataDisplay.Item syntax:**
+
+```tsx
+<DataDisplay title="Product Details" bordered column={2}>
+  <DataDisplay.Item itemKey="1" label="Product Name">
+    Wireless Mouse
+  </DataDisplay.Item>
+  <DataDisplay.Item itemKey="2" label="Price">
+    $29.99
+  </DataDisplay.Item>
+  <DataDisplay.Item itemKey="3" label="Manufacturer">
+    TechCorp
+  </DataDisplay.Item>
+  <DataDisplay.Item itemKey="4" label="Warranty">
+    2 years
+  </DataDisplay.Item>
+  <DataDisplay.Item itemKey="5" label="Description" span={2}>
+    High-precision wireless mouse with ergonomic design and long battery life.
+  </DataDisplay.Item>
+</DataDisplay>
 ```
 
 </details>
@@ -2549,6 +4348,1335 @@ const [open, setOpen] = useState(false)
 >
   Publish
 </Dropdown.Button>
+```
+
+</details>
+
+---
+
+<details>
+<parameter name="summary"><strong>Empty</strong> - Empty state placeholder with optional tumbleweed animation</summary>
+
+### Empty
+
+`Empty` displays a placeholder for empty content areas with an illustration, description text, and optional action buttons. Features a unique animated tumbleweed effect for adding personality to empty states.
+
+#### Import
+
+```tsx
+import { Empty } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `image` | `ReactNode` | Built-in illustration | Custom image (string URL or React node). Defaults to built-in simple illustration |
+| `imageStyle` | `CSSProperties` | - | Style for the image container |
+| `description` | `ReactNode \| false` | `'No data'` | Description text below image. Set to `false` to hide |
+| `tumbleweed` | `boolean` | `false` | Show animated tumbleweed rolling across the empty state |
+| `iconColor` | `string` | `tokens.colorBorder` | Stroke color for the built-in icon SVG (only applies when using default image) |
+| `tumbleweedColor` | `string` | `tokens.colorTextSubtle` | Fill color for the tumbleweed SVG |
+| `windColor` | `string` | `tokens.colorTextSubtle` | Stroke color for the wind lines |
+| `shadowColor` | `string` | `tokens.colorTextSubtle` | Background color for the tumbleweed shadow |
+| `children` | `ReactNode` | - | Footer content (e.g. action buttons) |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `EmptyClassNames` | - | Semantic class names for empty slots |
+| `styles` | `EmptyStyles` | - | Semantic inline styles for empty slots |
+
+#### Static Properties
+
+```tsx
+Empty.PRESENTED_IMAGE_SIMPLE // Built-in simple illustration component
+```
+
+#### Semantic DOM
+
+The Empty component uses semantic class names and styles for customization:
+
+```tsx
+type EmptySemanticSlot = 'root' | 'image' | 'description' | 'footer'
+
+interface EmptyClassNames {
+  root?: string
+  image?: string
+  description?: string
+  footer?: string
+}
+
+interface EmptyStyles {
+  root?: CSSProperties
+  image?: CSSProperties
+  description?: CSSProperties
+  footer?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic empty state:**
+
+```tsx
+<Empty />
+```
+
+**Custom description:**
+
+```tsx
+<Empty description="No items found" />
+```
+
+**Without description:**
+
+```tsx
+<Empty description={false} />
+```
+
+**Custom image (URL):**
+
+```tsx
+<Empty
+  image="https://via.placeholder.com/150"
+  description="No results"
+/>
+```
+
+**Custom image (ReactNode):**
+
+```tsx
+<Empty
+  image={
+    <div style={{ fontSize: '4rem', opacity: 0.3 }}>
+      📦
+    </div>
+  }
+  description="Empty box"
+/>
+```
+
+**With action button:**
+
+```tsx
+<Empty description="No tasks yet">
+  <Button type="primary">Create Task</Button>
+</Empty>
+```
+
+**Tumbleweed animation:**
+
+```tsx
+<Empty
+  tumbleweed
+  description="Nothing to see here..."
+/>
+```
+
+**Custom icon color:**
+
+```tsx
+<Empty
+  iconColor="#1890ff"
+  description="Custom colored icon"
+/>
+```
+
+**Custom tumbleweed colors:**
+
+```tsx
+<Empty
+  tumbleweed
+  tumbleweedColor="#8B4513"
+  windColor="#A0522D"
+  shadowColor="#D2691E"
+  description="Custom tumbleweed theme"
+/>
+```
+
+**Using built-in image constant:**
+
+```tsx
+<Empty
+  image={Empty.PRESENTED_IMAGE_SIMPLE}
+  description="Explicitly using default image"
+/>
+```
+
+**Multiple action buttons:**
+
+```tsx
+<Empty description="Your cart is empty">
+  <div style={{ display: 'flex', gap: '0.5rem' }}>
+    <Button>Browse Products</Button>
+    <Button type="primary">View Wishlist</Button>
+  </div>
+</Empty>
+```
+
+**Custom styling:**
+
+```tsx
+<Empty
+  description="Styled empty state"
+  style={{ padding: '4rem' }}
+  styles={{
+    description: { color: '#1890ff', fontSize: '1rem' },
+    footer: { marginTop: '2rem' }
+  }}
+>
+  <Button>Get Started</Button>
+</Empty>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Form</strong> - Data collection with validation, layouts, and dynamic fields</summary>
+
+### Form
+
+A comprehensive form component with field-level validation (required, type, min/max, pattern, custom async validators), three layouts (horizontal, vertical, inline), `FormInstance` API for programmatic control, `Form.Item` for automatic value binding and error display, `Form.List` for dynamic field arrays, `Form.ErrorList`, `Form.Provider` for cross-form communication, and hooks (`useForm`, `useWatch`, `useFormInstance`).
+
+#### Import
+
+```tsx
+import { Form } from 'j-ui'
+```
+
+#### Form Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `form` | `FormInstance` | — | Form instance created by `Form.useForm()` |
+| `name` | `string` | — | Form name (used with `Form.Provider`) |
+| `layout` | `'horizontal' \| 'vertical' \| 'inline'` | `'horizontal'` | Form layout |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Input variant propagated to children |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Size propagated to children |
+| `initialValues` | `Record<string, any>` | — | Initial field values |
+| `onFinish` | `(values: Record<string, any>) => void` | — | Called on successful submit |
+| `onFinishFailed` | `(errorInfo: { values; errorFields }) => void` | — | Called when submit validation fails |
+| `onValuesChange` | `(changedValues, allValues) => void` | — | Called when any field value changes |
+| `onFieldsChange` | `(changedFields, allFields) => void` | — | Called when any field data changes |
+| `fields` | `FieldData[]` | — | Controlled field data |
+| `validateTrigger` | `string \| string[]` | `'onChange'` | Default validation trigger |
+| `colon` | `boolean` | `true` | Show colon after label |
+| `labelAlign` | `'left' \| 'right'` | `'left'` | Label text alignment (requires fixed width via `styles.label`) |
+| `labelWrap` | `boolean` | `false` | Allow label text wrapping |
+| `requiredMark` | `boolean \| 'optional' \| { position } \| function` | `true` | Required mark configuration |
+| `disabled` | `boolean` | `false` | Disable all form fields |
+| `scrollToFirstError` | `boolean \| ScrollIntoViewOptions` | `false` | Scroll to first error on submit |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline styles |
+| `classNames` | `FormClassNames` | — | Semantic slot CSS classes |
+| `styles` | `FormStyles` | — | Semantic slot inline styles |
+
+#### Form.Item Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `name` | `NamePath` | — | Field name (binds to form values) |
+| `label` | `ReactNode` | — | Field label |
+| `layout` | `FormLayout` | Inherited | Override layout per item (mix layouts) |
+| `rules` | `FormRule[]` | — | Validation rules |
+| `dependencies` | `NamePath[]` | — | Re-validate when these fields change |
+| `validateTrigger` | `string \| string[]` | Inherited | Validation trigger override |
+| `validateFirst` | `boolean` | `false` | Stop on first rule error |
+| `validateDebounce` | `number` | — | Debounce validation (ms) |
+| `valuePropName` | `string` | `'value'` | Child prop for value (e.g. `'checked'`) |
+| `trigger` | `string` | `'onChange'` | Child prop for change event |
+| `getValueFromEvent` | `(...args) => any` | — | Custom value extraction from event |
+| `getValueProps` | `(value) => Record<string, any>` | — | Custom value-to-props mapping |
+| `normalize` | `(value, prevValue, allValues) => any` | — | Normalize value before storing |
+| `shouldUpdate` | `boolean \| ((prev, cur) => boolean)` | — | Force re-render on any value change |
+| `noStyle` | `boolean` | `false` | Render without wrapper (just bind props) |
+| `hidden` | `boolean` | `false` | Hide the field |
+| `required` | `boolean` | Auto | Override required indicator |
+| `colon` | `boolean` | Inherited | Override colon per item |
+| `labelAlign` | `'left' \| 'right'` | Inherited | Override label alignment per item (requires fixed width via `styles.label`) |
+| `hasFeedback` | `boolean` | `false` | Show validation status icon |
+| `help` | `ReactNode` | Auto | Help text (overrides validation messages) |
+| `extra` | `ReactNode` | — | Extra content below field |
+| `validateStatus` | `FormValidateStatus` | Auto | Override validation status |
+| `initialValue` | `any` | — | Initial value for this field |
+| `children` | `ReactNode \| (control, meta, form) => ReactNode` | — | Field content or render prop |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline styles |
+| `classNames` | `FormItemClassNames` | — | Semantic slot CSS classes |
+| `styles` | `FormItemStyles` | — | Semantic slot inline styles |
+
+#### Form.List Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `name` | `NamePath` | — | Array field name |
+| `children` | `(fields, operations, meta) => ReactNode` | — | Render function |
+| `initialValue` | `any[]` | — | Initial array values |
+
+#### Form.ErrorList Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `errors` | `ReactNode[]` | — | Error messages to display |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline styles |
+
+#### Form.Provider Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onFormFinish` | `(name, info: { values, forms }) => void` | — | Called when any child form finishes |
+| `onFormChange` | `(name, info: { changedFields, forms }) => void` | — | Called when any child form changes |
+
+#### Hooks
+
+| Hook | Signature | Description |
+|------|-----------|-------------|
+| `Form.useForm` | `(form?) => [FormInstance]` | Creates a form instance for programmatic control |
+| `useWatch` | `(name, form?) => value` | Subscribes to a field value reactively |
+| `useFormInstance` | `() => FormInstance` | Access form instance from any child component |
+
+#### Types
+
+```typescript
+type NamePath = string | number | (string | number)[]
+type FormLayout = 'horizontal' | 'vertical' | 'inline'
+type FormValidateStatus = 'success' | 'warning' | 'error' | 'validating' | ''
+type FormVariant = 'outlined' | 'filled' | 'borderless' | 'underlined'
+type FormSize = 'small' | 'middle' | 'large'
+type FormRequiredMark =
+  | boolean
+  | 'optional'
+  | { position: 'prefix' | 'suffix' }
+  | ((label: ReactNode, info: { required: boolean }) => ReactNode)
+
+interface FormRule {
+  required?: boolean
+  message?: string | ReactNode
+  type?: 'string' | 'number' | 'boolean' | 'url' | 'email' | 'integer' | 'float'
+  min?: number
+  max?: number
+  len?: number
+  pattern?: RegExp
+  whitespace?: boolean
+  enum?: any[]
+  validator?: (rule: FormRule, value: any) => Promise<void>
+  transform?: (value: any) => any
+  validateTrigger?: string | string[]
+  warningOnly?: boolean
+}
+
+interface FormInstance {
+  getFieldValue(name: NamePath): any
+  getFieldsValue(nameList?: NamePath[] | true): Record<string, any>
+  setFieldValue(name: NamePath, value: any): void
+  setFieldsValue(values: Record<string, any>): void
+  validateFields(nameList?, options?): Promise<Record<string, any>>
+  resetFields(nameList?: NamePath[]): void
+  isFieldTouched(name: NamePath): boolean
+  isFieldsTouched(nameList?, allFieldsTouched?): boolean
+  getFieldError(name: NamePath): string[]
+  getFieldsError(nameList?): FieldError[]
+  submit(): void
+  scrollToField(name: NamePath, options?: ScrollIntoViewOptions): void
+  isFieldValidating(name: NamePath): boolean
+}
+
+interface FieldError {
+  name: (string | number)[]
+  errors: string[]
+  warnings: string[]
+}
+
+interface FormListField { name: number; key: number }
+interface FormListOperations {
+  add(defaultValue?, insertIndex?): void
+  remove(index: number | number[]): void
+  move(from: number, to: number): void
+}
+
+// Semantic slot types
+type FormSemanticSlot = 'root'
+type FormItemSemanticSlot = 'root' | 'label' | 'control' | 'help' | 'extra'
+```
+
+#### Semantic DOM
+
+**Form:**
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<form>` | Root form element |
+
+**Form.Item:**
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Item wrapper with layout (horizontal/vertical) |
+| `label` | `<label>` | Label with required mark and colon |
+| `control` | `<div>` | Control area wrapping the field |
+| `help` | `<div>` | Validation messages or custom help text |
+| `extra` | `<div>` | Extra content below the field |
+
+#### Examples
+
+```tsx
+// Basic form
+const [form] = Form.useForm()
+
+<Form form={form} onFinish={(values) => console.log(values)}>
+  <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+    <input />
+  </Form.Item>
+  <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
+    <input />
+  </Form.Item>
+  <button type="submit">Submit</button>
+</Form>
+
+// Vertical layout
+<Form layout="vertical">
+  <Form.Item label="Name" name="name">
+    <input />
+  </Form.Item>
+</Form>
+
+// Inline layout
+<Form layout="inline">
+  <Form.Item name="search">
+    <input placeholder="Search..." />
+  </Form.Item>
+  <button type="submit">Go</button>
+</Form>
+
+// Mix layouts (per-item override)
+<Form layout="horizontal">
+  <Form.Item label="Name" name="name">
+    <input />
+  </Form.Item>
+  <Form.Item layout="vertical" label="Bio" name="bio">
+    <textarea />
+  </Form.Item>
+</Form>
+
+// Validation rules
+<Form.Item
+  label="Password"
+  name="password"
+  rules={[
+    { required: true, message: 'Password is required' },
+    { min: 8, message: 'At least 8 characters' },
+    { pattern: /[A-Z]/, message: 'Must contain uppercase' },
+  ]}
+>
+  <input type="password" />
+</Form.Item>
+
+// Custom async validator
+<Form.Item
+  label="Username"
+  name="username"
+  rules={[{
+    validator: async (_, value) => {
+      const exists = await checkUsername(value)
+      if (exists) throw new Error('Username taken')
+    },
+  }]}
+>
+  <input />
+</Form.Item>
+
+// Dependencies (confirm password)
+<Form.Item label="Password" name="password" rules={[{ required: true }]}>
+  <input type="password" />
+</Form.Item>
+<Form.Item
+  label="Confirm"
+  name="confirm"
+  dependencies={['password']}
+  rules={[{
+    validator: async (_, value) => {
+      if (value !== form.getFieldValue('password')) {
+        throw new Error('Passwords do not match')
+      }
+    },
+  }]}
+>
+  <input type="password" />
+</Form.Item>
+
+// hasFeedback (status icons)
+<Form.Item label="Email" name="email" hasFeedback rules={[{ type: 'email' }]}>
+  <input />
+</Form.Item>
+
+// Checkbox with valuePropName
+<Form.Item name="agree" valuePropName="checked">
+  <Checkbox>I agree to the terms</Checkbox>
+</Form.Item>
+
+// Form.List (dynamic fields)
+<Form.List name="users">
+  {(fields, { add, remove }) => (
+    <>
+      {fields.map(({ key, name }) => (
+        <div key={key} style={{ display: 'flex', gap: 8 }}>
+          <Form.Item name={[name, 'name']} rules={[{ required: true }]}>
+            <input placeholder="Name" />
+          </Form.Item>
+          <button type="button" onClick={() => remove(name)}>Remove</button>
+        </div>
+      ))}
+      <button type="button" onClick={() => add()}>Add User</button>
+    </>
+  )}
+</Form.List>
+
+// useWatch
+function PriceDisplay() {
+  const price = Form.useWatch('price')
+  return <span>Current: ${price ?? 0}</span>
+}
+
+// Programmatic control
+form.setFieldsValue({ username: 'john', email: 'john@example.com' })
+form.resetFields()
+form.validateFields(['username'])
+form.scrollToField('email')
+
+// Disabled form
+<Form disabled>
+  <Form.Item label="Name" name="name"><input /></Form.Item>
+</Form>
+
+// Required mark variations
+<Form requiredMark="optional">...</Form>
+<Form requiredMark={{ position: 'prefix' }}>...</Form>
+<Form requiredMark={false}>...</Form>
+
+// Form.Provider (cross-form communication)
+// Main form collects a project name + a contacts list.
+// Clicking "Add contact" opens a modal with its own form.
+// When the contact form submits, Form.Provider catches it
+// via onFormFinish, adds the contact, resets the form & closes the modal.
+function ProjectForm() {
+  const [mainForm] = Form.useForm()
+  const [contactForm] = Form.useForm()
+  const [showModal, setShowModal] = useState(false)
+  const [contacts, setContacts] = useState([])
+
+  return (
+    <Form.Provider
+      onFormFinish={(name, { values }) => {
+        if (name === 'contactForm') {
+          setContacts(prev => [...prev, values])
+          contactForm.resetFields()
+          setShowModal(false)
+        }
+      }}
+    >
+      <Form form={mainForm} name="mainForm" layout="vertical"
+        onFinish={(v) => console.log({ ...v, contacts })}>
+        <Form.Item name="project" label="Project name" rules={[{ required: true }]}>
+          <input />
+        </Form.Item>
+        <Form.Item label="Contacts">
+          {contacts.map((c, i) => <div key={i}>{c.name} — {c.phone}</div>)}
+          <button type="button" onClick={() => setShowModal(true)}>+ Add contact</button>
+        </Form.Item>
+        <Form.Item><button type="submit">Submit all</button></Form.Item>
+      </Form>
+
+      {/* Modal with its own form */}
+      {showModal && (
+        <div className="modal-overlay">
+          <Form form={contactForm} name="contactForm" layout="vertical">
+            <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+              <input />
+            </Form.Item>
+            <Form.Item name="phone" label="Phone" rules={[{ required: true }]}>
+              <input />
+            </Form.Item>
+            <button type="button" onClick={() => contactForm.submit()}>Add</button>
+          </Form>
+        </div>
+      )}
+    </Form.Provider>
+  )
+}
+
+// Semantic styling
+<Form.Item
+  label="Name"
+  name="name"
+  styles={{
+    label: { fontWeight: 700 },
+    control: { maxWidth: 300 },
+    help: { fontStyle: 'italic' },
+  }}
+>
+  <input />
+</Form.Item>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Input</strong> - Text input fields with multiple variants</summary>
+
+### Input
+
+A comprehensive input component with support for text input, text areas, search, password, and one-time password (OTP) fields.
+
+#### Import
+
+```tsx
+import { Input } from 'j-ui'
+```
+
+#### Input Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | — | Controlled value |
+| `defaultValue` | `string` | — | Initial uncontrolled value |
+| `placeholder` | `string` | — | Placeholder text |
+| `type` | `string` | `'text'` | Native input type |
+| `disabled` | `boolean` | `false` | Disable input |
+| `readOnly` | `boolean` | `false` | Make input read-only |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Input size |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Visual style variant |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `prefix` | `ReactNode` | — | Content before input text |
+| `suffix` | `ReactNode` | — | Content after input text |
+| `addonBefore` | `ReactNode` | — | Content before input wrapper |
+| `addonAfter` | `ReactNode` | — | Content after input wrapper |
+| `allowClear` | `boolean \| { clearIcon?: ReactNode }` | `false` | Show clear button |
+| `showCount` | `boolean` | `false` | Show character count |
+| `count` | `CountConfig` | — | Advanced count configuration |
+| `maxLength` | `number` | — | Maximum character length |
+| `onChange` | `(e: ChangeEvent) => void` | — | Value change callback |
+| `onPressEnter` | `(e: KeyboardEvent) => void` | — | Enter key callback |
+| `onFocus` | `(e: FocusEvent) => void` | — | Focus callback |
+| `onBlur` | `(e: FocusEvent) => void` | — | Blur callback |
+| `classNames` | `SemanticClassNames<'root' \| 'wrapper' \| 'input' \| 'prefix' \| 'suffix' \| 'addonBefore' \| 'addonAfter' \| 'clear' \| 'count'>` | — | Semantic class names |
+| `styles` | `SemanticStyles<'root' \| 'wrapper' \| 'input' \| 'prefix' \| 'suffix' \| 'addonBefore' \| 'addonAfter' \| 'clear' \| 'count'>` | — | Semantic inline styles |
+
+#### Input.TextArea Props
+
+Extends `Input` props with:
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `autoSize` | `boolean \| { minRows?: number; maxRows?: number }` | `false` | Auto-resize based on content |
+| `onResize` | `(size: { width: number; height: number }) => void` | — | Resize callback |
+
+#### Input.Search Props
+
+Extends `Input` props with:
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `enterButton` | `boolean \| ReactNode` | `false` | Show search button |
+| `loading` | `boolean` | `false` | Show loading state |
+| `onSearch` | `(value: string, e: Event) => void` | — | Search callback |
+
+#### Input.Password Props
+
+Extends `Input` props with:
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `visibilityToggle` | `boolean` | `true` | Show visibility toggle button |
+| `iconRender` | `(visible: boolean) => ReactNode` | — | Custom visibility icons |
+
+#### Input.OTP Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | — | Controlled value |
+| `defaultValue` | `string` | — | Initial uncontrolled value |
+| `onChange` | `(value: string) => void` | — | Value change callback |
+| `length` | `number` | `6` | Number of OTP digits |
+| `formatter` | `(value: string) => string` | — | Format input value |
+| `mask` | `boolean \| string` | `false` | Mask characters (true = '•', or custom char) |
+| `disabled` | `boolean` | `false` | Disable all inputs |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Input size |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Visual style variant |
+
+#### CountConfig
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `max` | `number` | — | Maximum count to display |
+| `exceedFormatter` | `(count: number, max: number) => ReactNode` | — | Custom formatter when exceeding max |
+| `show` | `boolean \| ((args: { value: string; count: number; maxLength?: number }) => boolean)` | — | Whether to show count |
+| `strategy` | `(text: string) => number` | — | Custom count strategy |
+
+#### InputRef
+
+| Method | Description |
+|--------|-------------|
+| `focus(options?)` | Focus the input. Options: `{ preventScroll?: boolean; cursor?: 'start' \| 'end' \| 'all' }` |
+| `blur()` | Remove focus from input |
+| `input` | Reference to the native input/textarea element |
+
+#### Size Configuration
+
+| Size | Height | Font Size |
+|------|--------|-----------|
+| `small` | 1.5rem (24px) | 0.75rem (12px) |
+| `middle` | 2rem (32px) | 0.875rem (14px) |
+| `large` | 2.5rem (40px) | 1rem (16px) |
+
+#### Variant Styles
+
+- **outlined** - Default border style
+- **filled** - Filled background with subtle border
+- **borderless** - No border or background
+- **underlined** - Bottom border only
+
+#### Semantic DOM
+
+##### Input / TextArea / Search / Password
+
+| Slot | Description |
+|------|-------------|
+| `root` | Outer container element |
+| `wrapper` | Input wrapper with prefix/suffix |
+| `input` | Native input/textarea element |
+| `prefix` | Prefix content container |
+| `suffix` | Suffix content container |
+| `addonBefore` | Addon before container |
+| `addonAfter` | Addon after container |
+| `clear` | Clear button |
+| `count` | Character count display |
+
+##### Input.OTP
+
+| Slot | Description |
+|------|-------------|
+| `root` | Outer container element |
+| `input` | Individual OTP input element |
+
+#### Examples
+
+```tsx
+// Basic input
+<Input placeholder="Enter text" />
+
+// Controlled input
+const [value, setValue] = useState('')
+<Input value={value} onChange={(e) => setValue(e.target.value)} />
+
+// Different sizes
+<Input size="small" placeholder="Small" />
+<Input size="middle" placeholder="Middle (default)" />
+<Input size="large" placeholder="Large" />
+
+// Variants
+<Input variant="outlined" placeholder="Outlined (default)" />
+<Input variant="filled" placeholder="Filled" />
+<Input variant="borderless" placeholder="Borderless" />
+<Input variant="underlined" placeholder="Underlined" />
+
+// Status states
+<Input status="error" placeholder="Error state" />
+<Input status="warning" placeholder="Warning state" />
+
+// With prefix/suffix
+<Input prefix={<SearchIcon />} placeholder="Search" />
+<Input suffix="@example.com" placeholder="Email" />
+<Input prefix="https://" suffix=".com" placeholder="website" />
+
+// With addons
+<Input addonBefore="https://" addonAfter=".com" placeholder="website" />
+<Input addonBefore={<SelectIcon />} placeholder="URL" />
+
+// Allow clear
+<Input allowClear placeholder="Can be cleared" />
+<Input allowClear={{ clearIcon: <CustomIcon /> }} />
+
+// Character count
+<Input showCount maxLength={50} placeholder="Max 50 characters" />
+<Input
+  count={{
+    max: 100,
+    show: true,
+    exceedFormatter: (count, max) => `${count}/${max} (exceeded!)`,
+  }}
+  placeholder="Advanced count"
+/>
+
+// Disabled and readonly
+<Input disabled placeholder="Disabled" />
+<Input readOnly value="Read only value" />
+
+// With ref (focus management)
+const inputRef = useRef<InputRef>(null)
+<Input ref={inputRef} />
+// Later: inputRef.current?.focus({ cursor: 'end' })
+
+// TextArea
+<Input.TextArea placeholder="Enter multiple lines" />
+<Input.TextArea rows={4} placeholder="Fixed 4 rows" />
+<Input.TextArea autoSize placeholder="Auto-resize" />
+<Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
+<Input.TextArea showCount maxLength={200} />
+
+// Search
+<Input.Search placeholder="Search" onSearch={(value) => console.log(value)} />
+<Input.Search enterButton placeholder="Search with button" />
+<Input.Search enterButton="Go" placeholder="Custom button text" />
+<Input.Search enterButton={<SearchIcon />} />
+<Input.Search loading placeholder="Loading..." />
+
+// Password
+<Input.Password placeholder="Enter password" />
+<Input.Password visibilityToggle={false} placeholder="No toggle" />
+<Input.Password
+  iconRender={(visible) => visible ? <EyeIcon /> : <EyeOffIcon />}
+  placeholder="Custom icons"
+/>
+
+// OTP
+<Input.OTP length={6} onChange={(value) => console.log(value)} />
+<Input.OTP length={4} mask />
+<Input.OTP length={6} mask="*" />
+<Input.OTP
+  length={6}
+  formatter={(value) => value.toUpperCase()}
+  placeholder="A-Z only"
+/>
+
+// Semantic styling
+<Input
+  placeholder="Styled input"
+  classNames={{
+    root: 'custom-root',
+    input: 'custom-input',
+  }}
+  styles={{
+    input: { fontWeight: 600 },
+    wrapper: { borderColor: 'blue' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Image</strong> - Image with preview, zoom, and gallery support</summary>
+
+### Image
+
+`Image` displays images with loading states, error handling, fallback support, and an interactive preview overlay featuring zoom, rotation, flip, and pan controls. Includes `Image.PreviewGroup` for creating image galleries with navigation.
+
+#### Import
+
+```tsx
+import { Image } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `string` | - | Image source URL |
+| `alt` | `string` | - | Alt text for accessibility |
+| `width` | `string \| number` | - | Image width (CSS value) |
+| `height` | `string \| number` | - | Image height (CSS value) |
+| `fallback` | `string` | - | Fallback image URL when main image fails to load |
+| `placeholder` | `ReactNode \| boolean` | - | Loading placeholder. `true` = built-in shimmer effect |
+| `preview` | `boolean \| PreviewConfig` | `true` | Preview configuration. `false` to disable |
+| `onError` | `(e: SyntheticEvent) => void` | - | Callback when image fails to load |
+| `className` | `string` | - | Root element class name |
+| `style` | `CSSProperties` | - | Root element inline styles |
+| `classNames` | `ImageClassNames` | - | Semantic class names for image slots |
+| `styles` | `ImageStyles` | - | Semantic inline styles for image slots |
+
+#### PreviewConfig
+
+```tsx
+interface PreviewConfig {
+  open?: boolean                          // Controlled preview open state
+  src?: string                            // Custom preview source (e.g., high-resolution)
+  onOpenChange?: (open: boolean) => void  // Callback when preview state changes
+  minScale?: number                       // Minimum zoom scale (default: 1)
+  maxScale?: number                       // Maximum zoom scale (default: 50)
+  scaleStep?: number                      // Zoom step multiplier (default: 0.5)
+}
+```
+
+#### Image.PreviewGroup Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `(string \| { src: string; alt?: string })[]` | - | Declarative image array (alternative to children) |
+| `preview` | `boolean \| PreviewGroupConfig` | `true` | Group preview configuration. `false` to disable |
+| `children` | `ReactNode` | - | Image components to include in gallery |
+
+#### PreviewGroupConfig
+
+```tsx
+interface PreviewGroupConfig extends PreviewConfig {
+  current?: number                                      // Controlled current image index
+  onChange?: (current: number, prev: number) => void    // Callback when image changes
+  countRender?: (current: number, total: number) => ReactNode // Custom counter renderer
+}
+```
+
+#### Preview Features
+
+The preview overlay includes:
+- **Zoom**: Mouse wheel, keyboard (+/-), or toolbar buttons
+- **Pan**: Drag to pan when zoomed in
+- **Rotate**: 90° left/right rotation
+- **Flip**: Horizontal and vertical flipping
+- **Reset**: Reset all transformations
+- **Navigation** (groups): Prev/next with arrows or keyboard (←/→)
+- **Keyboard**: Escape to close, arrow keys for navigation
+
+#### Semantic DOM
+
+The Image component uses semantic class names and styles for customization:
+
+```tsx
+type ImageSemanticSlot = 'root' | 'image' | 'mask'
+
+interface ImageClassNames {
+  root?: string
+  image?: string
+  mask?: string   // Preview hover mask
+}
+
+interface ImageStyles {
+  root?: CSSProperties
+  image?: CSSProperties
+  mask?: CSSProperties
+}
+```
+
+#### Examples
+
+**Basic image:**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/400x300"
+  alt="Placeholder"
+/>
+```
+
+**With dimensions:**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/400x300"
+  alt="Fixed size"
+  width={400}
+  height={300}
+/>
+```
+
+**Fallback image:**
+
+```tsx
+<Image
+  src="https://broken-url.example/image.jpg"
+  fallback="https://via.placeholder.com/400x300?text=Fallback"
+  alt="With fallback"
+  width={400}
+  height={300}
+/>
+```
+
+**Custom placeholder:**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/400x300"
+  placeholder={<div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>}
+  width={400}
+  height={300}
+/>
+```
+
+**Built-in shimmer placeholder:**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/400x300"
+  placeholder={true}
+  width={400}
+  height={300}
+/>
+```
+
+**Disable preview:**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/400x300"
+  preview={false}
+  width={400}
+  height={300}
+/>
+```
+
+**Controlled preview:**
+
+```tsx
+const [open, setOpen] = useState(false)
+
+<div>
+  <Button onClick={() => setOpen(true)}>Open Preview</Button>
+  <Image
+    src="https://via.placeholder.com/800x600"
+    preview={{
+      open,
+      onOpenChange: setOpen
+    }}
+    width={400}
+    height={300}
+  />
+</div>
+```
+
+**Custom preview source (high-res):**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/400x300"
+  preview={{
+    src: "https://via.placeholder.com/1920x1080"
+  }}
+  width={400}
+  height={300}
+/>
+```
+
+**Custom zoom settings:**
+
+```tsx
+<Image
+  src="https://via.placeholder.com/800x600"
+  preview={{
+    minScale: 0.5,
+    maxScale: 10,
+    scaleStep: 0.25
+  }}
+  width={400}
+  height={300}
+/>
+```
+
+**Preview group with items:**
+
+```tsx
+<Image.PreviewGroup
+  items={[
+    "https://via.placeholder.com/800x600/FF6B6B/FFFFFF?text=Image+1",
+    "https://via.placeholder.com/800x600/4ECDC4/FFFFFF?text=Image+2",
+    "https://via.placeholder.com/800x600/45B7D1/FFFFFF?text=Image+3",
+    { src: "https://via.placeholder.com/800x600/FFA07A/FFFFFF?text=Image+4", alt: "Fourth image" }
+  ]}
+/>
+```
+
+**Preview group with children:**
+
+```tsx
+<Image.PreviewGroup>
+  <Image src="https://via.placeholder.com/300x200/FF6B6B" width={300} height={200} />
+  <Image src="https://via.placeholder.com/300x200/4ECDC4" width={300} height={200} />
+  <Image src="https://via.placeholder.com/300x200/45B7D1" width={300} height={200} />
+  <Image src="https://via.placeholder.com/300x200/FFA07A" width={300} height={200} />
+</Image.PreviewGroup>
+```
+
+**Controlled group navigation:**
+
+```tsx
+const [current, setCurrent] = useState(0)
+
+<Image.PreviewGroup
+  preview={{
+    current,
+    onChange: (curr, prev) => {
+      console.log(`Changed from ${prev} to ${curr}`)
+      setCurrent(curr)
+    }
+  }}
+  items={[
+    "https://via.placeholder.com/800x600/FF6B6B",
+    "https://via.placeholder.com/800x600/4ECDC4",
+    "https://via.placeholder.com/800x600/45B7D1"
+  ]}
+/>
+```
+
+**Custom counter render:**
+
+```tsx
+<Image.PreviewGroup
+  preview={{
+    countRender: (current, total) => (
+      <span style={{ fontWeight: 'bold' }}>
+        {current} of {total}
+      </span>
+    )
+  }}
+  items={[
+    "https://via.placeholder.com/800x600/FF6B6B",
+    "https://via.placeholder.com/800x600/4ECDC4",
+    "https://via.placeholder.com/800x600/45B7D1"
+  ]}
+/>
+```
+
+**Mixed group with different sources:**
+
+```tsx
+<Image.PreviewGroup>
+  <Image
+    src="https://via.placeholder.com/300x200/FF6B6B"
+    preview={{ src: "https://via.placeholder.com/1920x1080/FF6B6B" }}
+    width={300}
+    height={200}
+  />
+  <Image
+    src="https://via.placeholder.com/300x200/4ECDC4"
+    fallback="https://via.placeholder.com/300x200/999999?text=Error"
+    width={300}
+    height={200}
+  />
+  <Image
+    src="https://via.placeholder.com/300x200/45B7D1"
+    placeholder={true}
+    width={300}
+    height={200}
+  />
+</Image.PreviewGroup>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>InputNumber</strong> - Numeric input with step controls</summary>
+
+### InputNumber
+
+A numeric input component with increment/decrement controls, keyboard navigation, and advanced formatting options.
+
+#### Import
+
+```tsx
+import { InputNumber } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `number \| string \| null` | — | Controlled value |
+| `defaultValue` | `number \| string \| null` | — | Initial uncontrolled value |
+| `onChange` | `(value: number \| string \| null) => void` | — | Value change callback |
+| `onStep` | `(value: number, info: { offset: number; type: 'up' \| 'down' }) => void` | — | Step callback (on increment/decrement) |
+| `onPressEnter` | `(e: KeyboardEvent) => void` | — | Enter key callback |
+| `onFocus` | `(e: FocusEvent) => void` | — | Focus callback |
+| `onBlur` | `(e: FocusEvent) => void` | — | Blur callback |
+| `min` | `number` | `-Infinity` | Minimum value |
+| `max` | `number` | `Infinity` | Maximum value |
+| `step` | `number` | `1` | Step increment/decrement value |
+| `precision` | `number` | — | Decimal precision (auto-inferred from step if not specified) |
+| `formatter` | `(value: string \| number, info: { userTyping: boolean; input: string }) => string` | — | Custom value formatter for display |
+| `parser` | `(displayValue: string) => number \| string` | — | Parser to convert display value back to numeric |
+| `controls` | `boolean \| { upIcon?: ReactNode; downIcon?: ReactNode }` | `true` | Show step controls (up/down buttons) |
+| `keyboard` | `boolean` | `true` | Enable keyboard navigation (arrow keys) |
+| `changeOnWheel` | `boolean` | `false` | Enable mouse wheel to change value when focused |
+| `changeOnBlur` | `boolean` | `true` | Commit value onChange blur (vs. onChange keystroke) |
+| `stringMode` | `boolean` | `false` | Return value as string with exact precision |
+| `decimalSeparator` | `string` | — | Custom decimal separator (e.g., ',') |
+| `placeholder` | `string` | — | Placeholder text |
+| `disabled` | `boolean` | `false` | Disable input |
+| `readOnly` | `boolean` | `false` | Make input read-only |
+| `id` | `string` | — | HTML id attribute |
+| `autoFocus` | `boolean` | `false` | Auto-focus on mount |
+| `name` | `string` | — | HTML name attribute |
+| `tabIndex` | `number` | — | Tab index |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Input size |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Visual style variant |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `prefix` | `ReactNode` | — | Content before input text |
+| `suffix` | `ReactNode` | — | Content after input text (before controls) |
+| `addonBefore` | `ReactNode` | — | Content before input wrapper |
+| `addonAfter` | `ReactNode` | — | Content after input wrapper |
+| `classNames` | `SemanticClassNames<'root' \| 'input' \| 'prefix' \| 'suffix' \| 'handler' \| 'handlerUp' \| 'handlerDown' \| 'addon'>` | — | Semantic class names |
+| `styles` | `SemanticStyles<'root' \| 'input' \| 'prefix' \| 'suffix' \| 'handler' \| 'handlerUp' \| 'handlerDown' \| 'addon'>` | — | Semantic inline styles |
+
+#### InputNumberRef
+
+| Method | Description |
+|--------|-------------|
+| `focus(options?)` | Focus the input. Options: `{ preventScroll?: boolean; cursor?: 'start' \| 'end' \| 'all' }` |
+| `blur()` | Remove focus from input |
+| `input` | Reference to the native input element |
+| `nativeElement` | Reference to the root element |
+
+#### Size Configuration
+
+| Size | Height | Font Size |
+|------|--------|-----------|
+| `small` | 1.5rem (24px) | 0.75rem (12px) |
+| `middle` | 2rem (32px) | 0.875rem (14px) |
+| `large` | 2.5rem (40px) | 1rem (16px) |
+
+#### Variant Styles
+
+- **outlined** - Default border style
+- **filled** - Filled background with subtle border
+- **borderless** - No border or background
+- **underlined** - Bottom border only
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | Outer container element |
+| `input` | Input wrapper with border/background |
+| `prefix` | Prefix content container |
+| `suffix` | Suffix content container |
+| `handler` | Step controls wrapper |
+| `handlerUp` | Increment button |
+| `handlerDown` | Decrement button |
+| `addon` | Addon (before/after) container |
+
+#### Examples
+
+```tsx
+// Basic
+<InputNumber placeholder="Enter number" />
+
+// Controlled
+const [value, setValue] = useState<number | null>(0)
+<InputNumber value={value} onChange={setValue} />
+
+// Min/max/step
+<InputNumber min={0} max={100} step={5} defaultValue={10} />
+<InputNumber min={0} max={1} step={0.1} defaultValue={0.5} />
+
+// Precision
+<InputNumber precision={2} defaultValue={3.14159} />
+<InputNumber step={0.01} defaultValue={1.5} /> // Auto precision from step
+
+// Different sizes
+<InputNumber size="small" placeholder="Small" />
+<InputNumber size="middle" placeholder="Middle (default)" />
+<InputNumber size="large" placeholder="Large" />
+
+// Variants
+<InputNumber variant="outlined" placeholder="Outlined (default)" />
+<InputNumber variant="filled" placeholder="Filled" />
+<InputNumber variant="borderless" placeholder="Borderless" />
+<InputNumber variant="underlined" placeholder="Underlined" />
+
+// Status
+<InputNumber status="error" placeholder="Error state" />
+<InputNumber status="warning" placeholder="Warning state" />
+
+// With prefix/suffix
+<InputNumber prefix="$" placeholder="Price" />
+<InputNumber suffix="kg" placeholder="Weight" />
+<InputNumber prefix="$" suffix="USD" defaultValue={100} />
+
+// With addons
+<InputNumber addonBefore="Price" addonAfter="USD" />
+<InputNumber addonBefore="$" addonAfter=".00" />
+
+// No controls
+<InputNumber controls={false} placeholder="No buttons" />
+
+// Custom control icons
+<InputNumber
+  controls={{
+    upIcon: <PlusIcon />,
+    downIcon: <MinusIcon />,
+  }}
+/>
+
+// Keyboard navigation
+<InputNumber keyboard placeholder="Use arrow keys" />
+
+// Mouse wheel (when focused)
+<InputNumber changeOnWheel placeholder="Focus and scroll" />
+
+// Change on blur vs on input
+<InputNumber changeOnBlur={false} placeholder="Updates on keystroke" />
+
+// String mode (for exact precision)
+<InputNumber
+  stringMode
+  precision={10}
+  onChange={(val) => console.log(typeof val)} // "string"
+/>
+
+// Custom decimal separator
+<InputNumber decimalSeparator="," placeholder="European format" />
+
+// Custom formatter/parser (e.g., currency)
+<InputNumber
+  formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+  parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+  defaultValue={1000000}
+/>
+
+// Percentage
+<InputNumber
+  min={0}
+  max={100}
+  formatter={(value) => `${value}%`}
+  parser={(value) => value.replace('%', '')}
+  defaultValue={50}
+/>
+
+// Disabled and readonly
+<InputNumber disabled defaultValue={42} />
+<InputNumber readOnly value={42} />
+
+// With ref (focus management)
+const inputRef = useRef<InputNumberRef>(null)
+<InputNumber ref={inputRef} />
+// Later: inputRef.current?.focus({ cursor: 'end' })
+
+// Step callback
+<InputNumber
+  onStep={(value, info) => {
+    console.log(`New value: ${value}, offset: ${info.offset}, type: ${info.type}`)
+  }}
+/>
+
+// Semantic styling
+<InputNumber
+  classNames={{
+    root: 'custom-root',
+    input: 'custom-input',
+    handler: 'custom-handler',
+  }}
+  styles={{
+    input: { borderColor: 'blue' },
+    handlerUp: { color: 'green' },
+    handlerDown: { color: 'red' },
+  }}
+/>
 ```
 
 </details>
@@ -3366,6 +6494,253 @@ const [openKeys, setOpenKeys] = useState<string[]>([])
 ---
 
 <details>
+<summary><strong>Mention</strong> - Textarea with @mention autocomplete</summary>
+
+### Mention
+
+A textarea component with mention detection and autocomplete dropdown. Detects mention triggers (like @, #) and shows filterable suggestions.
+
+#### Import
+
+```tsx
+import { Mention } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string` | — | Controlled value |
+| `defaultValue` | `string` | `''` | Initial uncontrolled value |
+| `onChange` | `(text: string) => void` | — | Value change callback |
+| `onSelect` | `(option: MentionOption, prefix: string) => void` | — | Callback when option is selected |
+| `onSearch` | `(text: string, prefix: string) => void` | — | Search callback (triggered on mention detection) |
+| `onFocus` | `(e: FocusEvent) => void` | — | Focus callback |
+| `onBlur` | `(e: FocusEvent) => void` | — | Blur callback |
+| `onPopupScroll` | `(e: UIEvent) => void` | — | Dropdown scroll callback |
+| `options` | `MentionOption[]` | `[]` | Available mention options |
+| `prefix` | `string \| string[]` | `'@'` | Mention trigger character(s) |
+| `split` | `string` | `' '` | Split character after mention |
+| `filterOption` | `false \| ((input: string, option: MentionOption) => boolean)` | `true` | Filter function or false to disable filtering |
+| `validateSearch` | `(text: string, props: MentionProps) => boolean` | — | Validate search text before showing dropdown |
+| `notFoundContent` | `ReactNode` | `'No matches'` | Content when no options match (null to hide) |
+| `placement` | `'top' \| 'bottom'` | `'bottom'` | Dropdown placement (auto-flips when needed) |
+| `allowClear` | `boolean` | `false` | Show clear button |
+| `placeholder` | `string` | — | Placeholder text |
+| `disabled` | `boolean` | `false` | Disable input |
+| `readOnly` | `boolean` | `false` | Make input read-only |
+| `id` | `string` | — | HTML id attribute |
+| `autoFocus` | `boolean` | `false` | Auto-focus on mount |
+| `rows` | `number` | `1` | Initial number of rows |
+| `autoSize` | `boolean \| { minRows?: number; maxRows?: number }` | `false` | Auto-resize based on content |
+| `resize` | `boolean` | `false` | Allow manual resize (when autoSize is false) |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Input size |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Visual style variant |
+| `status` | `'error' \| 'warning'` | — | Validation status |
+| `classNames` | `SemanticClassNames<'root' \| 'textarea' \| 'dropdown' \| 'option'>` | — | Semantic class names |
+| `styles` | `SemanticStyles<'root' \| 'textarea' \| 'dropdown' \| 'option'>` | — | Semantic inline styles |
+
+#### MentionOption
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `value` | `string` | Option value (inserted into text) |
+| `label` | `ReactNode` | Display label (defaults to value) |
+| `disabled` | `boolean` | Disable this option |
+
+#### MentionRef
+
+| Method | Description |
+|--------|-------------|
+| `focus(options?)` | Focus the textarea. Options: `{ preventScroll?: boolean; cursor?: 'start' \| 'end' \| 'all' }` |
+| `blur()` | Remove focus from textarea |
+| `textarea` | Reference to the native textarea element |
+| `nativeElement` | Reference to the root element |
+
+#### Size Configuration
+
+| Size | Height | Font Size | Line Height |
+|------|--------|-----------|-------------|
+| `small` | 1.5rem (24px) | 0.75rem (12px) | 1.125rem |
+| `middle` | 2rem (32px) | 0.875rem (14px) | 1.375rem |
+| `large` | 2.5rem (40px) | 1rem (16px) | 1.5rem |
+
+#### Variant Styles
+
+- **outlined** - Default border style
+- **filled** - Filled background with subtle border
+- **borderless** - No border or background
+- **underlined** - Bottom border only
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | Outer container element |
+| `textarea` | Native textarea element |
+| `dropdown` | Dropdown container |
+| `option` | Individual option element |
+
+#### Examples
+
+```tsx
+// Basic usage
+const options = [
+  { value: 'alice', label: 'Alice Johnson' },
+  { value: 'bob', label: 'Bob Smith' },
+  { value: 'charlie', label: 'Charlie Davis' },
+]
+<Mention options={options} placeholder="Type @ to mention someone" />
+
+// Controlled
+const [value, setValue] = useState('')
+<Mention value={value} onChange={setValue} options={options} />
+
+// Multiple prefixes (@ for users, # for tags)
+const userOptions = [
+  { value: 'alice', label: '@Alice' },
+  { value: 'bob', label: '@Bob' },
+]
+const tagOptions = [
+  { value: 'urgent', label: '#urgent' },
+  { value: 'important', label: '#important' },
+]
+<Mention
+  prefix={['@', '#']}
+  options={[...userOptions, ...tagOptions]}
+  onSearch={(text, prefix) => {
+    if (prefix === '@') loadUsers(text)
+    if (prefix === '#') loadTags(text)
+  }}
+/>
+
+// Custom split character
+<Mention
+  options={options}
+  prefix="@"
+  split=" "  // Default: space after mention
+/>
+
+// Custom filtering
+<Mention
+  options={options}
+  filterOption={(input, option) => {
+    return option.value.toLowerCase().startsWith(input.toLowerCase())
+  }}
+/>
+
+// Disable filtering (manual control)
+<Mention
+  options={filteredOptions}
+  filterOption={false}
+  onSearch={(text) => setFilteredOptions(customFilter(text))}
+/>
+
+// Validate search (minimum length, regex, etc.)
+<Mention
+  options={options}
+  validateSearch={(text) => text.length >= 2}
+  placeholder="Type @ + at least 2 chars"
+/>
+
+// Different sizes
+<Mention size="small" options={options} />
+<Mention size="middle" options={options} />
+<Mention size="large" options={options} />
+
+// Variants
+<Mention variant="outlined" options={options} />
+<Mention variant="filled" options={options} />
+<Mention variant="borderless" options={options} />
+<Mention variant="underlined" options={options} />
+
+// Status
+<Mention status="error" options={options} />
+<Mention status="warning" options={options} />
+
+// AutoSize
+<Mention autoSize options={options} placeholder="Auto-resize" />
+<Mention autoSize={{ minRows: 2, maxRows: 6 }} options={options} />
+
+// Fixed rows with manual resize
+<Mention rows={4} resize options={options} />
+
+// Allow clear
+<Mention allowClear options={options} />
+
+// Placement
+<Mention placement="top" options={options} />
+<Mention placement="bottom" options={options} /> // auto-flips if no space
+
+// Custom not found content
+<Mention notFoundContent="No users found" options={options} />
+<Mention notFoundContent={null} options={options} /> // hide when no matches
+
+// Disabled and readonly
+<Mention disabled options={options} defaultValue="Can't edit" />
+<Mention readOnly options={options} value="Read only" />
+
+// On select callback
+<Mention
+  options={options}
+  onSelect={(option, prefix) => {
+    console.log(`Selected ${prefix}${option.value}`)
+  }}
+/>
+
+// With ref
+const mentionRef = useRef<MentionRef>(null)
+<Mention ref={mentionRef} options={options} />
+// Later: mentionRef.current?.focus({ cursor: 'end' })
+
+// Rich options with custom labels
+<Mention
+  options={[
+    {
+      value: 'alice',
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Avatar src="/alice.jpg" />
+          <span>Alice Johnson</span>
+        </div>
+      ),
+    },
+    { value: 'bob', label: 'Bob Smith' },
+  ]}
+/>
+
+// Async loading
+const [options, setOptions] = useState([])
+<Mention
+  options={options}
+  onSearch={async (text, prefix) => {
+    if (prefix === '@') {
+      const users = await fetchUsers(text)
+      setOptions(users.map(u => ({ value: u.id, label: u.name })))
+    }
+  }}
+/>
+
+// Semantic styling
+<Mention
+  options={options}
+  classNames={{
+    root: 'custom-root',
+    textarea: 'custom-textarea',
+    dropdown: 'custom-dropdown',
+  }}
+  styles={{
+    textarea: { fontFamily: 'monospace' },
+    option: { padding: '1rem' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>NestedSelect</strong> - Cascading hierarchical selection with search and multiple mode</summary>
 
 ### NestedSelect
@@ -3806,6 +7181,932 @@ const [page, setPage] = useState(1)
 
 ```tsx
 <Pagination total={500} showLessItems />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Radio</strong> - Single selection from options</summary>
+
+### Radio
+
+A radio button component for single selection. Includes Radio.Group for managing multiple radios and Radio.Button for button-style toggle options.
+
+#### Import
+
+```tsx
+import { Radio } from 'j-ui'
+```
+
+#### Radio Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `checked` | `boolean` | — | Controlled checked state |
+| `defaultChecked` | `boolean` | `false` | Initial checked state (uncontrolled) |
+| `disabled` | `boolean` | `false` | Disable the radio |
+| `autoFocus` | `boolean` | `false` | Auto-focus on mount |
+| `value` | `string \| number` | — | Radio value (used by Radio.Group) |
+| `onChange` | `(e: RadioChangeEvent) => void` | — | Change callback |
+| `children` | `ReactNode` | — | Label content |
+| `id` | `string` | — | HTML id attribute |
+| `name` | `string` | — | HTML name attribute (for grouping) |
+| `tabIndex` | `number` | — | Tab index |
+| `classNames` | `SemanticClassNames<'root' \| 'radio' \| 'indicator' \| 'label'>` | — | Semantic class names |
+| `styles` | `SemanticStyles<'root' \| 'radio' \| 'indicator' \| 'label'>` | — | Semantic inline styles |
+
+#### Radio.Group Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `string \| number` | — | Controlled selected value |
+| `defaultValue` | `string \| number` | — | Initial selected value (uncontrolled) |
+| `onChange` | `(e: RadioChangeEvent) => void` | — | Change callback |
+| `disabled` | `boolean` | `false` | Disable all radios in group |
+| `name` | `string` | — | HTML name attribute for all radios |
+| `options` | `(string \| number \| RadioOptionType)[]` | — | Options array for auto-generation |
+| `optionType` | `'default' \| 'button'` | `'default'` | Render as radio circles or buttons |
+| `buttonStyle` | `'outline' \| 'solid'` | `'outline'` | Button style (when optionType is 'button') |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Button size (when optionType is 'button') |
+| `children` | `ReactNode` | — | Manual Radio/Radio.Button children |
+| `classNames` | `SemanticClassNames<'root'>` | — | Semantic class names |
+| `styles` | `SemanticStyles<'root'>` | — | Semantic inline styles |
+
+#### RadioOptionType
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `label` | `ReactNode` | Display label |
+| `value` | `string \| number` | Option value |
+| `disabled` | `boolean` | Disable this option |
+| `style` | `CSSProperties` | Inline style for this option |
+| `className` | `string` | CSS class for this option |
+
+#### RadioChangeEvent
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `target.checked` | `boolean` | Whether radio is checked |
+| `target.value` | `string \| number` | Radio value |
+| `nativeEvent` | `Event` | Native DOM event |
+
+#### Button Size Configuration (Radio.Button)
+
+| Size | Height | Font Size | Padding (H) |
+|------|--------|-----------|-------------|
+| `small` | 1.5rem (24px) | 0.75rem (12px) | 0.5rem |
+| `middle` | 2rem (32px) | 0.875rem (14px) | 0.75rem |
+| `large` | 2.5rem (40px) | 1rem (16px) | 1rem |
+
+#### Button Styles
+
+- **outline** - Border and text color change when selected (default)
+- **solid** - Background fills when selected
+
+#### Semantic DOM
+
+##### Radio
+
+| Slot | Description |
+|------|-------------|
+| `root` | Outer label element |
+| `radio` | Radio circle container |
+| `indicator` | Inner filled circle (when checked) |
+| `label` | Label text container |
+
+##### Radio.Group
+
+| Slot | Description |
+|------|-------------|
+| `root` | Group container element |
+
+#### Examples
+
+```tsx
+// Basic radio
+<Radio>Option A</Radio>
+
+// Controlled
+const [value, setValue] = useState('a')
+<Radio checked={value === 'a'} onChange={() => setValue('a')}>
+  Option A
+</Radio>
+
+// Radio.Group (recommended for multiple radios)
+const [value, setValue] = useState('a')
+<Radio.Group value={value} onChange={(e) => setValue(e.target.value)}>
+  <Radio value="a">Option A</Radio>
+  <Radio value="b">Option B</Radio>
+  <Radio value="c">Option C</Radio>
+</Radio.Group>
+
+// Radio.Group with options array
+<Radio.Group
+  options={['Apple', 'Banana', 'Orange']}
+  defaultValue="Apple"
+/>
+
+// Options with custom labels and values
+<Radio.Group
+  options={[
+    { label: 'Option 1', value: 1 },
+    { label: 'Option 2', value: 2 },
+    { label: 'Option 3 (disabled)', value: 3, disabled: true },
+  ]}
+  defaultValue={1}
+/>
+
+// Radio.Button (button-style radios)
+<Radio.Group optionType="button" defaultValue="a">
+  <Radio.Button value="a">Option A</Radio.Button>
+  <Radio.Button value="b">Option B</Radio.Button>
+  <Radio.Button value="c">Option C</Radio.Button>
+</Radio.Group>
+
+// Button with options array
+<Radio.Group
+  optionType="button"
+  options={['React', 'Vue', 'Angular']}
+  defaultValue="React"
+/>
+
+// Solid button style
+<Radio.Group
+  optionType="button"
+  buttonStyle="solid"
+  defaultValue="a"
+  options={[
+    { label: 'Option A', value: 'a' },
+    { label: 'Option B', value: 'b' },
+    { label: 'Option C', value: 'c' },
+  ]}
+/>
+
+// Button sizes
+<Radio.Group optionType="button" size="small" options={['S', 'M', 'L']} />
+<Radio.Group optionType="button" size="middle" options={['S', 'M', 'L']} />
+<Radio.Group optionType="button" size="large" options={['S', 'M', 'L']} />
+
+// Disabled group
+<Radio.Group disabled options={['A', 'B', 'C']} defaultValue="A" />
+
+// Disabled individual option
+<Radio.Group defaultValue="a">
+  <Radio value="a">Enabled</Radio>
+  <Radio value="b" disabled>Disabled</Radio>
+  <Radio value="c">Enabled</Radio>
+</Radio.Group>
+
+// With name attribute (for form submission)
+<Radio.Group name="preference" defaultValue="option1">
+  <Radio value="option1">Option 1</Radio>
+  <Radio value="option2">Option 2</Radio>
+</Radio.Group>
+
+// Vertical layout (using Flex or Space)
+<Flex vertical>
+  <Radio.Group defaultValue="a">
+    <Radio value="a">Option A</Radio>
+    <Radio value="b">Option B</Radio>
+    <Radio value="c">Option C</Radio>
+  </Radio.Group>
+</Flex>
+
+// onChange callback
+<Radio.Group
+  onChange={(e) => {
+    console.log('Selected:', e.target.value)
+    console.log('Checked:', e.target.checked)
+  }}
+  options={['A', 'B', 'C']}
+/>
+
+// Semantic styling (Radio)
+<Radio
+  classNames={{
+    root: 'custom-root',
+    radio: 'custom-radio',
+    label: 'custom-label',
+  }}
+  styles={{
+    radio: { borderColor: 'blue', backgroundColor: 'lightblue' },
+    label: { fontWeight: 600 },
+  }}
+>
+  Custom Styled
+</Radio>
+
+// Semantic styling (Radio.Group)
+<Radio.Group
+  classNames={{ root: 'custom-group' }}
+  styles={{ root: { gap: '1rem' } }}
+  options={['A', 'B', 'C']}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Rate</strong> - Star rating component with half-star support</summary>
+
+### Rate
+
+A star rating component for collecting user feedback. Supports customizable star count, half-star selection, tooltips, keyboard navigation, and custom characters.
+
+#### Import
+
+```tsx
+import { Rate } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `allowClear` | `boolean` | `true` | Allow clearing by clicking the same value again |
+| `allowHalf` | `boolean` | `false` | Allow half-star selection |
+| `autoFocus` | `boolean` | `false` | Auto focus on mount |
+| `character` | `ReactNode \| ((index: number) => ReactNode)` | Star SVG | Custom character to render for each star |
+| `count` | `number` | `5` | Total number of stars |
+| `defaultValue` | `number` | `0` | Default value for uncontrolled mode |
+| `disabled` | `boolean` | `false` | Disable interaction (read-only display) |
+| `size` | `'small' \| 'middle' \| 'large'` | `'middle'` | Size of the stars |
+| `tooltips` | `string[]` | - | Tooltip text for each star (array index corresponds to star index) |
+| `value` | `number` | - | Current value (controlled mode) |
+| `style` | `CSSProperties` | - | Root inline styles |
+| `className` | `string` | - | Root CSS class |
+| `classNames` | `RateClassNames` | - | Semantic slot classes |
+| `styles` | `RateStyles` | - | Semantic slot styles |
+| `onBlur` | `() => void` | - | Blur callback |
+| `onChange` | `(value: number) => void` | - | Value change callback |
+| `onFocus` | `() => void` | - | Focus callback |
+| `onHoverChange` | `(value: number) => void` | - | Hover value change callback (called with `0` on mouse leave) |
+| `onKeyDown` | `(event: KeyboardEvent) => void` | - | Keydown callback |
+
+#### RateRef
+
+| Method | Description |
+|--------|-------------|
+| `focus()` | Focus the rate component |
+| `blur()` | Blur the rate component |
+
+#### Size Configuration
+
+| Size | Font Size | Gap |
+|------|-----------|-----|
+| `small` | 0.875rem (14px) | 0.25rem (4px) |
+| `middle` | 1.25rem (20px) | 0.5rem (8px) |
+| `large` | 2rem (32px) | 0.625rem (10px) |
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | The container element with `role="radiogroup"` |
+| `star` | Each star wrapper (multiple elements) |
+| `character` | The character element inside each star (both background and foreground layers) |
+
+#### Examples
+
+**Basic usage:**
+```tsx
+const [value, setValue] = useState(0)
+
+<Rate value={value} onChange={setValue} />
+```
+
+**Half-star support:**
+```tsx
+<Rate allowHalf defaultValue={2.5} />
+```
+
+**Custom star count:**
+```tsx
+<Rate count={10} defaultValue={7} />
+```
+
+**Sizes:**
+```tsx
+<Rate size="small" defaultValue={3} />
+<Rate size="middle" defaultValue={3} />
+<Rate size="large" defaultValue={3} />
+```
+
+**With tooltips:**
+```tsx
+<Rate
+  tooltips={['Terrible', 'Bad', 'Normal', 'Good', 'Excellent']}
+  defaultValue={3}
+/>
+```
+
+**Custom character:**
+```tsx
+<Rate character="❤️" defaultValue={3} />
+
+// Or dynamic character per star
+<Rate
+  character={(index) => index + 1} // Shows numbers 1-5
+  defaultValue={3}
+/>
+```
+
+**Disabled (read-only):**
+```tsx
+<Rate disabled value={3.5} allowHalf />
+```
+
+**Keyboard navigation:**
+Rate component supports keyboard navigation when focused:
+- Arrow Right / Arrow Up: Increase rating by 1 (or 0.5 if `allowHalf` is enabled)
+- Arrow Left / Arrow Down: Decrease rating by 1 (or 0.5 if `allowHalf` is enabled)
+
+**Controlled with clear prevention:**
+```tsx
+const [value, setValue] = useState(4)
+
+<Rate
+  value={value}
+  onChange={setValue}
+  allowClear={false} // Prevent clearing once set
+/>
+```
+
+**Custom styling:**
+```tsx
+<Rate
+  defaultValue={3}
+  styles={{
+    character: { color: '#ff4d4f', fontSize: '2rem' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Select</strong> - Dropdown selection component with search, tags, and virtual scrolling</summary>
+
+### Select
+
+A powerful dropdown select component supporting single selection, multiple selection, tags mode, search/filter, virtual scrolling for large datasets, option groups, and extensive customization.
+
+#### Import
+
+```tsx
+import { Select } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `options` | `(SelectOption \| SelectOptionGroup)[]` | `[]` | Array of options or option groups |
+| `fieldNames` | `SelectFieldNames` | `{ label: 'label', value: 'value', options: 'options' }` | Custom field names for option properties |
+| `value` | `string \| number \| (string \| number)[]` | - | Current value (controlled) |
+| `defaultValue` | `string \| number \| (string \| number)[]` | - | Default value (uncontrolled) |
+| `mode` | `'multiple' \| 'tags'` | - | Selection mode: `multiple` for multi-select, `tags` for free-form tag creation |
+| `labelInValue` | `boolean` | `false` | Whether to return `{ value, label }` objects in onChange instead of just values |
+| `placeholder` | `string` | `'Select...'` | Placeholder text |
+| `showSearch` | `boolean` | - | Enable search/filter (auto-enabled in tags mode) |
+| `size` | `'large' \| 'middle' \| 'small'` | `'middle'` | Size of the select input |
+| `variant` | `'outlined' \| 'filled' \| 'borderless'` | `'outlined'` | Visual style variant |
+| `status` | `'error' \| 'warning'` | - | Validation status |
+| `placement` | `'bottomLeft' \| 'bottomRight' \| 'topLeft' \| 'topRight'` | `'bottomLeft'` | Initial dropdown placement (auto-flips if overflows) |
+| `allowClear` | `boolean` | `false` | Show clear button to reset selection |
+| `disabled` | `boolean` | `false` | Disable the select |
+| `loading` | `boolean` | `false` | Show loading indicator |
+| `autoFocus` | `boolean` | `false` | Auto focus on mount |
+| `virtual` | `boolean` | `true` | Enable virtual scrolling for large lists (threshold: 32 items) |
+| `popupMatchSelectWidth` | `boolean \| number` | `true` | Match dropdown width to select, or set custom width in pixels |
+| `maxTagCount` | `number` | - | Maximum number of tags to show in multiple mode (rest shown in `+N`) |
+| `maxTagPlaceholder` | `ReactNode \| ((omitted: (string \| number)[]) => ReactNode)` | `+N` | Custom placeholder for omitted tags |
+| `maxCount` | `number` | - | Maximum number of items that can be selected in multiple mode |
+| `defaultActiveFirstOption` | `boolean` | `true` | Auto-highlight first option on dropdown open |
+| `optionFilterProp` | `string` | - | Property name to filter on (uses searchable text by default) |
+| `filterOption` | `boolean \| ((input: string, option: SelectOption) => boolean)` | `true` | Filter function or `false` to disable filtering |
+| `filterSort` | `(a: SelectOption, b: SelectOption) => number` | - | Sort filtered options |
+| `tokenSeparators` | `string[]` | - | Characters that trigger tag creation in tags mode (e.g., `[',', ' ']`) |
+| `open` | `boolean` | - | Control dropdown visibility (controlled) |
+| `dropdownRender` | `(menu: ReactNode) => ReactNode` | - | Customize dropdown content (wrap the menu) |
+| `tagRender` | `(props: SelectTagRenderProps) => ReactNode` | - | Custom tag renderer in multiple mode |
+| `labelRender` | `(props: SelectLabelRenderProps) => ReactNode` | - | Custom label renderer for selected value |
+| `notFoundContent` | `ReactNode` | `'No data'` | Content shown when no options match (set to `null` to hide) |
+| `suffix` | `ReactNode` | Chevron icon | Custom suffix icon (replaces chevron) |
+| `removeIcon` | `ReactNode` | Close icon | Custom icon for removing tags |
+| `clearIcon` | `ReactNode` | Clear icon | Custom icon for clear button |
+| `prefix` | `ReactNode` | - | Prefix element inside the select |
+| `optionRender` | `(option: SelectOption, info: { index: number }) => ReactNode` | - | Custom option renderer |
+| `onChange` | `(value: any, option: any) => void` | - | Callback when value changes |
+| `onSelect` | `(value: string \| number, option: SelectOption) => void` | - | Callback when an option is selected |
+| `onDeselect` | `(value: string \| number, option: SelectOption) => void` | - | Callback when an option is deselected (multiple mode) |
+| `onSearch` | `(value: string) => void` | - | Callback when search input changes |
+| `onClear` | `() => void` | - | Callback when clear button is clicked |
+| `onFocus` | `() => void` | - | Focus callback |
+| `onBlur` | `() => void` | - | Blur callback |
+| `onDropdownVisibleChange` | `(open: boolean) => void` | - | Callback when dropdown visibility changes |
+| `onKeyDown` | `(e: KeyboardEvent) => void` | - | Keydown callback |
+| `className` | `string` | - | Root CSS class |
+| `style` | `CSSProperties` | - | Root inline styles |
+| `classNames` | `SelectClassNames` | - | Semantic slot classes |
+| `styles` | `SelectStyles` | - | Semantic slot styles |
+
+#### SelectOption
+
+```typescript
+interface SelectOption {
+  value: string | number
+  label?: ReactNode
+  disabled?: boolean
+  title?: string // Used for search if provided
+  [key: string]: unknown // Additional custom fields
+}
+```
+
+#### SelectOptionGroup
+
+```typescript
+interface SelectOptionGroup {
+  label: ReactNode
+  title?: string
+  options: SelectOption[]
+}
+```
+
+#### SelectFieldNames
+
+```typescript
+interface SelectFieldNames {
+  label?: string    // Default: 'label'
+  value?: string    // Default: 'value'
+  options?: string  // Default: 'options' (for groups)
+}
+```
+
+#### Size Configuration
+
+| Size | Height | Font Size |
+|------|--------|-----------|
+| `large` | 2.5rem (40px) | 1rem (16px) |
+| `middle` | 2.25rem (36px) | 0.875rem (14px) |
+| `small` | 1.75rem (28px) | 0.875rem (14px) |
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | The outermost container |
+| `selector` | The clickable select box with selected value(s) |
+| `search` | The search input element (when `showSearch` is enabled) |
+| `dropdown` | The dropdown menu container |
+| `option` | Each option element in the dropdown (multiple elements) |
+| `tag` | Each tag element in multiple mode (multiple elements) |
+
+#### Examples
+
+**Basic usage:**
+```tsx
+const [value, setValue] = useState('apple')
+
+const options = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'orange', label: 'Orange' },
+]
+
+<Select options={options} value={value} onChange={setValue} />
+```
+
+**With search:**
+```tsx
+<Select
+  options={options}
+  showSearch
+  placeholder="Search and select..."
+  onChange={setValue}
+/>
+```
+
+**Multiple selection:**
+```tsx
+const [values, setValues] = useState<string[]>([])
+
+<Select
+  mode="multiple"
+  options={options}
+  value={values}
+  onChange={setValues}
+  placeholder="Select multiple items"
+  maxTagCount={3}
+/>
+```
+
+**Tags mode (create custom tags):**
+```tsx
+<Select
+  mode="tags"
+  value={tags}
+  onChange={setTags}
+  placeholder="Type and press Enter to create tags"
+  tokenSeparators={[',', ' ']}
+/>
+```
+
+**Option groups:**
+```tsx
+const groupedOptions = [
+  {
+    label: 'Fruits',
+    options: [
+      { value: 'apple', label: 'Apple' },
+      { value: 'banana', label: 'Banana' },
+    ],
+  },
+  {
+    label: 'Vegetables',
+    options: [
+      { value: 'carrot', label: 'Carrot' },
+      { value: 'potato', label: 'Potato' },
+    ],
+  },
+]
+
+<Select options={groupedOptions} />
+```
+
+**Sizes and variants:**
+```tsx
+<Select size="small" variant="outlined" options={options} />
+<Select size="middle" variant="filled" options={options} />
+<Select size="large" variant="borderless" options={options} />
+```
+
+**With status:**
+```tsx
+<Select status="error" options={options} />
+<Select status="warning" options={options} />
+```
+
+**Custom field names:**
+```tsx
+const customOptions = [
+  { id: 1, name: 'Option 1' },
+  { id: 2, name: 'Option 2' },
+]
+
+<Select
+  options={customOptions}
+  fieldNames={{ label: 'name', value: 'id' }}
+  onChange={(value) => console.log(value)}
+/>
+```
+
+**labelInValue mode:**
+```tsx
+<Select
+  options={options}
+  labelInValue
+  onChange={(obj) => console.log(obj.value, obj.label)}
+/>
+```
+
+**Virtual scrolling:**
+Virtual scrolling is enabled by default for lists with more than 32 items. It significantly improves performance with large datasets.
+
+```tsx
+const largeOptions = Array.from({ length: 1000 }, (_, i) => ({
+  value: i,
+  label: `Option ${i + 1}`,
+}))
+
+<Select
+  options={largeOptions}
+  virtual // true by default
+  showSearch
+/>
+```
+
+**Custom dropdown render:**
+```tsx
+<Select
+  options={options}
+  dropdownRender={(menu) => (
+    <>
+      {menu}
+      <div style={{ padding: '0.5rem', borderTop: '1px solid #ddd' }}>
+        <button onClick={handleAddNew}>+ Add New Item</button>
+      </div>
+    </>
+  )}
+/>
+```
+
+**Custom option render:**
+```tsx
+<Select
+  options={options}
+  optionRender={(option) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <span style={{ fontSize: '1.25rem' }}>{option.icon}</span>
+      <span>{option.label}</span>
+    </div>
+  )}
+/>
+```
+
+**Keyboard navigation:**
+- Arrow Down: Open dropdown / Navigate down
+- Arrow Up: Navigate up
+- Enter: Select highlighted option / Create tag (in tags mode)
+- Escape: Close dropdown
+- Backspace: Remove last tag (in multiple mode when search is empty)
+
+**Loading state:**
+```tsx
+<Select loading options={options} placeholder="Loading..." />
+```
+
+**Max count (limit selections):**
+```tsx
+<Select
+  mode="multiple"
+  maxCount={3}
+  options={options}
+  placeholder="Select up to 3 items"
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Slider</strong> - Range slider with tooltips, marks, and editable handles</summary>
+
+### Slider
+
+A versatile range slider component supporting single values, multi-handle ranges, editable ranges (add/remove handles dynamically), marks with custom labels, draggable tracks, vertical/horizontal orientation, and keyboard navigation.
+
+#### Import
+
+```tsx
+import { Slider } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `defaultValue` | `number \| number[]` | `min` or `[min, min]` | Default value (uncontrolled) |
+| `value` | `number \| number[]` | - | Current value (controlled) |
+| `min` | `number` | `0` | Minimum value |
+| `max` | `number` | `100` | Maximum value |
+| `step` | `number \| null` | `1` | Step size (`null` means snap to marks only) |
+| `marks` | `SliderMarks` | - | Mark labels at specific values (Record<number, label>) |
+| `dots` | `boolean` | `false` | Show dots at each step position |
+| `included` | `boolean` | `true` | Highlight track between handles (or from min to handle in single mode) |
+| `range` | `boolean \| SliderRangeConfig` | `false` | Enable range mode with multiple handles |
+| `vertical` | `boolean` | `false` | Vertical orientation |
+| `reverse` | `boolean` | `false` | Reverse the direction (right-to-left or bottom-to-top) |
+| `disabled` | `boolean` | `false` | Disable interaction |
+| `keyboard` | `boolean` | `true` | Enable keyboard navigation |
+| `tooltip` | `SliderTooltipConfig` | - | Tooltip configuration (placement, formatter, visibility) |
+| `draggableTrack` | `boolean` | `false` | Allow dragging the entire track to move all handles together (range mode only) |
+| `onChange` | `(value: number \| number[]) => void` | - | Callback on value change (fires during drag) |
+| `onChangeComplete` | `(value: number \| number[]) => void` | - | Callback when drag completes or keyboard adjustment finishes |
+| `style` | `CSSProperties` | - | Root inline styles |
+| `className` | `string` | - | Root CSS class |
+| `classNames` | `SliderClassNames` | - | Semantic slot classes |
+| `styles` | `SliderStyles` | - | Semantic slot styles |
+
+#### SliderRangeConfig
+
+```typescript
+interface SliderRangeConfig {
+  editable?: boolean          // Allow adding/removing handles dynamically
+  minCount?: number           // Minimum number of handles (default: editable ? 1 : 2)
+  maxCount?: number           // Maximum number of handles (default: Infinity)
+  draggableTrack?: boolean    // Allow dragging the entire track
+}
+```
+
+#### SliderTooltipConfig
+
+```typescript
+interface SliderTooltipConfig {
+  open?: boolean                              // Force show (true) or hide (false) tooltips
+  placement?: 'top' | 'bottom' | 'left' | 'right'  // Tooltip placement (default: 'top' for horizontal, 'right' for vertical)
+  formatter?: ((value: number) => ReactNode) | null  // Custom formatter (null to hide tooltips)
+}
+```
+
+#### SliderMarks
+
+```typescript
+type SliderMarkLabel = ReactNode | { style?: CSSProperties; label: ReactNode }
+type SliderMarks = Record<number, SliderMarkLabel>
+
+// Example:
+const marks = {
+  0: 'Min',
+  50: { label: '50%', style: { color: 'blue' } },
+  100: 'Max',
+}
+```
+
+#### SliderRef
+
+| Method | Description |
+|--------|-------------|
+| `focus()` | Focus the slider (enables keyboard navigation) |
+| `blur()` | Blur the slider |
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | The outermost container with keyboard event handling |
+| `rail` | The background track (full slider length) |
+| `track` | The highlighted track segment(s) between handles (multiple elements in range mode) |
+| `handle` | The draggable handle(s) (multiple elements in range mode) |
+| `mark` | Mark labels at specific positions (multiple elements) |
+| `dot` | Small dots at step/mark positions (multiple elements) |
+| `tooltip` | Tooltip shown on hover/drag for each handle (multiple elements) |
+
+#### Examples
+
+**Basic usage:**
+```tsx
+const [value, setValue] = useState(30)
+
+<Slider value={value} onChange={setValue} />
+```
+
+**Range mode (two handles):**
+```tsx
+const [range, setRange] = useState([20, 60])
+
+<Slider range value={range} onChange={setRange} />
+```
+
+**With marks:**
+```tsx
+<Slider
+  defaultValue={50}
+  marks={{
+    0: '0°C',
+    25: '25°C',
+    50: '50°C',
+    75: '75°C',
+    100: '100°C',
+  }}
+/>
+```
+
+**With custom mark styles:**
+```tsx
+<Slider
+  marks={{
+    0: 'Min',
+    50: {
+      label: '⭐ Recommended',
+      style: { color: '#faad14', fontWeight: 600 }
+    },
+    100: 'Max',
+  }}
+/>
+```
+
+**With dots:**
+```tsx
+<Slider defaultValue={30} step={10} dots />
+```
+
+**Step null (snap to marks only):**
+```tsx
+<Slider
+  defaultValue={25}
+  step={null}
+  marks={{ 0: '0', 25: '25', 50: '50', 75: '75', 100: '100' }}
+/>
+```
+
+**Editable range (add/remove handles):**
+```tsx
+<Slider
+  range={{ editable: true, minCount: 1, maxCount: 5 }}
+  defaultValue={[20, 50, 80]}
+/>
+```
+
+To use editable range:
+- **Add handles:** Click anywhere on the rail
+- **Remove handles:** Drag a handle far away (60px) from the rail, or press Delete/Backspace when focused
+- **Keyboard:** Tab to switch between handles, Delete/Backspace to remove active handle
+
+**Draggable track:**
+```tsx
+<Slider
+  range
+  defaultValue={[20, 60]}
+  draggableTrack
+/>
+```
+
+Click and drag the highlighted track to move both handles together.
+
+**Vertical slider:**
+```tsx
+<div style={{ height: '300px' }}>
+  <Slider vertical defaultValue={50} />
+</div>
+```
+
+**Reverse direction:**
+```tsx
+<Slider reverse defaultValue={30} />
+```
+
+**Disabled:**
+```tsx
+<Slider disabled value={50} />
+```
+
+**Custom tooltip:**
+```tsx
+<Slider
+  defaultValue={30}
+  tooltip={{
+    open: true,  // Always visible
+    placement: 'bottom',
+    formatter: (value) => `${value}%`,
+  }}
+/>
+```
+
+**Hide tooltip:**
+```tsx
+<Slider
+  defaultValue={50}
+  tooltip={{ formatter: null }}
+/>
+```
+
+**Keyboard navigation:**
+Slider supports full keyboard navigation when focused:
+- **Arrow Right / Arrow Up:** Increase value by step (respects `reverse`)
+- **Arrow Left / Arrow Down:** Decrease value by step (respects `reverse`)
+- **Home:** Jump to minimum value
+- **End:** Jump to maximum value
+- **Tab / Shift+Tab:** Switch between handles (in range mode)
+- **Delete / Backspace:** Remove active handle (in editable range mode)
+
+**Custom styling:**
+```tsx
+<Slider
+  defaultValue={50}
+  styles={{
+    handle: {
+      backgroundColor: '#ff4d4f',
+      borderColor: '#ff4d4f',
+    },
+    track: {
+      backgroundColor: '#ff7875',
+    },
+  }}
+/>
+```
+
+**Included vs not included:**
+```tsx
+// Included (default): highlights track from min to handle
+<Slider defaultValue={30} included />
+
+// Not included: no track highlight
+<Slider defaultValue={30} included={false} />
+
+// Range with included: highlights between handles
+<Slider range defaultValue={[20, 60]} included />
+```
+
+**Controlled with change complete:**
+```tsx
+const [value, setValue] = useState(50)
+
+<Slider
+  value={value}
+  onChange={(v) => console.log('Changing:', v)}  // Fires during drag
+  onChangeComplete={(v) => {
+    console.log('Final:', v)  // Fires when drag completes
+    setValue(v)
+  }}
+/>
 ```
 
 </details>
@@ -4402,6 +8703,156 @@ const [current, setCurrent] = useState(0)
 ---
 
 <details>
+<summary><strong>Switch</strong> - Toggle switch for on/off states with loading support</summary>
+
+### Switch
+
+A toggle switch component for binary on/off states. Supports two sizes, loading state with spinner, custom text labels for checked/unchecked states, and keyboard accessibility.
+
+#### Import
+
+```tsx
+import { Switch } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `autoFocus` | `boolean` | `false` | Auto focus on mount |
+| `checked` | `boolean` | - | Current checked state (controlled) |
+| `checkedChildren` | `ReactNode` | - | Content shown inside the switch when checked (e.g., "ON") |
+| `defaultChecked` | `boolean` | `false` | Default checked state (uncontrolled) |
+| `defaultValue` | `boolean` | `false` | Alias for `defaultChecked` |
+| `disabled` | `boolean` | `false` | Disable the switch |
+| `loading` | `boolean` | `false` | Show loading spinner (also disables interaction) |
+| `size` | `'default' \| 'small'` | `'default'` | Size of the switch |
+| `unCheckedChildren` | `ReactNode` | - | Content shown inside the switch when unchecked (e.g., "OFF") |
+| `value` | `boolean` | - | Alias for `checked` |
+| `onChange` | `(checked: boolean, event: MouseEvent) => void` | - | Callback when checked state changes |
+| `onClick` | `(checked: boolean, event: MouseEvent) => void` | - | Click callback (fires after onChange) |
+| `className` | `string` | - | Root CSS class |
+| `style` | `CSSProperties` | - | Root inline styles |
+| `classNames` | `SwitchClassNames` | - | Semantic slot classes |
+| `styles` | `SwitchStyles` | - | Semantic slot styles |
+| `tabIndex` | `number` | - | Custom tab index |
+| `id` | `string` | - | HTML id attribute |
+
+#### SwitchRef
+
+| Method | Description |
+|--------|-------------|
+| `focus()` | Focus the switch |
+| `blur()` | Blur the switch |
+
+#### Size Configuration
+
+| Size | Track Height | Track Min Width | Thumb Size |
+|------|--------------|-----------------|------------|
+| `default` | 1.375rem (22px) | 2.75rem (44px) | 1.125rem (18px) |
+| `small` | 1rem (16px) | 1.75rem (28px) | 0.75rem (12px) |
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | The button element (outer container) |
+| `track` | The background track that changes color |
+| `thumb` | The circular sliding thumb |
+| `inner` | The text content container (for checkedChildren/unCheckedChildren) |
+
+#### Examples
+
+**Basic usage:**
+```tsx
+const [checked, setChecked] = useState(false)
+
+<Switch checked={checked} onChange={setChecked} />
+```
+
+**Uncontrolled:**
+```tsx
+<Switch defaultChecked />
+```
+
+**With text labels:**
+```tsx
+<Switch
+  checkedChildren="ON"
+  unCheckedChildren="OFF"
+  defaultChecked
+/>
+```
+
+**Small size:**
+```tsx
+<Switch size="small" defaultChecked />
+<Switch size="small" checkedChildren="✓" unCheckedChildren="✗" />
+```
+
+**Disabled:**
+```tsx
+<Switch disabled />
+<Switch disabled checked />
+```
+
+**Loading state:**
+```tsx
+<Switch loading />
+<Switch loading checked />
+```
+
+**With onChange handler:**
+```tsx
+const [checked, setChecked] = useState(false)
+
+<Switch
+  checked={checked}
+  onChange={(checked) => {
+    console.log('Switch is now:', checked)
+    setChecked(checked)
+  }}
+/>
+```
+
+**Custom styling:**
+```tsx
+<Switch
+  defaultChecked
+  styles={{
+    track: {
+      backgroundColor: checked ? '#52c41a' : '#d9d9d9',
+    },
+  }}
+/>
+```
+
+**Keyboard accessibility:**
+The Switch component is fully keyboard accessible:
+- **Space / Enter:** Toggle the switch
+- Supports standard focus management with focus ring on keyboard navigation
+
+**With icons as labels:**
+```tsx
+<Switch
+  checkedChildren={<CheckOutlined />}
+  unCheckedChildren={<CloseOutlined />}
+  defaultChecked
+/>
+```
+
+**Using value/defaultValue aliases:**
+```tsx
+// These are equivalent to checked/defaultChecked
+<Switch value={isEnabled} onChange={setEnabled} />
+<Switch defaultValue={true} />
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Tabs</strong> - Tabbed navigation with line, card, and editable modes</summary>
 
 ### Tabs
@@ -4798,6 +9249,1160 @@ interface EllipsisConfig {
 <Text type="success" italic underline>
   Task completed successfully
 </Text>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>TimePicker</strong> - Time selection with analog clock and range support</summary>
+
+### TimePicker
+
+A time selection component with digital columns or analog clock view. Supports 12/24-hour formats, custom time steps, disabled times, and range selection via `TimePicker.RangePicker`.
+
+#### Import
+
+```tsx
+import { TimePicker } from 'j-ui'
+```
+
+#### TimePicker Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `Date \| null` | - | Current time value (controlled) |
+| `defaultValue` | `Date \| null` | `null` | Default time value (uncontrolled) |
+| `onChange` | `(time: Date \| null, timeString: string) => void` | - | Callback when time changes |
+| `onCalendarChange` | `(time: Date \| null, timeString: string) => void` | - | Callback when user selects time (before confirm) |
+| `onOpenChange` | `(open: boolean) => void` | - | Callback when dropdown visibility changes |
+| `open` | `boolean` | - | Control dropdown visibility (controlled) |
+| `defaultOpen` | `boolean` | `false` | Default dropdown visibility (uncontrolled) |
+| `format` | `string` | `'HH:mm'` or `'hh:mm A'` | Time format string (e.g., `'HH:mm:ss'`, `'hh:mm A'`) |
+| `use12Hours` | `boolean` | `false` | Use 12-hour format with AM/PM |
+| `hourStep` | `number` | `1` | Hour step size for column options |
+| `minuteStep` | `number` | `1` | Minute step size |
+| `secondStep` | `number` | `1` | Second step size |
+| `disabled` | `boolean` | `false` | Disable the picker |
+| `allowClear` | `boolean` | `true` | Show clear button |
+| `placeholder` | `string` | `'Select time'` | Input placeholder |
+| `placement` | `'bottomLeft' \| 'bottomRight' \| 'topLeft' \| 'topRight'` | `'bottomLeft'` | Dropdown placement (auto-flips if overflows) |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size of the picker |
+| `variant` | `'outlined' \| 'borderless' \| 'filled'` | `'outlined'` | Visual style variant |
+| `status` | `'error' \| 'warning'` | - | Validation status |
+| `needConfirm` | `boolean` | `true` | Show OK button (requires confirmation to apply) |
+| `showNow` | `boolean` | `true` | Show "Now" button in footer |
+| `prefix` | `ReactNode` | - | Prefix element in input |
+| `suffix` | `ReactNode` | Clock icon | Suffix element in input |
+| `addon` | `ReactNode` | - | Extra content in dropdown footer |
+| `changeOnScroll` | `boolean` | `false` | Select value by scrolling columns instead of clicking |
+| `showAnalog` | `boolean` | `false` | Show analog clock instead of digital columns |
+| `inputReadOnly` | `boolean` | `false` | Make input read-only (disable manual typing) |
+| `disabledTime` | `() => DisabledTimeConfig` | - | Function to disable specific times |
+| `className` | `string` | - | Root CSS class |
+| `style` | `CSSProperties` | - | Root inline styles |
+| `classNames` | `TimePickerClassNames` | - | Semantic slot classes |
+| `styles` | `TimePickerStyles` | - | Semantic slot styles |
+| `id` | `string` | - | HTML id attribute |
+| `autoFocus` | `boolean` | `false` | Auto focus on mount |
+
+#### TimePicker.RangePicker Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `[Date \| null, Date \| null]` | - | Current time range (controlled) |
+| `defaultValue` | `[Date \| null, Date \| null]` | `[null, null]` | Default time range (uncontrolled) |
+| `onChange` | `(times: [Date \| null, Date \| null] \| null, timeStrings: [string, string]) => void` | - | Callback when range changes |
+| `onCalendarChange` | `(times: [Date \| null, Date \| null], timeStrings: [string, string], info: { range: 'start' \| 'end' }) => void` | - | Callback when user selects time (before confirm) |
+| `disabled` | `boolean \| [boolean, boolean]` | `false` | Disable picker or disable start/end separately |
+| `placeholder` | `[string, string]` | `['Start time', 'End time']` | Placeholder for start and end inputs |
+| `separator` | `ReactNode` | Arrow icon | Separator between start and end inputs |
+| `order` | `boolean` | `true` | Auto-swap start and end if start > end |
+| `disabledTime` | `(type: 'start' \| 'end') => DisabledTimeConfig` | - | Function to disable times for start/end |
+| *(other props)* | Same as TimePicker | | Most TimePicker props are supported |
+
+#### DisabledTimeConfig
+
+```typescript
+interface DisabledTimeConfig {
+  disabledHours?: () => number[]
+  disabledMinutes?: (hour: number) => number[]
+  disabledSeconds?: (hour: number, minute: number) => number[]
+}
+```
+
+#### Size Configuration
+
+| Size | Height |
+|------|--------|
+| `sm` | 1.75rem (28px) |
+| `md` | 2.25rem (36px) |
+| `lg` | 2.75rem (40px) |
+
+#### Semantic DOM
+
+| Slot | Description |
+|------|-------------|
+| `root` | The outermost container |
+| `input` | The clickable input wrapper |
+| `popup` | The dropdown panel |
+| `column` | Time column containers (Hour/Minute/Second/AM-PM) |
+| `footer` | The footer section with Now/OK buttons |
+
+#### Examples
+
+**Basic usage:**
+```tsx
+const [time, setTime] = useState<Date | null>(null)
+
+<TimePicker value={time} onChange={setTime} />
+```
+
+**12-hour format:**
+```tsx
+<TimePicker use12Hours format="hh:mm A" />
+```
+
+**With seconds:**
+```tsx
+<TimePicker format="HH:mm:ss" />
+```
+
+**Custom steps:**
+```tsx
+<TimePicker hourStep={2} minuteStep={15} secondStep={10} />
+```
+
+**Sizes and variants:**
+```tsx
+<TimePicker size="sm" variant="outlined" />
+<TimePicker size="md" variant="filled" />
+<TimePicker size="lg" variant="borderless" />
+```
+
+**Without confirmation:**
+```tsx
+<TimePicker needConfirm={false} />
+```
+
+**Analog clock view:**
+```tsx
+<TimePicker showAnalog />
+<TimePicker showAnalog use12Hours />
+```
+
+**Change on scroll:**
+```tsx
+<TimePicker changeOnScroll />
+```
+
+**Disabled times:**
+```tsx
+<TimePicker
+  disabledTime={() => ({
+    disabledHours: () => [0, 1, 2, 3, 4, 5, 22, 23],
+    disabledMinutes: (hour) => hour === 12 ? [0, 15, 30, 45] : [],
+  })}
+/>
+```
+
+**With addon (custom footer):**
+```tsx
+<TimePicker
+  addon={
+    <div style={{ display: 'flex', gap: '0.5rem' }}>
+      <button onClick={() => setTime(new Date())}>Now</button>
+      <button onClick={() => setTime(null)}>Clear</button>
+    </div>
+  }
+/>
+```
+
+**Range picker:**
+```tsx
+const [range, setRange] = useState<[Date | null, Date | null]>([null, null])
+
+<TimePicker.RangePicker
+  value={range}
+  onChange={setRange}
+  format="HH:mm"
+/>
+```
+
+**Range with 12-hour format:**
+```tsx
+<TimePicker.RangePicker use12Hours format="hh:mm A" />
+```
+
+**Range with disabled end:**
+```tsx
+<TimePicker.RangePicker
+  disabled={[false, true]} // Start enabled, end disabled
+  placeholder={['Select start', 'End disabled']}
+/>
+```
+
+**Range with custom separator:**
+```tsx
+<TimePicker.RangePicker separator="→" />
+<TimePicker.RangePicker separator={<span>to</span>} />
+```
+
+**Range without auto-ordering:**
+```tsx
+<TimePicker.RangePicker order={false} />
+```
+
+**Format strings:**
+- `HH:mm` - 24-hour format, e.g., "14:30"
+- `hh:mm A` - 12-hour format with AM/PM, e.g., "02:30 PM"
+- `HH:mm:ss` - 24-hour with seconds, e.g., "14:30:45"
+- `h:mm A` - 12-hour without leading zero, e.g., "2:30 PM"
+- Custom combinations using: `HH`/`H` (24h), `hh`/`h` (12h), `mm`/`m` (min), `ss`/`s` (sec), `A`/`a` (AM/PM)
+
+**Validation status:**
+```tsx
+<TimePicker status="error" />
+<TimePicker status="warning" />
+```
+
+**Read-only input:**
+```tsx
+<TimePicker inputReadOnly /> {/* User must use picker, cannot type */}
+```
+
+**With prefix:**
+```tsx
+<TimePicker prefix={<ClockCircleOutlined />} />
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Transfer</strong> - Dual-list item transfer</summary>
+
+### Transfer
+
+`Transfer` is a dual-list component that allows users to move items between two lists (source and target). It's commonly used for selecting multiple items from a large set, managing permissions, or organizing data between categories.
+
+**Import:**
+```tsx
+import { Transfer } from 'j-ui';
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `dataSource` | `TransferItem[]` | *required* | Complete data source for all items |
+| `targetKeys` | `string[]` | `undefined` | Controlled keys of items in target list |
+| `defaultTargetKeys` | `string[]` | `[]` | Initial keys of items in target list (uncontrolled mode) |
+| `selectedKeys` | `string[]` | `undefined` | Controlled keys of currently selected items |
+| `defaultSelectedKeys` | `string[]` | `[]` | Initial selected keys (uncontrolled mode) |
+| `onChange` | `(targetKeys: string[], direction: TransferDirection, moveKeys: string[]) => void` | `undefined` | Callback when items are transferred |
+| `onSelectChange` | `(sourceSelectedKeys: string[], targetSelectedKeys: string[]) => void` | `undefined` | Callback when selection changes |
+| `onSearch` | `(direction: TransferDirection, value: string) => void` | `undefined` | Callback when search input changes |
+| `render` | `(record: TransferItem) => ReactNode` | `undefined` | Custom render function for items (defaults to `item.title`) |
+| `disabled` | `boolean` | `false` | Whether the transfer is disabled |
+| `showSearch` | `boolean` | `false` | Whether to show search boxes in both lists |
+| `filterOption` | `(inputValue: string, item: TransferItem) => boolean` | Case-insensitive title match | Custom filter function for search |
+| `titles` | `[ReactNode, ReactNode]` | `['Source', 'Target']` | Titles for source and target lists |
+| `operations` | `[string, string]` | `undefined` | Custom text for operation buttons (defaults to arrow icons) |
+| `showSelectAll` | `boolean` | `true` | Whether to show "select all" checkbox in headers |
+| `oneWay` | `boolean` | `false` | One-way transfer mode (shows remove icons instead of left arrow) |
+| `status` | `'error' \| 'warning'` | `undefined` | Validation status affecting border color |
+| `footer` | `ReactNode \| ((props: { direction: TransferDirection }) => ReactNode)` | `undefined` | Footer content for lists (can be direction-specific function) |
+| `pagination` | `boolean \| { pageSize?: number }` | `false` | Enable pagination (default pageSize: 10) |
+| `listStyle` | `CSSProperties \| ((direction: TransferDirection) => CSSProperties)` | `undefined` | Custom styles for list panels (can be direction-specific function) |
+| `className` | `string` | `undefined` | Root element class name |
+| `style` | `CSSProperties` | `undefined` | Root element inline styles |
+| `classNames` | `SemanticClassNames<TransferSemanticSlot>` | `undefined` | Semantic class names for component slots |
+| `styles` | `SemanticStyles<TransferSemanticSlot>` | `undefined` | Semantic inline styles for component slots |
+
+#### TransferItem Interface
+
+```typescript
+interface TransferItem {
+  key: string;           // Unique identifier
+  title: string;         // Display title (used for default rendering and search)
+  description?: string;  // Optional description
+  disabled?: boolean;    // Whether the item is disabled
+  [key: string]: unknown; // Additional custom properties
+}
+```
+
+#### TransferDirection Type
+
+```typescript
+type TransferDirection = 'left' | 'right';
+```
+
+#### Default Dimensions
+
+- **List panel width**: 12rem (192px)
+- **List panel height**: 18rem (288px)
+- **Default pagination page size**: 10 items
+
+#### Semantic DOM Slots
+
+| Slot | Description |
+|------|-------------|
+| `root` | The root container wrapping both lists and operations |
+| `list` | Individual list panel (applied to both source and target) |
+| `header` | List header containing checkbox, title, and count |
+| `search` | Search input container |
+| `item` | Individual transfer item row |
+| `operation` | Operation buttons container (transfer arrows) |
+
+#### Examples
+
+**Basic usage:**
+```tsx
+import { Transfer } from 'j-ui';
+
+const [targetKeys, setTargetKeys] = useState<string[]>([]);
+
+const dataSource = [
+  { key: '1', title: 'Item 1' },
+  { key: '2', title: 'Item 2' },
+  { key: '3', title: 'Item 3', disabled: true },
+];
+
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={(newTargetKeys) => setTargetKeys(newTargetKeys)}
+/>
+```
+
+**With search:**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  showSearch
+  onSearch={(direction, value) => {
+    console.log(`Searching ${direction} list:`, value);
+  }}
+/>
+```
+
+**Custom titles and operations:**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  titles={['Available', 'Selected']}
+  operations={['Add', 'Remove']}
+/>
+```
+
+**Custom item rendering:**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  render={(item) => (
+    <div>
+      <strong>{item.title}</strong>
+      {item.description && <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+        {item.description}
+      </div>}
+    </div>
+  )}
+/>
+```
+
+**One-way transfer (with remove icons):**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  oneWay
+  titles={['All Items', 'My Selection']}
+/>
+```
+
+**With pagination:**
+```tsx
+<Transfer
+  dataSource={largeDataSource} // 100+ items
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  pagination={{ pageSize: 15 }}
+  showSearch
+/>
+```
+
+**With custom filter:**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  showSearch
+  filterOption={(inputValue, item) => {
+    // Custom search: check title and description
+    const search = inputValue.toLowerCase();
+    return (
+      item.title.toLowerCase().includes(search) ||
+      item.description?.toLowerCase().includes(search) ||
+      false
+    );
+  }}
+/>
+```
+
+**With footer:**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  footer={(props) => (
+    <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>
+      {props.direction === 'left' ? 'Select items to transfer' : 'Selected items'}
+    </div>
+  )}
+/>
+```
+
+**With validation status:**
+```tsx
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  onChange={setTargetKeys}
+  status={targetKeys.length === 0 ? 'error' : undefined}
+/>
+```
+
+**Controlled selection:**
+```tsx
+const [targetKeys, setTargetKeys] = useState<string[]>([]);
+const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
+<Transfer
+  dataSource={dataSource}
+  targetKeys={targetKeys}
+  selectedKeys={selectedKeys}
+  onChange={(newTargetKeys, direction, moveKeys) => {
+    console.log('Moved:', moveKeys, 'to', direction);
+    setTargetKeys(newTargetKeys);
+  }}
+  onSelectChange={(sourceSelected, targetSelected) => {
+    setSelectedKeys([...sourceSelected, ...targetSelected]);
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>TreeSelect</strong> - Hierarchical tree selection</summary>
+
+### TreeSelect
+
+`TreeSelect` is a hierarchical tree selector component that allows users to select values from a tree structure. It supports single and multiple selection modes, checkboxes with cascading behavior, search filtering, lazy loading, and tree line visualization.
+
+**Import:**
+```tsx
+import { TreeSelect } from 'j-ui';
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `treeData` | `TreeSelectTreeData[]` | `[]` | Hierarchical tree data source |
+| `fieldNames` | `TreeSelectFieldNames` | `{ label: 'title', value: 'value', children: 'children' }` | Custom field name mapping |
+| `value` | `string \| number \| (string \| number)[]` | `undefined` | Controlled value |
+| `defaultValue` | `string \| number \| (string \| number)[]` | `''` or `[]` | Initial value (uncontrolled mode) |
+| `onChange` | `(value: any, labelList: ReactNode[], extra: { triggerValue }) => void` | `undefined` | Callback when selection changes |
+| `multiple` | `boolean` | `false` | Allow multiple selection (without checkboxes) |
+| `treeCheckable` | `boolean` | `false` | Show checkboxes for selection |
+| `treeCheckStrictly` | `boolean` | `false` | Independent checkbox selection (no cascading) |
+| `showCheckedStrategy` | `'SHOW_ALL' \| 'SHOW_PARENT' \| 'SHOW_CHILD'` | `'SHOW_ALL'` | Strategy for displaying checked values |
+| `treeDefaultExpandAll` | `boolean` | `false` | Expand all tree nodes by default |
+| `treeDefaultExpandedKeys` | `(string \| number)[]` | `[]` | Default expanded node keys (uncontrolled) |
+| `treeExpandedKeys` | `(string \| number)[]` | `undefined` | Controlled expanded node keys |
+| `onTreeExpand` | `(expandedKeys: (string \| number)[]) => void` | `undefined` | Callback when tree expansion changes |
+| `loadData` | `(node: TreeSelectTreeData) => Promise<void>` | `undefined` | Async load data for a node |
+| `treeLine` | `boolean` | `false` | Show tree lines connecting nodes |
+| `switcherIcon` | `ReactNode` | `undefined` | Custom expand/collapse icon |
+| `showSearch` | `boolean` | `false` | Enable search input |
+| `filterTreeNode` | `boolean \| ((inputValue: string, treeNode: TreeSelectTreeData) => boolean)` | `true` | Filter function for search (false disables) |
+| `treeNodeFilterProp` | `string` | `'title'` | Property name to filter on |
+| `allowClear` | `boolean` | `false` | Show clear button |
+| `placeholder` | `string` | `undefined` | Placeholder text when empty |
+| `disabled` | `boolean` | `false` | Whether the TreeSelect is disabled |
+| `size` | `'large' \| 'middle' \| 'small'` | `'middle'` | Size of the selector |
+| `variant` | `'outlined' \| 'filled' \| 'borderless' \| 'underlined'` | `'outlined'` | Visual variant |
+| `status` | `'error' \| 'warning'` | `undefined` | Validation status |
+| `placement` | `'bottomLeft' \| 'bottomRight' \| 'topLeft' \| 'topRight'` | `'bottomLeft'` | Dropdown placement |
+| `maxCount` | `number` | `undefined` | Maximum number of selected items |
+| `maxTagCount` | `number` | `undefined` | Maximum number of tags to display |
+| `maxTagPlaceholder` | `ReactNode \| ((omittedValues) => ReactNode)` | `'+N'` | Placeholder for hidden tags |
+| `tagRender` | `(props: TreeSelectTagRenderProps) => ReactNode` | `undefined` | Custom tag renderer |
+| `notFoundContent` | `ReactNode` | `'No data'` | Content when no results found |
+| `listHeight` | `number` | `256` | Dropdown max height in pixels |
+| `popupMatchSelectWidth` | `boolean \| number` | `true` | Match dropdown width to selector |
+| `dropdownRender` | `(menu: ReactNode) => ReactNode` | `undefined` | Custom dropdown content wrapper |
+| `suffixIcon` | `ReactNode` | `<ChevronDownIcon />` | Custom suffix icon |
+| `prefix` | `ReactNode` | `undefined` | Prefix element |
+| `onSearch` | `(value: string) => void` | `undefined` | Callback when search input changes |
+| `onDropdownVisibleChange` | `(open: boolean) => void` | `undefined` | Callback when dropdown visibility changes |
+| `onClear` | `() => void` | `undefined` | Callback when clear button is clicked |
+| `open` | `boolean` | `undefined` | Controlled dropdown open state |
+| `className` | `string` | `undefined` | Root element class name |
+| `style` | `CSSProperties` | `undefined` | Root element inline styles |
+| `classNames` | `SemanticClassNames<TreeSelectSemanticSlot>` | `undefined` | Semantic class names |
+| `styles` | `SemanticStyles<TreeSelectSemanticSlot>` | `undefined` | Semantic inline styles |
+
+#### TreeSelectTreeData Interface
+
+```typescript
+interface TreeSelectTreeData {
+  value: string | number;          // Unique node value
+  title?: ReactNode;               // Display label
+  children?: TreeSelectTreeData[]; // Child nodes
+  disabled?: boolean;              // Disable entire node
+  disableCheckbox?: boolean;       // Disable only checkbox
+  selectable?: boolean;            // Whether node is selectable
+  isLeaf?: boolean;                // Mark as leaf (for lazy loading)
+  [key: string]: unknown;          // Additional custom properties
+}
+```
+
+#### TreeSelectFieldNames Interface
+
+```typescript
+interface TreeSelectFieldNames {
+  label?: string;    // Field name for display label (default: 'title')
+  value?: string;    // Field name for value (default: 'value')
+  children?: string; // Field name for children array (default: 'children')
+}
+```
+
+#### TreeSelectTagRenderProps Interface
+
+```typescript
+interface TreeSelectTagRenderProps {
+  label: ReactNode;
+  value: string | number;
+  closable: boolean;
+  onClose: () => void;
+}
+```
+
+#### Show Checked Strategy
+
+- **`SHOW_ALL`**: Display all checked nodes (including parents and children)
+- **`SHOW_PARENT`**: Only show parent nodes if all children are selected
+- **`SHOW_CHILD`**: Only show leaf nodes (child nodes without children)
+
+#### Size Configuration
+
+| Size | Height | Font Size | Tag Height |
+|------|--------|-----------|------------|
+| `large` | 2.5rem (40px) | 1rem (16px) | 1.75rem |
+| `middle` | 2.25rem (36px) | 0.875rem (14px) | 1.5rem |
+| `small` | 1.75rem (28px) | 0.875rem (14px) | 1rem |
+
+#### Semantic DOM Slots
+
+| Slot | Description |
+|------|-------------|
+| `root` | The root container element |
+| `selector` | The selector/input area where values are displayed |
+| `dropdown` | The dropdown panel containing the tree |
+| `tree` | The tree container |
+| `node` | Individual tree node row |
+| `tag` | Tag element (for multiple mode) |
+
+#### Keyboard Navigation
+
+- **Arrow Down/Up**: Navigate through visible tree nodes
+- **Arrow Right**: Expand focused node
+- **Arrow Left**: Collapse focused node
+- **Enter**: Select/check focused node
+- **Escape**: Close dropdown and clear search
+- **Backspace**: Remove last tag (in multiple mode when search is empty)
+
+#### Examples
+
+**Basic usage:**
+```tsx
+import { TreeSelect } from 'j-ui';
+
+const treeData = [
+  {
+    value: 'parent1',
+    title: 'Parent 1',
+    children: [
+      { value: 'child1', title: 'Child 1' },
+      { value: 'child2', title: 'Child 2' },
+    ],
+  },
+  { value: 'parent2', title: 'Parent 2' },
+];
+
+<TreeSelect
+  treeData={treeData}
+  placeholder="Select node"
+  onChange={(value, labels) => console.log('Selected:', value, labels)}
+/>
+```
+
+**With checkboxes (cascading):**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  treeCheckable
+  placeholder="Select items"
+  onChange={(values) => console.log('Checked:', values)}
+/>
+```
+
+**Independent checkboxes (no cascading):**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  treeCheckable
+  treeCheckStrictly
+  showCheckedStrategy={TreeSelect.SHOW_ALL}
+/>
+```
+
+**Show only parent nodes:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  treeCheckable
+  showCheckedStrategy={TreeSelect.SHOW_PARENT}
+  placeholder="Select categories"
+/>
+```
+
+**Show only leaf nodes:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  treeCheckable
+  showCheckedStrategy={TreeSelect.SHOW_CHILD}
+  placeholder="Select items"
+/>
+```
+
+**With search:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  showSearch
+  placeholder="Search and select"
+  onSearch={(value) => console.log('Searching:', value)}
+/>
+```
+
+**Custom search filter:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  showSearch
+  filterTreeNode={(input, node) => {
+    return node.title?.toString().toLowerCase().includes(input.toLowerCase()) || false;
+  }}
+/>
+```
+
+**With tree lines:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  treeLine
+  treeDefaultExpandAll
+  placeholder="Select with tree lines"
+/>
+```
+
+**Lazy loading:**
+```tsx
+const [treeData, setTreeData] = useState([
+  { value: '0', title: 'Node 0', isLeaf: false },
+]);
+
+const loadData = async (node) => {
+  // Simulate async load
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  const children = [
+    { value: `${node.value}-0`, title: `Child ${node.value}-0`, isLeaf: true },
+    { value: `${node.value}-1`, title: `Child ${node.value}-1`, isLeaf: true },
+  ];
+
+  // Update treeData to add children to this node
+  setTreeData(prev => updateTreeData(prev, node.value, children));
+};
+
+<TreeSelect
+  treeData={treeData}
+  loadData={loadData}
+  placeholder="Lazy load nodes"
+/>
+```
+
+**Multiple selection without checkboxes:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  multiple
+  placeholder="Select multiple"
+  maxTagCount={3}
+  maxTagPlaceholder={(omitted) => `+${omitted.length} more`}
+/>
+```
+
+**Custom field names:**
+```tsx
+const customData = [
+  {
+    id: '1',
+    name: 'Parent',
+    items: [
+      { id: '1-1', name: 'Child 1' },
+      { id: '1-2', name: 'Child 2' },
+    ],
+  },
+];
+
+<TreeSelect
+  treeData={customData}
+  fieldNames={{
+    label: 'name',
+    value: 'id',
+    children: 'items',
+  }}
+/>
+```
+
+**With custom tag render:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  treeCheckable
+  tagRender={({ label, onClose }) => (
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      padding: '0.125rem 0.5rem',
+      backgroundColor: '#1890ff',
+      color: '#fff',
+      borderRadius: '0.25rem',
+    }}>
+      {label}
+      <span onClick={onClose} style={{ marginLeft: '0.25rem', cursor: 'pointer' }}>×</span>
+    </span>
+  )}
+/>
+```
+
+**Disabled nodes:**
+```tsx
+const dataWithDisabled = [
+  {
+    value: 'parent1',
+    title: 'Parent 1',
+    children: [
+      { value: 'child1', title: 'Child 1' },
+      { value: 'child2', title: 'Child 2 (disabled)', disabled: true },
+    ],
+  },
+];
+
+<TreeSelect treeData={dataWithDisabled} />
+```
+
+**With validation status:**
+```tsx
+<TreeSelect
+  treeData={treeData}
+  status="error"
+  placeholder="Select required field"
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Upload</strong> - File upload</summary>
+
+### Upload
+
+`Upload` is a file upload component that supports multiple file selection, drag-and-drop, progress tracking, preview, and custom upload requests. It provides different display modes including text lists, picture thumbnails, and card layouts.
+
+**Import:**
+```tsx
+import { Upload } from 'j-ui';
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `accept` | `string` | `undefined` | Accepted file types (e.g., `'image/*'`, `'.pdf,.doc'`) |
+| `action` | `string \| ((file: UploadFile) => Promise<string>)` | `undefined` | Upload URL or async function returning URL |
+| `beforeUpload` | `(file: File, fileList: File[]) => boolean \| string \| Promise<File \| boolean \| void> \| void` | `undefined` | Pre-upload validation hook |
+| `customRequest` | `(options: UploadRequestOption) => { abort: () => void } \| void` | Built-in XMLHttpRequest | Custom upload implementation |
+| `data` | `Record<string, unknown> \| ((file: UploadFile) => Record<string, unknown> \| Promise<...>)` | `undefined` | Additional data to send with upload |
+| `defaultFileList` | `UploadFile[]` | `[]` | Initial file list (uncontrolled mode) |
+| `fileList` | `UploadFile[]` | `undefined` | Controlled file list |
+| `directory` | `boolean` | `false` | Enable folder/directory upload |
+| `disabled` | `boolean` | `false` | Whether upload is disabled |
+| `headers` | `Record<string, string>` | `undefined` | Custom HTTP headers for upload request |
+| `listType` | `'text' \| 'picture' \| 'picture-card' \| 'picture-circle'` | `'text'` | Display style of file list |
+| `maxCount` | `number` | `undefined` | Maximum number of files allowed |
+| `method` | `string` | `'post'` | HTTP method for upload |
+| `multiple` | `boolean` | `false` | Allow multiple file selection |
+| `name` | `string` | `'file'` | Name of file parameter sent to backend |
+| `openFileDialogOnClick` | `boolean` | `true` | Open file dialog when clicking trigger |
+| `showUploadList` | `ShowUploadListConfig` | `true` | Show/configure file list display |
+| `withCredentials` | `boolean` | `false` | Include credentials in CORS requests |
+| `progress` | `UploadProgressConfig` | `undefined` | Progress bar configuration |
+| `itemRender` | `(originNode, file, fileList, actions) => ReactNode` | `undefined` | Custom file list item renderer |
+| `onChange` | `(info: UploadChangeParam) => void` | `undefined` | Callback when upload state changes |
+| `onPreview` | `(file: UploadFile) => void` | `undefined` | Callback when preview icon is clicked |
+| `onDownload` | `(file: UploadFile) => void` | `undefined` | Callback when download icon is clicked |
+| `onRemove` | `(file: UploadFile) => boolean \| Promise<boolean> \| void` | `undefined` | Callback before file removal (return false to prevent) |
+| `onDrop` | `(event: DragEvent) => void` | `undefined` | Callback when files are dropped |
+| `children` | `ReactNode` | `undefined` | Custom trigger element |
+| `className` | `string` | `undefined` | Root element class name |
+| `style` | `CSSProperties` | `undefined` | Root element inline styles |
+| `classNames` | `SemanticClassNames<UploadSemanticSlot>` | `undefined` | Semantic class names |
+| `styles` | `SemanticStyles<UploadSemanticSlot>` | `undefined` | Semantic inline styles |
+
+#### UploadFile Interface
+
+```typescript
+interface UploadFile<T = any> {
+  uid: string;                 // Unique identifier
+  name: string;                // File name
+  status?: UploadFileStatus;   // 'uploading' | 'done' | 'error' | 'removed'
+  percent?: number;            // Upload progress (0-100)
+  thumbUrl?: string;           // Thumbnail URL
+  url?: string;                // File URL after upload
+  type?: string;               // MIME type
+  size?: number;               // File size in bytes
+  originFileObj?: File;        // Original File object
+  response?: T;                // Server response
+  error?: any;                 // Error object if upload failed
+  crossOrigin?: '' | 'anonymous' | 'use-credentials';
+  preview?: string;            // Base64 preview for images
+}
+```
+
+#### ShowUploadListConfig Type
+
+```typescript
+type ShowUploadListConfig = boolean | {
+  showPreviewIcon?: boolean;
+  showRemoveIcon?: boolean;
+  showDownloadIcon?: boolean;
+  previewIcon?: ReactNode | ((file: UploadFile) => ReactNode);
+  removeIcon?: ReactNode | ((file: UploadFile) => ReactNode);
+  downloadIcon?: ReactNode | ((file: UploadFile) => ReactNode);
+};
+```
+
+#### UploadProgressConfig Interface
+
+```typescript
+interface UploadProgressConfig {
+  strokeColor?: string;
+  strokeWidth?: number;
+  format?: (percent: number, file: UploadFile) => ReactNode;
+}
+```
+
+#### UploadRef Interface
+
+```typescript
+interface UploadRef {
+  upload: (file?: UploadFile) => void;  // Manually trigger upload
+  nativeElement: HTMLDivElement | null;
+}
+```
+
+#### Semantic DOM Slots
+
+| Slot | Description |
+|------|-------------|
+| `root` | The root container element |
+| `trigger` | The clickable trigger element |
+| `dragger` | Drag-and-drop area (Upload.Dragger) |
+| `list` | File list container |
+| `item` | Individual file list item |
+| `itemActions` | Action buttons container for each item |
+| `thumbnail` | Thumbnail image or icon |
+
+#### beforeUpload Return Values
+
+- `false`: Prevent upload but add file to list
+- `Upload.LIST_IGNORE`: Don't add file to list at all
+- `Promise<File>`: Transform file before upload
+- `Promise<false>`: Async validation to prevent upload
+
+#### Examples
+
+**Basic usage:**
+```tsx
+import { Upload, Button } from 'j-ui';
+
+<Upload
+  action="/api/upload"
+  onChange={(info) => {
+    if (info.file.status === 'done') {
+      console.log('Upload success:', info.file.response);
+    } else if (info.file.status === 'error') {
+      console.log('Upload failed:', info.file.error);
+    }
+  }}
+>
+  <Button>Click to Upload</Button>
+</Upload>
+```
+
+**Picture list:**
+```tsx
+<Upload
+  action="/api/upload"
+  listType="picture"
+  defaultFileList={[
+    {
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      url: 'https://example.com/image.png',
+    },
+  ]}
+>
+  <Button>Upload Image</Button>
+</Upload>
+```
+
+**Picture card (grid layout):**
+```tsx
+<Upload
+  action="/api/upload"
+  listType="picture-card"
+  maxCount={4}
+>
+  <div>
+    <PlusIcon />
+    <div>Upload</div>
+  </div>
+</Upload>
+```
+
+**Drag and drop:**
+```tsx
+<Upload.Dragger
+  action="/api/upload"
+  multiple
+  onChange={(info) => console.log('Files:', info.fileList)}
+>
+  <p>Click or drag files to this area to upload</p>
+  <p>Support for single or bulk upload</p>
+</Upload.Dragger>
+```
+
+**With file type restriction:**
+```tsx
+<Upload
+  action="/api/upload"
+  accept="image/*"
+  beforeUpload={(file) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      console.error('You can only upload JPG/PNG files!');
+      return false;
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      console.error('Image must be smaller than 2MB!');
+      return false;
+    }
+    return true;
+  }}
+>
+  <Button>Upload Image (JPG/PNG, max 2MB)</Button>
+</Upload>
+```
+
+**Controlled file list:**
+```tsx
+const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+<Upload
+  action="/api/upload"
+  fileList={fileList}
+  onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+  onRemove={(file) => {
+    const index = fileList.indexOf(file);
+    const newFileList = fileList.slice();
+    newFileList.splice(index, 1);
+    setFileList(newFileList);
+  }}
+>
+  <Button>Upload</Button>
+</Upload>
+```
+
+**Manual upload trigger:**
+```tsx
+const uploadRef = useRef<UploadRef>(null);
+const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+<>
+  <Upload
+    ref={uploadRef}
+    action="/api/upload"
+    fileList={fileList}
+    onChange={({ fileList }) => setFileList(fileList)}
+    beforeUpload={() => false} // Prevent auto-upload
+  >
+    <Button>Select File</Button>
+  </Upload>
+  <Button
+    onClick={() => uploadRef.current?.upload()}
+    disabled={fileList.length === 0}
+  >
+    Start Upload
+  </Button>
+</>
+```
+
+**Custom request:**
+```tsx
+<Upload
+  customRequest={async (options) => {
+    const formData = new FormData();
+    formData.append('file', options.file);
+
+    try {
+      const response = await fetch(options.action, {
+        method: 'POST',
+        body: formData,
+        onUploadProgress: (e) => {
+          options.onProgress({ percent: (e.loaded / e.total) * 100 });
+        },
+      });
+      const data = await response.json();
+      options.onSuccess(data, options.file);
+    } catch (error) {
+      options.onError(error);
+    }
+  }}
+  action="/api/upload"
+>
+  <Button>Upload with Custom Request</Button>
+</Upload>
+```
+
+**With custom progress display:**
+```tsx
+<Upload
+  action="/api/upload"
+  progress={{
+    strokeWidth: 3,
+    strokeColor: '#52c41a',
+    format: (percent) => `${Math.round(percent)}% uploaded`,
+  }}
+>
+  <Button>Upload with Custom Progress</Button>
+</Upload>
+```
+
+**Dynamic upload URL:**
+```tsx
+<Upload
+  action={async (file) => {
+    // Get presigned URL from server
+    const response = await fetch('/api/get-upload-url', {
+      method: 'POST',
+      body: JSON.stringify({ filename: file.name }),
+    });
+    const { url } = await response.json();
+    return url;
+  }}
+>
+  <Button>Upload to Dynamic URL</Button>
+</Upload>
+```
+
+**With preview modal:**
+```tsx
+const [previewUrl, setPreviewUrl] = useState('');
+const [previewVisible, setPreviewVisible] = useState(false);
+
+<>
+  <Upload
+    action="/api/upload"
+    listType="picture-card"
+    onPreview={(file) => {
+      setPreviewUrl(file.url || file.thumbUrl || '');
+      setPreviewVisible(true);
+    }}
+  >
+    <div>Upload</div>
+  </Upload>
+  {previewVisible && (
+    <Modal open onClose={() => setPreviewVisible(false)}>
+      <img src={previewUrl} alt="preview" style={{ width: '100%' }} />
+    </Modal>
+  )}
+</>
+```
+
+**Directory upload:**
+```tsx
+<Upload
+  action="/api/upload"
+  directory
+  multiple
+  onChange={(info) => {
+    console.log('Uploaded directory files:', info.fileList);
+  }}
+>
+  <Button>Upload Folder</Button>
+</Upload>
+```
+
+**Transform file before upload:**
+```tsx
+<Upload
+  action="/api/upload"
+  beforeUpload={async (file) => {
+    // Compress image before upload
+    if (file.type.startsWith('image/')) {
+      const compressed = await compressImage(file);
+      return compressed;
+    }
+    return file;
+  }}
+>
+  <Button>Upload (Auto-compress images)</Button>
+</Upload>
 ```
 
 </details>

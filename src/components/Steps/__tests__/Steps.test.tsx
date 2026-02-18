@@ -134,13 +134,13 @@ describe('Steps', () => {
   it('renders small icons (24px) when size="small"', () => {
     const { container } = render(<Steps items={[{ title: 'A' }]} size="small" />)
     // Icon wrapper has width/height = 24
-    const iconWrapper = container.querySelector('div[style*="width: 24px"]')
+    const iconWrapper = container.querySelector('div[style*="width: 1.5rem"]')
     expect(iconWrapper).toBeInTheDocument()
   })
 
   it('renders default icons (32px) by default', () => {
     const { container } = render(<Steps items={[{ title: 'A' }]} />)
-    const iconWrapper = container.querySelector('div[style*="width: 32px"]')
+    const iconWrapper = container.querySelector('div[style*="width: 2rem"]')
     expect(iconWrapper).toBeInTheDocument()
   })
 

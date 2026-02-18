@@ -74,7 +74,7 @@ describe('Bubble', () => {
   it('applies square shape', () => {
     const { container } = render(<Bubble shape="square" />)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.borderRadius).toBe('8px')
+    expect(button.style.borderRadius).toBe('0.5rem')
   })
 
   it('applies different sizes', () => {

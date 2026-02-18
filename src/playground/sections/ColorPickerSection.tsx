@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Text, ColorPicker, tokens } from '../../index'
-import type { ColorPickerColor, ColorPickerGradientStop } from '../../index'
+import type { ColorPickerGradientStop } from '../../index'
 import { Section } from './shared'
 
 const presetColors = [
@@ -23,21 +23,18 @@ const presetColors = [
 // ---- Controlled demo ----
 
 function ControlledDemo() {
-  const [color, setColor] = useState<ColorPickerColor | undefined>(undefined)
   const [hex, setHex] = useState('#1677ff')
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <ColorPicker
         value={hex}
-        onChange={(c, h) => { setColor(c); setHex(h) }}
+        onChange={(_, h) => setHex(h)}
         showText
       />
-      {color && (
-        <Text size="sm" type="secondary">
-          HEX: {color.toHexString()} | RGB: {color.toRgbString()}
-        </Text>
-      )}
+      <Text size="sm" type="secondary">
+        Selected: {hex.toUpperCase()}
+      </Text>
     </div>
   )
 }

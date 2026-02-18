@@ -76,6 +76,8 @@ export function AnchorSection() {
               border: `1px solid ${tokens.colorBorder}`,
               borderRadius: 8,
               padding: 16,
+              width:400,
+              scrollbarColor: `${tokens.colorSecondaryHover} transparent`
             }}
           >
             {basicItems.map((item, i) => (
@@ -107,6 +109,8 @@ export function AnchorSection() {
               border: `1px solid ${tokens.colorBorder}`,
               borderRadius: 8,
               padding: 16,
+              width: 400,
+              scrollbarColor: `${tokens.colorSecondaryHover} transparent`
             }}
           >
             {horizontalItems.map((item, i) => (
@@ -138,6 +142,8 @@ export function AnchorSection() {
               border: `1px solid ${tokens.colorBorder}`,
               borderRadius: 8,
               padding: 16,
+              width:400,
+              scrollbarColor: `${tokens.colorSecondaryHover} transparent`
             }}
           >
             {[
@@ -171,8 +177,8 @@ export function AnchorSection() {
               style={{ flexShrink: 0, width: 180 }}
               styles={{
                 root: { backgroundColor: '#faf5ff', padding: 8, borderRadius: 8, border: '1px solid #e9d5ff' },
-                track: { backgroundColor: '#e9d5ff' },
-                indicator: { backgroundColor: '#8b5cf6', width: 3 },
+                track: { backgroundColor: '#e9d5ff', borderRadius: 8 },
+                indicator: { backgroundColor: '#8b5cf6', width: 3, borderRadius: 8 },
                 link: { color: '#7c3aed', fontWeight: 600 },
               }}
             />

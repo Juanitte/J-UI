@@ -80,13 +80,13 @@ describe('Button', () => {
   it('applies sm size styles', () => {
     const { container } = render(<Button size="sm">Small</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.fontSize).toBe('13px')
+    expect(button.style.fontSize).toBe('0.8125rem')
   })
 
   it('applies lg size styles', () => {
     const { container } = render(<Button size="lg">Large</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.fontSize).toBe('16px')
+    expect(button.style.fontSize).toBe('1rem')
   })
 
   it('applies block width', () => {

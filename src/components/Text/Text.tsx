@@ -2,6 +2,7 @@ import { type ReactNode, type CSSProperties, useState } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { Tooltip } from '../Tooltip'
 
 export type TextType = 'default' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
 export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -83,12 +84,12 @@ export function Text({
   const [copied, setCopied] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
-  const sizeMap: Record<TextSize, number> = {
-    xs: 10,
-    sm: 13,
-    md: 16,
-    lg: 24,
-    xl: 36,
+  const sizeMap: Record<TextSize, string> = {
+    xs: '0.625rem',
+    sm: '0.8125rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2.25rem',
   }
 
   const typeColorMap: Record<TextType, string> = {
@@ -209,8 +210,8 @@ export function Text({
         style={{
           backgroundColor: tokens.colorWarning200,
           color: tokens.colorWarning900,
-          padding: '0 2px',
-          borderRadius: 2,
+          padding: '0 0.125rem',
+          borderRadius: '0.125rem',
         }}
       >
         {content}
@@ -227,8 +228,8 @@ export function Text({
           fontSize: '0.9em',
           backgroundColor: tokens.colorBgMuted,
           border: `1px solid ${tokens.colorBorder}`,
-          borderRadius: 4,
-          padding: '2px 6px',
+          borderRadius: '0.25rem',
+          padding: '0.125rem 0.375rem',
         }}
       >
         {content}
@@ -246,8 +247,8 @@ export function Text({
           backgroundColor: tokens.colorBgMuted,
           border: `1px solid ${tokens.colorBorder}`,
           borderBottom: `2px solid ${tokens.colorBorder}`,
-          borderRadius: 4,
-          padding: '2px 6px',
+          borderRadius: '0.25rem',
+          padding: '0.125rem 0.375rem',
           boxShadow: `inset 0 -1px 0 ${tokens.colorBorder}`,
         }}
       >
@@ -258,29 +259,30 @@ export function Text({
 
   // Botón de copiar
   const copyButton = copyable && (
-    <button
-      onClick={handleCopy}
-      disabled={disabled}
-      className={classNames?.copyButton}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginLeft: 4,
-        padding: 2,
-        border: 'none',
-        background: 'none',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        color: copied ? tokens.colorSuccess : tokens.colorTextMuted,
-        opacity: disabled ? 0.5 : 1,
-        transition: 'color 0.2s',
-        verticalAlign: 'middle',
-        ...styles?.copyButton,
-      }}
-      title={copied ? 'Copiado!' : 'Copiar'}
-    >
-      {copied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
-    </button>
+    <Tooltip content={copied ? 'Copiado!' : 'Copiar'} delay={100}>
+      <button
+        onClick={handleCopy}
+        disabled={disabled}
+        className={classNames?.copyButton}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginLeft: '0.25rem',
+          padding: '0.125rem',
+          border: 'none',
+          background: 'none',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          color: copied ? tokens.colorSuccess : tokens.colorTextMuted,
+          opacity: disabled ? 0.5 : 1,
+          transition: 'color 0.2s',
+          verticalAlign: 'middle',
+          ...styles?.copyButton,
+        }}
+      >
+        {copied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
+      </button>
+    </Tooltip>
   )
 
   // Botón de expandir/colapsar
@@ -290,7 +292,7 @@ export function Text({
       className={classNames?.expandButton}
       style={{
         display: 'inline',
-        marginLeft: 4,
+        marginLeft: '0.25rem',
         padding: 0,
         border: 'none',
         background: 'none',

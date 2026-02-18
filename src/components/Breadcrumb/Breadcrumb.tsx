@@ -82,7 +82,7 @@ function ChevronDownIcon() {
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{ marginLeft: 2 }}
+      style={{ marginLeft: '0.125rem' }}
     >
       <polyline points="6 9 12 15 18 9" />
     </svg>
@@ -106,23 +106,27 @@ function BreadcrumbOverlay({
     position: 'absolute',
     top: '100%',
     left: 0,
-    marginTop: 4,
-    minWidth: 120,
+    marginTop: '0.25rem',
+    minWidth: '7.5rem',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 6,
+    borderRadius: '0.375rem',
     boxShadow: tokens.shadowMd,
-    padding: '4px 0',
+    padding: '0.25rem 0',
     zIndex: 1050,
+    maxHeight: 'min(16rem, 40vh)',
+    overflowY: 'auto',
+    overscrollBehavior: 'contain',
     ...style,
   }
 
   const itemStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 6,
-    padding: '6px 12px',
-    fontSize: 14,
+    gap: '0.375rem',
+    padding: '0.625rem 0.75rem',
+    minHeight: '2.75rem',
+    fontSize: '0.875rem',
     color: tokens.colorText,
     textDecoration: 'none',
     cursor: 'pointer',
@@ -138,7 +142,7 @@ function BreadcrumbOverlay({
         const content = (
           <>
             {menuItem.icon && (
-              <span style={{ display: 'inline-flex', fontSize: 14 }}>{menuItem.icon}</span>
+              <span style={{ display: 'inline-flex', fontSize: '0.875rem' }}>{menuItem.icon}</span>
             )}
             {menuItem.title}
           </>
@@ -211,7 +215,7 @@ export function Breadcrumb({
 
   const navStyle = mergeSemanticStyle(
     {
-      fontSize: 14,
+      fontSize: '0.875rem',
       color: tokens.colorTextMuted,
     },
     styles?.root,
@@ -239,7 +243,7 @@ export function Breadcrumb({
     const content = (
       <>
         {item.icon && (
-          <span style={{ display: 'inline-flex', marginRight: item.title ? 4 : 0, fontSize: 14 }}>
+          <span style={{ display: 'inline-flex', marginRight: item.title ? '0.25rem' : 0, fontSize: '0.875rem' }}>
             {item.icon}
           </span>
         )}
@@ -389,7 +393,7 @@ export function Breadcrumb({
                 <li
                   aria-hidden="true"
                   style={{
-                    margin: '0 8px',
+                    margin: '0 0.5rem',
                     color: tokens.colorTextSubtle,
                     userSelect: 'none',
                     ...styles?.separator,

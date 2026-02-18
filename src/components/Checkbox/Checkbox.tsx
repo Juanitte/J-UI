@@ -146,6 +146,8 @@ function CheckboxComponent({
 }: CheckboxProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const checkboxRef = useRef<HTMLSpanElement>(null)
+  const mouseDownRef = useRef(false)
+  const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
   const groupContext = useContext(CheckboxGroupContext)
   const isInGroup = groupContext !== null
 
@@ -240,7 +242,8 @@ function CheckboxComponent({
   const rootStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 8,
+    gap: '0.5rem',
+    minHeight: '2.75rem',
     cursor: mergedDisabled ? 'not-allowed' : 'pointer',
     userSelect: 'none',
     lineHeight: 1,
@@ -252,17 +255,17 @@ function CheckboxComponent({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-    border: `2px solid ${isActive ? tokens.colorPrimary : tokens.colorBorder}`,
+    width: '1rem',
+    height: '1rem',
+    borderRadius: '0.25rem',
+    border: `2px solid ${(isActive || isFocused) ? tokens.colorPrimary : tokens.colorBorder}`,
     backgroundColor: isActive ? tokens.colorPrimary : 'transparent',
     color: '#fff',
     transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
     flexShrink: 0,
-    ...(isFocused && !mergedDisabled ? {
-      boxShadow: `0 0 0 2px ${tokens.colorPrimaryLight}`,
-    } : {}),
+    boxShadow: isFocused && !mergedDisabled && focusSourceRef.current === 'keyboard'
+      ? `0 0 0 2px ${tokens.colorPrimaryLight}`
+      : 'none',
   }
 
   const hiddenInputStyle: CSSProperties = {
@@ -276,8 +279,8 @@ function CheckboxComponent({
   }
 
   const labelStyle: CSSProperties = {
-    fontSize: 14,
-    lineHeight: '22px',
+    fontSize: '0.875rem',
+    lineHeight: '1.375rem',
     color: mergedDisabled ? tokens.colorTextSubtle : tokens.colorText,
   }
 
@@ -285,6 +288,7 @@ function CheckboxComponent({
     <label
       className={mergeSemanticClassName(className, classNames?.root)}
       style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      onMouseDown={() => { mouseDownRef.current = true }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -302,7 +306,11 @@ function CheckboxComponent({
           disabled={mergedDisabled}
           tabIndex={tabIndex}
           onChange={handleChange}
-          onFocus={() => setIsFocused(true)}
+          onFocus={() => {
+            focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
+            mouseDownRef.current = false
+            setIsFocused(true)
+          }}
           onBlur={() => setIsFocused(false)}
           style={hiddenInputStyle}
           value={value !== undefined ? String(value) : undefined}
@@ -386,7 +394,7 @@ function CheckboxGroupComponent({
         role="group"
         className={mergeSemanticClassName(className, classNames?.root)}
         style={mergeSemanticStyle(
-          { display: 'inline-flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
+          { display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' },
           styles?.root,
           style,
         )}

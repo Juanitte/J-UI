@@ -111,19 +111,19 @@ describe('DatePicker', () => {
 
   it('renders small size', () => {
     const { container } = render(<DatePicker size="sm" />)
-    const wrapper = container.querySelector('div[style*="min-height: 28px"]')
+    const wrapper = container.querySelector('div[style*="min-height: 1.75rem"]')
     expect(wrapper).toBeInTheDocument()
   })
 
   it('renders medium size (default)', () => {
     const { container } = render(<DatePicker />)
-    const wrapper = container.querySelector('div[style*="min-height: 36px"]')
+    const wrapper = container.querySelector('div[style*="min-height: 2.25rem"]')
     expect(wrapper).toBeInTheDocument()
   })
 
   it('renders large size', () => {
     const { container } = render(<DatePicker size="lg" />)
-    const wrapper = container.querySelector('div[style*="min-height: 44px"]')
+    const wrapper = container.querySelector('div[style*="min-height: 2.75rem"]')
     expect(wrapper).toBeInTheDocument()
   })
 

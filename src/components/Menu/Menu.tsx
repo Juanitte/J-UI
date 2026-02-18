@@ -9,6 +9,7 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { Tooltip } from '../Tooltip'
 
 // ============================================================================
 // Types
@@ -153,7 +154,7 @@ interface MenuContextValue {
 
 function MenuDivider({ item, ctx }: { item: MenuDividerOption; ctx: MenuContextValue }) {
   const style: CSSProperties = {
-    margin: '4px 0',
+    margin: '0.25rem 0',
     padding: 0,
     listStyle: 'none',
     borderTop: item.dashed
@@ -185,8 +186,8 @@ function MenuGroup({
   level: number
 }) {
   const titleStyle: CSSProperties = {
-    padding: '8px 16px',
-    fontSize: 12,
+    padding: '0.5rem 1rem',
+    fontSize: '0.75rem',
     fontWeight: 600,
     color: tokens.colorTextSubtle,
     lineHeight: '1.5',
@@ -254,9 +255,9 @@ function MenuItemLeaf({
   const baseStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 8,
-    padding: isHorizontal ? '0 20px' : '8px 16px',
-    lineHeight: isHorizontal ? '46px' : '22px',
+    gap: '0.5rem',
+    padding: isHorizontal ? '0 1.25rem' : '0.5rem 1rem',
+    lineHeight: isHorizontal ? '2.875rem' : '1.375rem',
     cursor: item.disabled ? 'not-allowed' : 'pointer',
     color: item.danger
       ? tokens.colorError
@@ -282,7 +283,7 @@ function MenuItemLeaf({
   // Collapsed mode: center icon
   if (collapsed) {
     baseStyle.justifyContent = 'center'
-    baseStyle.padding = '8px 0'
+    baseStyle.padding = '0.5rem 0'
   }
 
   // Selected border for vertical
@@ -323,22 +324,32 @@ function MenuItemLeaf({
     ctx.onItemClick(item, fullKeyPath, e)
   }
 
+  const innerContent = (
+    <>
+      {item.icon && (
+        <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: '0.875rem' }}>{item.icon}</span>
+      )}
+      {(!collapsed || !item.icon) && (
+        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+      )}
+    </>
+  )
+
   return (
     <li
       role="menuitem"
       style={baseStyle}
       className={ctx.classNames?.item}
-      title={item.title}
+      title={!collapsed ? item.title : undefined}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {item.icon && (
-        <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: 14 }}>{item.icon}</span>
-      )}
-      {(!collapsed || !item.icon) && (
-        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
-      )}
+      {collapsed && item.title ? (
+        <Tooltip content={item.title} position="right" delay={100}>
+          {innerContent}
+        </Tooltip>
+      ) : innerContent}
     </li>
   )
 }
@@ -375,9 +386,9 @@ function SubMenu({
   const triggerStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
-    gap: 8,
-    padding: isHorizontal ? '0 20px' : '8px 16px',
-    lineHeight: isHorizontal ? '46px' : '22px',
+    gap: '0.5rem',
+    padding: isHorizontal ? '0 1.25rem' : '0.5rem 1rem',
+    lineHeight: isHorizontal ? '2.875rem' : '1.375rem',
     cursor: item.disabled ? 'not-allowed' : 'pointer',
     color: hasSelectedChild ? tokens.colorPrimary : tokens.colorText,
     opacity: item.disabled ? 0.5 : 1,
@@ -394,7 +405,7 @@ function SubMenu({
 
   if (collapsed) {
     triggerStyle.justifyContent = 'center'
-    triggerStyle.padding = '8px 0'
+    triggerStyle.padding = '0.5rem 0'
   }
 
   // Selected indicator on horizontal for submenu with selected child
@@ -460,15 +471,15 @@ function SubMenu({
     zIndex: 1050,
     listStyle: 'none',
     margin: 0,
-    padding: '4px 0',
-    minWidth: 160,
+    padding: '0.25rem 0',
+    minWidth: '10rem',
     backgroundColor: tokens.colorBg,
     border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: 8,
+    borderRadius: '0.5rem',
     boxShadow: tokens.shadowMd,
     ...(isHorizontal
-      ? { top: '100%', left: 0, marginTop: 4 }
-      : { left: '100%', top: 0, marginLeft: 4 }),
+      ? { top: '100%', left: 0, marginTop: '0.25rem' }
+      : { left: '100%', top: 0, marginLeft: '0.25rem' }),
     ...ctx.styles?.submenu,
   }
 
@@ -501,7 +512,7 @@ function SubMenu({
         onMouseLeave={handleTriggerMouseLeave}
       >
         {item.icon && (
-          <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: 14 }}>{item.icon}</span>
+          <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: '0.875rem' }}>{item.icon}</span>
         )}
         {(!collapsed || !item.icon) && (
           <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
@@ -758,10 +769,10 @@ export function Menu({
   const rootBaseStyle: CSSProperties = {
     listStyle: 'none',
     margin: 0,
-    padding: isHorizontal ? 0 : '4px 0',
+    padding: isHorizontal ? 0 : '0.25rem 0',
     backgroundColor: tokens.colorBg,
     color: tokens.colorText,
-    fontSize: 14,
+    fontSize: '0.875rem',
     overflow: 'hidden',
     ...(isHorizontal
       ? {
@@ -773,7 +784,7 @@ export function Menu({
           borderRight: `1px solid ${tokens.colorBorder}`,
         }),
     ...(isInline && inlineCollapsed
-      ? { width: 48, overflow: 'hidden' }
+      ? { width: '3rem', overflow: 'hidden' }
       : {}),
   }
 

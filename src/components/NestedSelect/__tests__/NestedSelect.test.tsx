@@ -368,19 +368,19 @@ describe('NestedSelect', () => {
   it('renders large size', () => {
     render(<NestedSelect options={options} size="large" />)
     const selector = screen.getByRole('combobox')
-    expect(selector.style.height).toBe('40px')
+    expect(selector.style.height).toBe('2.5rem')
   })
 
   it('renders middle size (default)', () => {
     render(<NestedSelect options={options} />)
     const selector = screen.getByRole('combobox')
-    expect(selector.style.height).toBe('36px')
+    expect(selector.style.height).toBe('2.25rem')
   })
 
   it('renders small size', () => {
     render(<NestedSelect options={options} size="small" />)
     const selector = screen.getByRole('combobox')
-    expect(selector.style.height).toBe('28px')
+    expect(selector.style.height).toBe('1.75rem')
   })
 
   // ---------- Multiple mode ----------
