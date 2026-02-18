@@ -79,21 +79,25 @@ export function useCompactItemContext(): CompactItemContextValue | null {
 // Constants
 // ============================================================================
 
-const sizeMap: Record<'small' | 'middle' | 'large', number> = {
-  small: 8,
-  middle: 16,
-  large: 24,
+const sizeMap: Record<'small' | 'middle' | 'large', string> = {
+  small: '0.5rem',
+  middle: '1rem',
+  large: '1.5rem',
 }
 
-const BORDER_RADIUS = 8
+const BORDER_RADIUS = '0.5rem'
 
 // ============================================================================
 // Helpers
 // ============================================================================
 
-function resolveSize(size: SpaceSize): number {
+function resolveSize(size: SpaceSize): string | number {
   if (typeof size === 'number') return size
   return sizeMap[size]
+}
+
+function formatGap(val: string | number): string {
+  return typeof val === 'number' ? `${val}px` : val
 }
 
 // ============================================================================
@@ -135,7 +139,7 @@ function SpaceRoot({
       flexDirection: direction === 'vertical' ? 'column' : 'row',
       flexWrap: wrap ? 'wrap' : 'nowrap',
       alignItems: resolvedAlign ? alignMap[resolvedAlign] : undefined,
-      gap: split ? undefined : (horizontalGap === verticalGap ? horizontalGap : `${verticalGap}px ${horizontalGap}px`),
+      gap: split ? undefined : (horizontalGap === verticalGap ? formatGap(horizontalGap) : `${formatGap(verticalGap)} ${formatGap(horizontalGap)}`),
     },
     styles?.root,
     style,
@@ -173,8 +177,8 @@ function SpaceRoot({
                 display: 'inline-flex',
                 alignSelf: 'center',
                 margin: isVertical
-                  ? `${verticalGap / 2}px 0`
-                  : `0 ${horizontalGap / 2}px`,
+                  ? (typeof verticalGap === 'number' ? `${verticalGap / 2}px 0` : `calc(${verticalGap} / 2) 0`)
+                  : (typeof horizontalGap === 'number' ? `0 ${horizontalGap / 2}px` : `0 calc(${horizontalGap} / 2)`),
                 ...styles?.separator,
               }}
               className={classNames?.separator}
@@ -221,18 +225,18 @@ function Compact({
 
         if (isVertical) {
           if (isFirst) {
-            compactStyle.borderRadius = `${BORDER_RADIUS}px ${BORDER_RADIUS}px 0 0`
+            compactStyle.borderRadius = `${BORDER_RADIUS} ${BORDER_RADIUS} 0 0`
           } else if (isLast) {
-            compactStyle.borderRadius = `0 0 ${BORDER_RADIUS}px ${BORDER_RADIUS}px`
+            compactStyle.borderRadius = `0 0 ${BORDER_RADIUS} ${BORDER_RADIUS}`
           } else {
             compactStyle.borderRadius = 0
           }
           if (!isFirst) compactStyle.marginTop = -1
         } else {
           if (isFirst) {
-            compactStyle.borderRadius = `${BORDER_RADIUS}px 0 0 ${BORDER_RADIUS}px`
+            compactStyle.borderRadius = `${BORDER_RADIUS} 0 0 ${BORDER_RADIUS}`
           } else if (isLast) {
-            compactStyle.borderRadius = `0 ${BORDER_RADIUS}px ${BORDER_RADIUS}px 0`
+            compactStyle.borderRadius = `0 ${BORDER_RADIUS} ${BORDER_RADIUS} 0`
           } else {
             compactStyle.borderRadius = 0
           }

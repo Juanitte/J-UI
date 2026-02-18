@@ -150,21 +150,22 @@ function CountDemo() {
       <Text size="sm" type="secondary">showCount + maxLength:</Text>
       <Input showCount maxLength={20} placeholder="Max 20 chars" />
 
-      <Text size="sm" type="secondary">count.max + exceedFormatter (truncates):</Text>
+      <Text size="sm" type="secondary">Word limit (strategy + exceedFormatter):</Text>
       <Input
         count={{
-          max: 10,
+          max: 5,
           show: true,
-          exceedFormatter: (val, { max }) => val.slice(0, max),
+          strategy: (val) => val.trim().split(/\s+/).filter(Boolean).length,
+          exceedFormatter: (val, { max }) => val.trim().split(/\s+/).slice(0, max).join(' '),
         }}
-        placeholder="Max 10 chars (auto-truncate)"
+        placeholder="Max 5 words"
       />
 
-      <Text size="sm" type="secondary">Custom count formatter:</Text>
+      <Text size="sm" type="secondary">Custom count display:</Text>
       <Input
         count={{
           show: ({ count, maxLength }) => (
-            <span style={{ color: count > 15 ? tokens.colorError : tokens.colorTextMuted }}>
+            <span style={{ color: maxLength && count > maxLength ? tokens.colorError : tokens.colorTextMuted }}>
               {count}{maxLength ? ` / ${maxLength}` : ''} chars
             </span>
           ),

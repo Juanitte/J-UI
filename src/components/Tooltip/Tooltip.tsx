@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, type ReactNode, type CSSProperties } from 'react'
+import { useState, useRef, useEffect, useCallback, type ReactNode, type CSSProperties } from 'react'
+import { createPortal } from 'react-dom'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
@@ -30,6 +31,8 @@ export interface TooltipProps {
   styles?: TooltipStyles
 }
 
+const GAP = 8
+
 export function Tooltip({
   content,
   children,
@@ -43,13 +46,34 @@ export function Tooltip({
 }: TooltipProps) {
   const [visible, setVisible] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [coords, setCoords] = useState({ top: 0, left: 0 })
   const timeoutRef = useRef<number | null>(null)
+  const triggerRef = useRef<HTMLDivElement>(null)
+
+  const updateCoords = useCallback(() => {
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    switch (position) {
+      case 'top':
+        setCoords({ top: rect.top - GAP, left: rect.left + rect.width / 2 })
+        break
+      case 'bottom':
+        setCoords({ top: rect.bottom + GAP, left: rect.left + rect.width / 2 })
+        break
+      case 'left':
+        setCoords({ top: rect.top + rect.height / 2, left: rect.left - GAP })
+        break
+      case 'right':
+        setCoords({ top: rect.top + rect.height / 2, left: rect.right + GAP })
+        break
+    }
+  }, [position])
 
   const showTooltip = () => {
     if (disabled) return
     timeoutRef.current = window.setTimeout(() => {
+      updateCoords()
       setVisible(true)
-      // Pequeño delay para que el navegador procese el visible=true antes de animar
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsAnimating(true)
@@ -73,69 +97,56 @@ export function Tooltip({
     }
   }, [])
 
-  // Posición base + animación de entrada (empieza desplazado, termina en 0)
+  // Reposition on scroll/resize while visible
+  useEffect(() => {
+    if (!visible) return
+    const handle = () => updateCoords()
+    window.addEventListener('scroll', handle, true)
+    window.addEventListener('resize', handle)
+    return () => {
+      window.removeEventListener('scroll', handle, true)
+      window.removeEventListener('resize', handle)
+    }
+  }, [visible, updateCoords])
+
   const getTransform = (): string => {
     const offset = isAnimating ? 0 : 6
     switch (position) {
       case 'top':
-        return `translateX(-50%) translateY(${offset}px)`
+        return `translateX(-50%) translateY(-100%) translateY(${offset}px)`
       case 'bottom':
         return `translateX(-50%) translateY(${-offset}px)`
       case 'left':
-        return `translateY(-50%) translateX(${offset}px)`
+        return `translateX(-100%) translateY(-50%) translateX(${offset}px)`
       case 'right':
         return `translateY(-50%) translateX(${-offset}px)`
     }
   }
 
-  const positionStyles: Record<TooltipPosition, React.CSSProperties> = {
+  const arrowPositionStyles: Record<TooltipPosition, CSSProperties> = {
     top: {
-      bottom: '100%',
-      left: '50%',
-      marginBottom: 8,
-    },
-    bottom: {
-      top: '100%',
-      left: '50%',
-      marginTop: 8,
-    },
-    left: {
-      right: '100%',
-      top: '50%',
-      marginRight: 8,
-    },
-    right: {
-      left: '100%',
-      top: '50%',
-      marginLeft: 8,
-    },
-  }
-
-  // Flecha: rotación correcta para apuntar hacia el elemento trigger
-  const arrowStyles: Record<TooltipPosition, React.CSSProperties> = {
-    top: {
-      bottom: -4,
+      bottom: '-0.25rem',
       left: '50%',
       transform: 'translateX(-50%) rotate(45deg)',
       borderRight: `1px solid ${tokens.colorBorder}`,
       borderBottom: `1px solid ${tokens.colorBorder}`,
     },
     bottom: {
-      top: -4,
+      top: '-0.25rem',
       left: '50%',
       transform: 'translateX(-50%) rotate(-135deg)',
       borderRight: `1px solid ${tokens.colorBorder}`,
       borderBottom: `1px solid ${tokens.colorBorder}`,
     },
     left: {
-      right: -4,
+      right: '-0.25rem',
       top: '50%',
       transform: 'translateY(-50%) rotate(-45deg)',
       borderRight: `1px solid ${tokens.colorBorder}`,
       borderBottom: `1px solid ${tokens.colorBorder}`,
     },
     right: {
-      left: -4,
+      left: '-0.25rem',
       top: '50%',
       transform: 'translateY(-50%) rotate(135deg)',
       borderRight: `1px solid ${tokens.colorBorder}`,
@@ -143,14 +154,16 @@ export function Tooltip({
     },
   }
 
-  const tooltipStyle: React.CSSProperties = {
-    position: 'absolute',
-    zIndex: 1000,
-    padding: '8px 12px',
-    borderRadius: 6,
+  const tooltipStyle: CSSProperties = {
+    position: 'fixed',
+    zIndex: 9999,
+    top: coords.top,
+    left: coords.left,
+    padding: '0.5rem 0.75rem',
+    borderRadius: '0.375rem',
     backgroundColor: tokens.colorBgMuted,
     color: tokens.colorText,
-    fontSize: 13,
+    fontSize: '0.8125rem',
     fontWeight: 500,
     whiteSpace: 'nowrap',
     boxShadow: tokens.shadowMd,
@@ -159,27 +172,37 @@ export function Tooltip({
     transform: getTransform(),
     transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
     pointerEvents: 'none',
-    ...positionStyles[position],
     ...styles?.popup,
   }
 
-  const arrowStyle: React.CSSProperties = {
+  const arrowStyle: CSSProperties = {
     position: 'absolute',
-    width: 8,
-    height: 8,
+    width: '0.5rem',
+    height: '0.5rem',
     backgroundColor: tokens.colorBgMuted,
-    ...arrowStyles[position],
+    ...arrowPositionStyles[position],
     ...styles?.arrow,
   }
 
   const rootStyle = mergeSemanticStyle(
-    { position: 'relative', display: 'inline-flex' },
+    { display: 'inline-flex' },
     styles?.root,
     style,
   )
 
+  const popup = visible && typeof document !== 'undefined'
+    ? createPortal(
+        <div style={tooltipStyle} className={classNames?.popup} role="tooltip">
+          {content}
+          <div style={arrowStyle} className={classNames?.arrow} />
+        </div>,
+        document.body,
+      )
+    : null
+
   return (
     <div
+      ref={triggerRef}
       style={rootStyle}
       className={mergeSemanticClassName(className, classNames?.root)}
       onMouseEnter={showTooltip}
@@ -188,12 +211,7 @@ export function Tooltip({
       onBlur={hideTooltip}
     >
       {children}
-      {visible && (
-        <div style={tooltipStyle} className={classNames?.popup} role="tooltip">
-          {content}
-          <div style={arrowStyle} className={classNames?.arrow} />
-        </div>
-      )}
+      {popup}
     </div>
   )
 }

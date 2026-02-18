@@ -43,7 +43,7 @@ describe('Space', () => {
     const { container } = render(
       <Space size="large"><span>A</span><span>B</span></Space>
     )
-    expect((container.firstChild as HTMLElement).style.gap).toBe('24px')
+    expect((container.firstChild as HTMLElement).style.gap).toBe('1.5rem')
   })
 
   it('applies size as number', () => {
@@ -57,7 +57,7 @@ describe('Space', () => {
     const { container } = render(
       <Space size={['small', 'large']}><span>A</span><span>B</span></Space>
     )
-    expect((container.firstChild as HTMLElement).style.gap).toBe('24px 8px')
+    expect((container.firstChild as HTMLElement).style.gap).toBe('1.5rem 0.5rem')
   })
 
   it('applies wrap', () => {

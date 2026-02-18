@@ -5,6 +5,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useMemo,
 } from 'react'
@@ -304,17 +305,6 @@ function defaultSearchFilter(inputValue: string, path: NestedSelectOption[], fn:
   })
 }
 
-function shouldFlipUp(rootEl: HTMLElement | null, preferTop: boolean): boolean {
-  if (!rootEl) return preferTop
-  const rect = rootEl.getBoundingClientRect()
-  const spaceBelow = window.innerHeight - rect.bottom
-  const spaceAbove = rect.top
-  if (preferTop) {
-    return spaceAbove >= 280 || spaceAbove > spaceBelow
-  }
-  return spaceBelow < 280 && spaceAbove > spaceBelow
-}
-
 // --- Multiple-mode helpers ---
 
 function pathsEqual(a: (string | number)[], b: (string | number)[]): boolean {
@@ -505,12 +495,15 @@ function NestedSelectComponent({
   const [searchActiveIndex, setSearchActiveIndex] = useState(0)
   // Focus
   const [isFocused, setIsFocused] = useState(false)
+  const mouseDownRef = useRef(false)
+  const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
   // Flip
   const [flipUp, setFlipUp] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
   // Refs
   const rootRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const selectorRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const hoverTimeoutRef = useRef<number | null>(null)
@@ -535,7 +528,8 @@ function NestedSelectComponent({
     if (!isOpenControlled) setInternalOpen(newOpen)
     onDropdownVisibleChange?.(newOpen)
     if (newOpen) {
-      setFlipUp(shouldFlipUp(rootRef.current, preferTop))
+      // Set initial direction from placement; useLayoutEffect will auto-correct if it overflows
+      setFlipUp(preferTop)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => setIsAnimating(true))
       })
@@ -553,6 +547,21 @@ function NestedSelectComponent({
       setIsAnimating(false)
     }
   }, [isOpenControlled, onDropdownVisibleChange, currentValue, currentMultiValue, multiple, preferTop])
+
+  // ---- Auto-flip: measure real DOM and flip if it overflows ----
+  useLayoutEffect(() => {
+    if (!isOpen || !dropdownRef.current || !rootRef.current) return
+    const dropRect = dropdownRef.current.getBoundingClientRect()
+    const rootRect = rootRef.current.getBoundingClientRect()
+    const spaceAbove = rootRect.top
+    const spaceBelow = window.innerHeight - rootRect.bottom
+
+    if (!flipUp && dropRect.bottom > window.innerHeight) {
+      if (spaceAbove > spaceBelow) setFlipUp(true)
+    } else if (flipUp && dropRect.top < 0) {
+      if (spaceBelow > spaceAbove) setFlipUp(false)
+    }
+  })
 
   // ---- Resolve current selection for display (single mode) ----
   const selectedOptions = useMemo(
@@ -998,11 +1007,12 @@ function NestedSelectComponent({
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
     color: disabled ? tokens.colorTextSubtle : statusBorderColor || tokens.colorText,
     ...variantStyles[variant],
-    ...(statusBorderColor ? { borderColor: statusBorderColor } : {}),
-    ...(isFocused && !disabled ? {
-      borderColor: statusBorderColor || tokens.colorPrimary,
-      boxShadow: `0 0 0 2px ${focusRingColor}`,
-    } : {}),
+    borderColor: isFocused && !disabled
+      ? (statusBorderColor || tokens.colorPrimary)
+      : (statusBorderColor || (variant === 'outlined' ? tokens.colorBorder : 'transparent')),
+    boxShadow: isFocused && !disabled && focusSourceRef.current === 'keyboard'
+      ? `0 0 0 2px ${focusRingColor}`
+      : 'none',
     ...(disabled ? { opacity: 0.6 } : {}),
   }
 
@@ -1341,7 +1351,12 @@ function NestedSelectComponent({
         className={classNames?.selector}
         onClick={handleSelectorClick}
         onKeyDown={handleSelectorKeyDown}
-        onFocus={() => setIsFocused(true)}
+        onMouseDown={() => { mouseDownRef.current = true }}
+        onFocus={() => {
+          focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
+          mouseDownRef.current = false
+          setIsFocused(true)
+        }}
         onBlur={() => setIsFocused(false)}
       >
         {prefix && (
@@ -1388,6 +1403,7 @@ function NestedSelectComponent({
       {/* Dropdown */}
       {isOpen && (
         <div
+          ref={dropdownRef}
           style={mergedDropdownStyle}
           className={classNames?.dropdown}
           onMouseDown={(e) => e.preventDefault()}

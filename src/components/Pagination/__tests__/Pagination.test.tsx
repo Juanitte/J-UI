@@ -261,13 +261,13 @@ describe('Pagination', () => {
   it('renders small buttons when size="small"', () => {
     render(<Pagination total={50} size="small" />)
     const pageBtn = screen.getByText('1').closest('button') as HTMLElement
-    expect(pageBtn.style.height).toBe('24px')
+    expect(pageBtn.style.height).toBe('1.5rem')
   })
 
   it('renders default size buttons', () => {
     render(<Pagination total={50} />)
     const pageBtn = screen.getByText('1').closest('button') as HTMLElement
-    expect(pageBtn.style.height).toBe('32px')
+    expect(pageBtn.style.height).toBe('2rem')
   })
 
   // ---------- showTitle ----------

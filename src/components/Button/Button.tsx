@@ -177,7 +177,6 @@ export function Button({
     justifyContent: 'center',
     gap: '0.5rem',
     borderRadius: '0.5rem',
-    minHeight: '2.75rem',
     fontWeight: 500,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
     opacity: isDisabled ? 0.6 : 1,
@@ -190,9 +189,9 @@ export function Button({
   }
 
   const sizeStyles: Record<ButtonSize, React.CSSProperties> = {
-    sm: { padding: '0.375rem 0.75rem', fontSize: '0.8125rem' },
-    md: { padding: '0.625rem 1.125rem', fontSize: '0.875rem' },
-    lg: { padding: '0.875rem 1.5rem', fontSize: '1rem' },
+    sm: { minHeight: '2rem', padding: '0.25rem 0.75rem', fontSize: '0.8125rem' },
+    md: { minHeight: '2.5rem', padding: '0.5rem 1rem', fontSize: '0.875rem' },
+    lg: { minHeight: '3rem', padding: '0.75rem 1.5rem', fontSize: '1rem' },
   }
 
   const ct = colorTokens[color]

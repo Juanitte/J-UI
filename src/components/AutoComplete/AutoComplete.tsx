@@ -6,6 +6,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useMemo,
 } from 'react'
@@ -134,15 +135,6 @@ function defaultFilter(inputValue: string, option: AutoCompleteOption): boolean 
   return false
 }
 
-/** Auto-flip: check if dropdown should appear above */
-function shouldFlipUp(rootEl: HTMLElement | null): boolean {
-  if (!rootEl) return false
-  const rect = rootEl.getBoundingClientRect()
-  const spaceBelow = window.innerHeight - rect.bottom
-  const estimatedDropHeight = 260
-  return spaceBelow < estimatedDropHeight && rect.top > spaceBelow
-}
-
 // ============================================================================
 // AutoComplete Component
 // ============================================================================
@@ -208,7 +200,7 @@ export function AutoComplete({
     if (!isOpenControlled) setInternalOpen(newOpen)
     onDropdownVisibleChange?.(newOpen)
     if (newOpen) {
-      setFlipUp(shouldFlipUp(rootRef.current))
+      setFlipUp(false)
       // Animate in
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -277,6 +269,21 @@ export function AutoComplete({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [isOpen, setOpen])
 
+  // ---- Auto-flip: measure actual dropdown and flip if it overflows viewport ----
+  useLayoutEffect(() => {
+    if (!isOpen || !dropdownRef.current || !rootRef.current) return
+    const dropRect = dropdownRef.current.getBoundingClientRect()
+    const rootRect = rootRef.current.getBoundingClientRect()
+    const spaceAbove = rootRect.top
+    const spaceBelow = window.innerHeight - rootRect.bottom
+
+    if (!flipUp && dropRect.bottom > window.innerHeight) {
+      if (spaceAbove > spaceBelow) setFlipUp(true)
+    } else if (flipUp && dropRect.top < 0) {
+      if (spaceBelow > spaceAbove) setFlipUp(false)
+    }
+  })
+
   // ---- Scroll active option into view ----
   useEffect(() => {
     if (!shouldShowDropdown || activeIndex < 0) return
@@ -284,7 +291,13 @@ export function AutoComplete({
     if (!dropdown) return
     const activeEl = dropdown.querySelector(`[data-option-index="${activeIndex}"]`) as HTMLElement | null
     if (activeEl) {
-      activeEl.scrollIntoView({ block: 'nearest' })
+      const elTop = activeEl.offsetTop
+      const elBottom = elTop + activeEl.offsetHeight
+      if (elTop < dropdown.scrollTop) {
+        dropdown.scrollTop = elTop
+      } else if (elBottom > dropdown.scrollTop + dropdown.clientHeight) {
+        dropdown.scrollTop = elBottom - dropdown.clientHeight
+      }
     }
   }, [activeIndex, shouldShowDropdown])
 

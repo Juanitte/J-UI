@@ -9,6 +9,7 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { Tooltip } from '../Tooltip'
 
 // ============================================================================
 // Types
@@ -297,18 +298,25 @@ function AnchorRoot({
             whiteSpace: 'nowrap',
           }
 
+      const anchorLink = (
+        <a
+          ref={(el) => registerLink(item.href, el)}
+          href={item.href}
+          style={{ ...linkStyle, ...styles?.link }}
+          className={classNames?.link}
+          onClick={(e) => handleClick(e, item.href, item.title)}
+        >
+          {item.title}
+        </a>
+      )
+
       return (
         <div key={item.key} style={isVertical ? {} : { display: 'inline-block' }}>
-          <a
-            ref={(el) => registerLink(item.href, el)}
-            href={item.href}
-            style={{ ...linkStyle, ...styles?.link }}
-            className={classNames?.link}
-            onClick={(e) => handleClick(e, item.href, item.title)}
-            title={typeof item.title === 'string' ? item.title : undefined}
-          >
-            {item.title}
-          </a>
+          {typeof item.title === 'string' ? (
+            <Tooltip content={item.title} delay={600}>
+              {anchorLink}
+            </Tooltip>
+          ) : anchorLink}
           {isVertical && item.children && item.children.length > 0 && (
             <div>{renderItems(item.children, depth + 1)}</div>
           )}
@@ -320,12 +328,12 @@ function AnchorRoot({
   // Estilos del contenedor
   const wrapperStyle: CSSProperties = isVertical
     ? mergeSemanticStyle(
-        { position: 'relative', paddingLeft: 2 },
+        { position: 'relative', paddingLeft: 2, overflow: 'hidden' },
         styles?.root,
         style,
       )
     : mergeSemanticStyle(
-        { position: 'relative', display: 'flex', flexWrap: 'wrap', paddingBottom: 2 },
+        { position: 'relative', display: 'flex', flexWrap: 'wrap', paddingBottom: 2, overflow: 'hidden' },
         styles?.root,
         style,
       )

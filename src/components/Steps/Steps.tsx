@@ -172,11 +172,14 @@ function StepComponent({
   onClick?: () => void
 }) {
   const isSmall = size === 'small'
-  const iconDim = isSmall ? 24 : 32
-  const iconFontSize = isSmall ? 12 : 14
-  const titleFontSize = isSmall ? 14 : 16
-  const descFontSize = isSmall ? 12 : 14
-  const dotSize = 8
+  const iconDim = isSmall ? '1.5rem' : '2rem'
+  const iconDimPx = isSmall ? 24 : 32
+  const iconFontSize = isSmall ? '0.75rem' : '0.875rem'
+  const iconSizePx = isSmall ? 12 : 14
+  const titleFontSize = isSmall ? '0.875rem' : '1rem'
+  const descFontSize = isSmall ? '0.75rem' : '0.875rem'
+  const dotSize = '0.5rem'
+  const dotSizePx = 8
 
   // ── Status colors ──────────────────────────────────────────────────
 
@@ -246,9 +249,9 @@ function StepComponent({
   } else if (item.icon) {
     iconContent = item.icon
   } else if (stepStatus === 'finish') {
-    iconContent = <CheckIcon size={iconFontSize} />
+    iconContent = <CheckIcon size={iconSizePx} />
   } else if (stepStatus === 'error') {
-    iconContent = <CloseIcon size={iconFontSize} />
+    iconContent = <CloseIcon size={iconSizePx} />
   } else {
     iconContent = index + 1
   }
@@ -286,7 +289,7 @@ function StepComponent({
     <div style={iconWrapperStyle} className={classNames?.icon}>
       {iconContent}
       {showPercent && !isDot && (
-        <ProgressRing percent={percent} ringSize={iconDim + 10} iconSize={iconDim} />
+        <ProgressRing percent={percent} ringSize={iconDimPx + 10} iconSize={iconDimPx} />
       )}
     </div>
   )
@@ -309,7 +312,7 @@ function StepComponent({
           <span style={{
             fontSize: descFontSize,
             color: tokens.colorTextMuted,
-            marginLeft: 8,
+            marginLeft: '0.5rem',
             fontWeight: 400,
           }}>
             {item.subTitle}
@@ -320,7 +323,7 @@ function StepComponent({
         <div style={{
           fontSize: descFontSize,
           color: colors.descColor,
-          marginTop: 2,
+          marginTop: '0.125rem',
           lineHeight: 1.5,
         }}>
           {item.description}
@@ -356,7 +359,7 @@ function StepComponent({
           display: 'flex',
           alignItems: 'center',
           position: 'relative',
-          padding: isSmall ? '8px 16px' : '12px 24px',
+          padding: isSmall ? '0.5rem 1rem' : '0.75rem 1.5rem',
           backgroundColor: stepStatus === 'process' ? tokens.colorBgMuted : 'transparent',
           cursor: cursorStyle,
           opacity: item.disabled ? 0.5 : 1,
@@ -383,7 +386,7 @@ function StepComponent({
             {item.title}
           </span>
           {item.description && (
-            <span style={{ fontSize: descFontSize, color: colors.descColor, marginTop: 2 }}>
+            <span style={{ fontSize: descFontSize, color: colors.descColor, marginTop: '0.125rem' }}>
               {item.description}
             </span>
           )}
@@ -427,7 +430,7 @@ function StepComponent({
   // Nothing overflows because everything is contained within the step.
 
   if (!isVertical && labelVertical) {
-    const tailGap = isDot ? 4 : 8
+    const tailGap = isDot ? '0.25rem' : '0.5rem'
 
     return (
       <div
@@ -460,7 +463,7 @@ function StepComponent({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          marginTop: isDot ? 4 : 8,
+          marginTop: isDot ? '0.25rem' : '0.5rem',
         })}
       </div>
     )
@@ -489,7 +492,7 @@ function StepComponent({
         {buildContent({
           display: 'flex',
           flexDirection: 'column',
-          marginLeft: 8,
+          marginLeft: '0.5rem',
         })}
         {!isLast && (
           <div style={{
@@ -497,8 +500,8 @@ function StepComponent({
             display: 'flex',
             alignItems: 'center',
             height: iconDim,
-            minWidth: 24,
-            padding: '0 8px',
+            minWidth: '1.5rem',
+            padding: '0 0.5rem',
           }}>
             {tailLine(colors.tailColor)}
           </div>
@@ -518,7 +521,7 @@ function StepComponent({
         display: 'flex',
         alignItems: 'flex-start',
         position: 'relative',
-        paddingBottom: isLast ? 0 : 24,
+        paddingBottom: isLast ? 0 : '1.5rem',
         cursor: cursorStyle,
         opacity: item.disabled ? 0.5 : 1,
         ...styles?.step,
@@ -530,14 +533,14 @@ function StepComponent({
       {buildContent({
         display: 'flex',
         flexDirection: 'column',
-        marginLeft: isDot ? 12 : 8,
+        marginLeft: isDot ? '0.75rem' : '0.5rem',
       })}
       {!isLast && (
         <div
           style={{
             position: 'absolute',
-            left: isDot ? dotSize / 2 : iconDim / 2,
-            top: isDot ? dotSize + 4 : iconDim + 4,
+            left: isDot ? dotSizePx / 2 : iconDimPx / 2,
+            top: isDot ? dotSizePx + 4 : iconDimPx + 4,
             bottom: 0,
             width: 1,
             backgroundColor: colors.tailColor,

@@ -282,19 +282,19 @@ describe('Tabs', () => {
   it('renders large tabs with fontSize 16', () => {
     render(<Tabs items={basicItems} size="large" />)
     const tab = screen.getAllByRole('tab')[0]
-    expect(tab.style.fontSize).toBe('16px')
+    expect(tab.style.fontSize).toBe('1rem')
   })
 
   it('renders middle tabs with fontSize 14', () => {
     render(<Tabs items={basicItems} size="middle" />)
     const tab = screen.getAllByRole('tab')[0]
-    expect(tab.style.fontSize).toBe('14px')
+    expect(tab.style.fontSize).toBe('0.875rem')
   })
 
   it('renders small tabs with fontSize 14', () => {
     render(<Tabs items={basicItems} size="small" />)
     const tab = screen.getAllByRole('tab')[0]
-    expect(tab.style.fontSize).toBe('14px')
+    expect(tab.style.fontSize).toBe('0.875rem')
   })
 
   // ---------- tabBarExtraContent ----------

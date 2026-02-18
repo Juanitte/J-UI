@@ -9,6 +9,7 @@ import {
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
 import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { Tooltip } from '../Tooltip'
 
 // ============================================================================
 // Types
@@ -323,22 +324,32 @@ function MenuItemLeaf({
     ctx.onItemClick(item, fullKeyPath, e)
   }
 
-  return (
-    <li
-      role="menuitem"
-      style={baseStyle}
-      className={ctx.classNames?.item}
-      title={item.title}
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+  const innerContent = (
+    <>
       {item.icon && (
         <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: '0.875rem' }}>{item.icon}</span>
       )}
       {(!collapsed || !item.icon) && (
         <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
       )}
+    </>
+  )
+
+  return (
+    <li
+      role="menuitem"
+      style={baseStyle}
+      className={ctx.classNames?.item}
+      title={!collapsed ? item.title : undefined}
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {collapsed && item.title ? (
+        <Tooltip content={item.title} position="right" delay={100}>
+          {innerContent}
+        </Tooltip>
+      ) : innerContent}
     </li>
   )
 }

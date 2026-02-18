@@ -10,7 +10,7 @@ export type BubbleColor = 'primary' | 'secondary' | 'success' | 'warning' | 'err
 export type BubbleDirection = 'top' | 'bottom' | 'left' | 'right'
 
 // Semantic slots
-export type BubbleSemanticSlot = 'root' | 'icon' | 'badge' | 'tooltip' | 'tooltipArrow'
+export type BubbleSemanticSlot = 'root' | 'icon' | 'tooltip' | 'tooltipArrow'
 export type BubbleClassNames = SemanticClassNames<BubbleSemanticSlot>
 export type BubbleStyles = SemanticStyles<BubbleSemanticSlot>
 
@@ -44,10 +44,6 @@ export interface BubbleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   size?: BubbleSize
   /** Color del bubble */
   color?: BubbleColor
-  /** Mostrar badge con número o punto */
-  badge?: number | boolean
-  /** Color del badge */
-  badgeColor?: BubbleColor
   /** Tooltip a mostrar */
   tooltip?: string
   /** Posición del tooltip */
@@ -79,8 +75,6 @@ function BubbleComponent({
   shape = 'circle',
   size = 'md',
   color = 'primary',
-  badge,
-  badgeColor = 'error',
   tooltip,
   tooltipPosition,
   offsetX = 24,
@@ -185,26 +179,6 @@ function BubbleComponent({
     ...(shouldApplyPositionStyles && positionStyles[position]),
   }
 
-  // Estilos para el badge
-  const badgeCt = colorTokens[badgeColor]
-  const badgeStyles: React.CSSProperties = {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    minWidth: typeof badge === 'number' ? 18 : 10,
-    height: typeof badge === 'number' ? 18 : 10,
-    padding: typeof badge === 'number' ? '0 0.3125rem' : 0,
-    borderRadius: '50%',
-    backgroundColor: badgeCt.base,
-    color: badgeCt.contrast,
-    fontSize: '0.6875rem',
-    fontWeight: 600,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: `2px solid ${tokens.colorBg}`,
-  }
-
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return
 
@@ -279,13 +253,6 @@ function BubbleComponent({
         <span style={semanticStyles?.icon} className={semanticClassNames?.icon}>{description}</span>
       ) : (
         <DefaultIcon size={sizeMap[size].iconSize} />
-      )}
-
-      {/* Badge */}
-      {badge !== undefined && badge !== false && (
-        <span style={{ ...badgeStyles, ...semanticStyles?.badge }} className={semanticClassNames?.badge}>
-          {typeof badge === 'number' && badge > 0 ? (badge > 99 ? '99+' : badge) : null}
-        </span>
       )}
 
       {/* Tooltip inline */}
@@ -410,7 +377,7 @@ function BubbleGroup({
     }
   }
 
-  // Estilos del contenedor compacto (sin overflow:hidden para no cortar badges)
+  // Estilos del contenedor compacto
   const containerStyles: React.CSSProperties = {
     position: 'fixed',
     display: 'flex',

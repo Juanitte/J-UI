@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { Children, type ReactNode } from 'react'
 import { Text, tokens } from '../../index'
 
 export function Section({ title, children, align = 'center' }: { title: string; children: ReactNode; align?: 'center' | 'start' | 'end' }) {
@@ -8,7 +8,9 @@ export function Section({ title, children, align = 'center' }: { title: string; 
         {title}
       </Text>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: align === 'center' ? 'center' : align === 'start' ? 'flex-start' : 'flex-end' }}>
-        {children}
+        {Children.map(children, child => (
+          <div style={{ minWidth: 0, maxWidth: '100%' }}>{child}</div>
+        ))}
       </div>
     </div>
   )

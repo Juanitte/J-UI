@@ -139,7 +139,7 @@ function SplitBar({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    [isVertical ? 'height' : 'width']: 12,
+    [isVertical ? 'height' : 'width']: '0.75rem',
     [isVertical ? 'width' : 'height']: '100%',
     cursor: isVertical ? 'row-resize' : 'col-resize',
     userSelect: 'none',
@@ -156,12 +156,12 @@ function SplitBar({
 
   const arrowBtnStyles = (side: 'start' | 'end'): CSSProperties => {
     const isStart = side === 'start'
-    const offset = isStart ? -14 : 14
+    const offset = isStart ? '-0.875rem' : '0.875rem'
 
     const base: CSSProperties = {
       position: 'absolute',
-      width: 20,
-      height: 20,
+      width: '1.25rem',
+      height: '1.25rem',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -169,7 +169,7 @@ function SplitBar({
       border: `1px solid ${tokens.colorBorder}`,
       backgroundColor: tokens.colorBg,
       cursor: 'pointer',
-      fontSize: 10,
+      fontSize: '0.625rem',
       color: tokens.colorTextMuted,
       opacity: hovered ? 1 : 0,
       transition: 'opacity 0.15s ease',
@@ -182,7 +182,7 @@ function SplitBar({
         ...base,
         top: '50%',
         left: '50%',
-        transform: `translate(calc(-50% + ${offset}px), -50%)`,
+        transform: `translate(calc(-50% + ${offset}), -50%)`,
       }
     }
 
@@ -191,7 +191,7 @@ function SplitBar({
       ...base,
       top: '50%',
       left: '50%',
-      transform: `translate(-50%, calc(-50% + ${offset}px))`,
+      transform: `translate(-50%, calc(-50% + ${offset}))`,
     }
   }
 

@@ -9,6 +9,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useImperativeHandle,
   forwardRef,
@@ -317,6 +318,8 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
   const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapperRef = useRef<HTMLSpanElement>(null)
+  const mouseDownRef = useRef(false)
+  const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
 
   // ---- Ref ----
   useImperativeHandle(ref, () => ({
@@ -357,6 +360,8 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
   }, [isControlled, onChange, countConfig])
 
   const handleFocus = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
+    mouseDownRef.current = false
     setIsFocused(true)
     onFocus?.(e)
   }, [onFocus])
@@ -434,13 +439,14 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
     boxSizing: 'border-box',
     ...getVariantStyles(variant, sc.radius),
-    ...(statusBorder ? (variant === 'underlined' ? { borderBottomColor: statusBorder } : { borderColor: statusBorder }) : {}),
-    ...(isFocused && !disabled ? {
-      ...(variant === 'underlined'
-        ? { borderBottomColor: focusBorder, boxShadow: `0 1px 0 0 ${focusBorder}` }
-        : { borderColor: focusBorder, boxShadow: `0 0 0 2px ${focusRing}` }
-      ),
-    } : {}),
+    ...(variant === 'underlined'
+      ? { borderBottomColor: isFocused && !disabled ? focusBorder : (statusBorder || tokens.colorBorder) }
+      : { borderColor: isFocused && !disabled && variant !== 'borderless'
+          ? focusBorder
+          : (statusBorder || (variant === 'borderless' || variant === 'filled' ? 'transparent' : tokens.colorBorder)) }),
+    boxShadow: isFocused && !disabled && focusSourceRef.current === 'keyboard'
+      ? (variant === 'underlined' ? `0 1px 0 0 ${focusBorder}` : `0 0 0 2px ${focusRing}`)
+      : 'none',
     ...(disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
   }
 
@@ -501,7 +507,9 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
 
   // ---- Count display ----
   const charCount = countConfig.strategy(currentValue)
-  const countExceeded = countConfig.max !== undefined && charCount > countConfig.max
+  const countExceeded = countConfig.max !== undefined && (
+    charCount > countConfig.max || (!!countConfig.exceedFormatter && charCount >= countConfig.max)
+  )
 
   const renderCount = () => {
     if (!countConfig.show) return null
@@ -583,6 +591,7 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
       ref={wrapperRef}
       className={classNames?.input}
       style={mergeSemanticStyle(mergedWrapperStyle, styles?.input)}
+      onMouseDown={() => { mouseDownRef.current = true }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -731,6 +740,8 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
   const [isFocused, setIsFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const mouseDownRef = useRef(false)
+  const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
 
   useImperativeHandle(ref, () => ({
     focus: (options) => {
@@ -763,7 +774,11 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
     const borderTop = parseFloat(cs.borderTopWidth) || 0
     const borderBottom = parseFloat(cs.borderBottomWidth) || 0
 
-    el.style.height = 'auto'
+    // Collapse to measure true content height.
+    // min-height: 0 overrides flex item default (min-height: auto)
+    // which would otherwise prevent the element from collapsing.
+    el.style.minHeight = '0'
+    el.style.height = '0'
     el.style.overflow = 'hidden'
 
     const scrollH = el.scrollHeight
@@ -777,12 +792,14 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
 
     const clampedH = Math.max(minH, Math.min(scrollH, maxH))
     el.style.height = `${clampedH}px`
+    el.style.minHeight = minH > 0 ? `${minH}px` : ''
+    el.style.maxHeight = maxH !== Infinity ? `${maxH}px` : ''
     el.style.overflow = clampedH < scrollH ? 'auto' : 'hidden'
 
     onResize?.({ width: el.offsetWidth, height: clampedH })
   }, [autoSize, onResize])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     resizeTextarea()
   }, [currentValue, resizeTextarea])
 
@@ -803,6 +820,8 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
   }, [isControlled, onChange, countConfig])
 
   const handleFocus = useCallback((e: FocusEvent<HTMLTextAreaElement>) => {
+    focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
+    mouseDownRef.current = false
     setIsFocused(true)
     onFocus?.(e)
   }, [onFocus])
@@ -865,13 +884,14 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
     transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
     boxSizing: 'border-box',
     ...getVariantStyles(variant, sc.radius),
-    ...(statusBorder ? (variant === 'underlined' ? { borderBottomColor: statusBorder } : { borderColor: statusBorder }) : {}),
-    ...(isFocused && !disabled ? {
-      ...(variant === 'underlined'
-        ? { borderBottomColor: focusBorder, boxShadow: `0 1px 0 0 ${focusBorder}` }
-        : { borderColor: focusBorder, boxShadow: `0 0 0 2px ${focusRing}` }
-      ),
-    } : {}),
+    ...(variant === 'underlined'
+      ? { borderBottomColor: isFocused && !disabled ? focusBorder : (statusBorder || tokens.colorBorder) }
+      : { borderColor: isFocused && !disabled && variant !== 'borderless'
+          ? focusBorder
+          : (statusBorder || (variant === 'borderless' || variant === 'filled' ? 'transparent' : tokens.colorBorder)) }),
+    boxShadow: isFocused && !disabled && focusSourceRef.current === 'keyboard'
+      ? (variant === 'underlined' ? `0 1px 0 0 ${focusBorder}` : `0 0 0 2px ${focusRing}`)
+      : 'none',
     ...(disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
   }
 
@@ -892,7 +912,9 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
 
   // ---- Count ----
   const charCount = countConfig.strategy(currentValue)
-  const countExceeded = countConfig.max !== undefined && charCount > countConfig.max
+  const countExceeded = countConfig.max !== undefined && (
+    charCount > countConfig.max || (!!countConfig.exceedFormatter && charCount >= countConfig.max)
+  )
 
   const showClear = allowClear && !!currentValue && !disabled && !readOnly
 
@@ -936,6 +958,7 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
       <div
         ref={wrapperRef}
         style={wrapperStyle}
+        onMouseDown={() => { mouseDownRef.current = true }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -950,7 +973,7 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
           readOnly={readOnly}
           autoFocus={autoFocus}
           maxLength={maxLength}
-          rows={rows}
+          rows={autoSize ? 1 : rows}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -1007,6 +1030,7 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
     value: controlledValue,
     defaultValue = '',
     suffix,
+    styles: userStyles,
     ...restProps
   } = props
 
@@ -1039,6 +1063,8 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
   const sc = sizeConfig[restProps.size || 'middle']
 
   if (enterButton) {
+    const { className, style, ...inputProps } = restProps
+
     const buttonContent = enterButton === true
       ? (loading ? <LoadingSpinner /> : <SearchSvg />)
       : enterButton
@@ -1047,7 +1073,6 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
       display: 'inline-flex',
       alignItems: 'center',
       justifyContent: 'center',
-      height: sc.height,
       padding: `0 ${sc.paddingH}`,
       border: 'none',
       backgroundColor: tokens.colorPrimary,
@@ -1060,28 +1085,36 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
       opacity: loading ? 0.7 : 1,
       gap: '0.25rem',
       whiteSpace: 'nowrap',
+      flexShrink: 0,
     }
 
     return (
-      <InputComponent
-        ref={inputRef}
-        {...restProps}
-        type="text"
-        value={controlledValue}
-        defaultValue={defaultValue}
-        onChange={handleChange}
-        onPressEnter={handlePressEnter}
-        suffix={suffix}
-        addonAfter={
-          <button
-            type="button"
-            onClick={(e) => !loading && handleSearch(e)}
-            style={buttonStyle}
-          >
-            {buttonContent}
-          </button>
-        }
-      />
+      <div className={className} style={{ display: 'inline-flex', width: '100%', alignItems: 'stretch', ...style }}>
+        <InputComponent
+          ref={inputRef}
+          {...inputProps}
+          type="text"
+          value={controlledValue}
+          defaultValue={defaultValue}
+          onChange={handleChange}
+          onPressEnter={handlePressEnter}
+          suffix={suffix}
+          styles={{
+            ...userStyles,
+            root: { flex: 1, minWidth: 0, ...userStyles?.root },
+            input: { borderRight: 'none', borderRadius: `${sc.radius} 0 0 ${sc.radius}`, ...userStyles?.input },
+          }}
+        />
+        <button
+          type="button"
+          onClick={(e) => !loading && handleSearch(e)}
+          style={buttonStyle}
+          onMouseEnter={(e) => { if (!loading) e.currentTarget.style.backgroundColor = tokens.colorPrimaryHover }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = tokens.colorPrimary }}
+        >
+          {buttonContent}
+        </button>
+      </div>
     )
   }
 
@@ -1108,6 +1141,7 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
       onChange={handleChange}
       onPressEnter={handlePressEnter}
       suffix={searchSuffix}
+      styles={userStyles}
     />
   )
 })
@@ -1203,7 +1237,7 @@ const OTPComponent = forwardRef<InputRef, OTPProps>(function OTPInner(props, ref
     onChange?.(newVal)
   }, [isControlled, onChange])
 
-  const chars = currentValue.padEnd(length, '').split('').slice(0, length)
+  const chars = Array.from({ length }, (_, i) => currentValue[i] ?? '')
 
   const handleInput = useCallback((index: number, char: string) => {
     let val = char

@@ -5,6 +5,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
 } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
@@ -141,40 +142,6 @@ function getAnimationTransform(placement: DropdownPlacement, isAnimating: boolea
   const isTop = placement.startsWith('top')
   const baseTransform = placement === 'bottom' || placement === 'top' ? 'translateX(-50%) ' : ''
   return `${baseTransform}translateY(${isTop ? offset : -offset}px)`
-}
-
-// Flip placement if not enough space in viewport
-function flipPlacement(placement: DropdownPlacement): DropdownPlacement {
-  const flipMap: Record<DropdownPlacement, DropdownPlacement> = {
-    bottom: 'top',
-    bottomLeft: 'topLeft',
-    bottomRight: 'topRight',
-    top: 'bottom',
-    topLeft: 'bottomLeft',
-    topRight: 'bottomRight',
-  }
-  return flipMap[placement]
-}
-
-function resolveAutoPlacement(placement: DropdownPlacement, rootEl: HTMLElement | null): DropdownPlacement {
-  if (!rootEl) return placement
-  const rect = rootEl.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
-  const estimatedMenuHeight = 200 // approximate max menu height for flip decision
-  const isBottomPlacement = placement.startsWith('bottom')
-
-  if (isBottomPlacement) {
-    const spaceBelow = viewportHeight - rect.bottom
-    if (spaceBelow < estimatedMenuHeight && rect.top > spaceBelow) {
-      return flipPlacement(placement)
-    }
-  } else {
-    const spaceAbove = rect.top
-    if (spaceAbove < estimatedMenuHeight && (viewportHeight - rect.bottom) > spaceAbove) {
-      return flipPlacement(placement)
-    }
-  }
-  return placement
 }
 
 // ============================================================================
@@ -411,6 +378,7 @@ export function DropdownComponent({
   const [resolvedPlacement, setResolvedPlacement] = useState(placement)
   const timeoutRef = useRef<number | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
 
   const isControlled = controlledOpen !== undefined
   const isOpen = isControlled ? controlledOpen : internalOpen
@@ -427,8 +395,8 @@ export function DropdownComponent({
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-    // Resolve auto-flip before opening
-    setResolvedPlacement(resolveAutoPlacement(placement, rootRef.current))
+    // Set initial direction from placement; useLayoutEffect will auto-correct if it overflows
+    setResolvedPlacement(placement)
     timeoutRef.current = window.setTimeout(() => {
       setOpen(true)
       requestAnimationFrame(() => {
@@ -458,6 +426,26 @@ export function DropdownComponent({
       show()
     }
   }
+
+  // Auto-flip: measure real DOM and flip if it overflows
+  useLayoutEffect(() => {
+    if (!isOpen || !overlayRef.current || !rootRef.current) return
+    const overlayRect = overlayRef.current.getBoundingClientRect()
+    const rootRect = rootRef.current.getBoundingClientRect()
+    const spaceAbove = rootRect.top
+    const spaceBelow = window.innerHeight - rootRect.bottom
+    const isTop = resolvedPlacement.startsWith('top')
+
+    if (!isTop && overlayRect.bottom > window.innerHeight) {
+      if (spaceAbove > spaceBelow) {
+        setResolvedPlacement(p => p.replace('bottom', 'top').replace('Bottom', 'Top') as DropdownPlacement)
+      }
+    } else if (isTop && overlayRect.top < 0) {
+      if (spaceBelow > spaceAbove) {
+        setResolvedPlacement(p => p.replace('top', 'bottom').replace('Top', 'Bottom') as DropdownPlacement)
+      }
+    }
+  })
 
   // Sync resolvedPlacement when placement prop changes
   useEffect(() => {
@@ -561,7 +549,7 @@ export function DropdownComponent({
       </span>
 
       {isOpen && (
-        <div style={overlayContainerStyle}>
+        <div ref={overlayRef} style={overlayContainerStyle}>
           {arrow && <div style={arrowBaseStyle} className={classNames?.arrow} />}
           {overlayContent}
         </div>

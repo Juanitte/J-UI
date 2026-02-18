@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react'
 import type { ReactNode, CSSProperties, MouseEvent as ReactMouseEvent } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
@@ -235,34 +235,6 @@ function interpolateGradientColor(stops: GradientStopInternal[], percent: number
     b: Math.round(left.color.b + (right.color.b - left.color.b) * t),
     a: Math.round((left.color.a + (right.color.a - left.color.a) * t) * 100) / 100,
   }
-}
-
-// ============================================================================
-// Smart Flip Positioning
-// ============================================================================
-
-function flipPlacement(p: ColorPickerPlacement): ColorPickerPlacement {
-  const map: Record<ColorPickerPlacement, ColorPickerPlacement> = {
-    bottomLeft: 'topLeft', bottomRight: 'topRight',
-    topLeft: 'bottomLeft', topRight: 'bottomRight',
-  }
-  return map[p]
-}
-
-function resolveAutoPlacement(placement: ColorPickerPlacement, rootEl: HTMLElement | null): ColorPickerPlacement {
-  if (!rootEl) return placement
-  const rect = rootEl.getBoundingClientRect()
-  const viewportHeight = window.innerHeight
-  const estimatedPanelHeight = 380
-  const isBottom = placement.startsWith('bottom')
-  if (isBottom) {
-    const spaceBelow = viewportHeight - rect.bottom
-    if (spaceBelow < estimatedPanelHeight && rect.top > spaceBelow) return flipPlacement(placement)
-  } else {
-    const spaceAbove = rect.top
-    if (spaceAbove < estimatedPanelHeight && (viewportHeight - rect.bottom) > spaceAbove) return flipPlacement(placement)
-  }
-  return placement
 }
 
 // ============================================================================
@@ -942,10 +914,31 @@ export function ColorPicker({
     return () => { if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current) }
   }, [])
 
+  // ---- Auto-flip: measure real DOM and flip if it overflows ----
+  useLayoutEffect(() => {
+    if (!isOpen || !panelRef.current || !rootRef.current) return
+    const panelRect = panelRef.current.getBoundingClientRect()
+    const rootRect = rootRef.current.getBoundingClientRect()
+    const spaceAbove = rootRect.top
+    const spaceBelow = window.innerHeight - rootRect.bottom
+    const isTop = resolvedPlacement.startsWith('top')
+
+    if (!isTop && panelRect.bottom > window.innerHeight) {
+      if (spaceAbove > spaceBelow) {
+        setResolvedPlacement(p => p.replace('bottom', 'top') as ColorPickerPlacement)
+      }
+    } else if (isTop && panelRect.top < 0) {
+      if (spaceBelow > spaceAbove) {
+        setResolvedPlacement(p => p.replace('top', 'bottom') as ColorPickerPlacement)
+      }
+    }
+  })
+
   // ---- Helpers ----
   const setOpen = useCallback((v: boolean) => {
     if (disabled) return
-    if (v) setResolvedPlacement(resolveAutoPlacement(placement, rootRef.current))
+    // Set initial direction from placement prop; useLayoutEffect will auto-correct if it overflows
+    if (v) setResolvedPlacement(placement)
     if (!isOpenControlled) setInternalOpen(v)
     onOpenChange?.(v)
   }, [disabled, isOpenControlled, onOpenChange, placement])
