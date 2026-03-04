@@ -184,11 +184,13 @@ export function Popover({
 }: PopoverProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [isExiting, setIsExiting] = useState(false)
   const [coords, setCoords] = useState({ top: 0, left: 0 })
   const [resolvedPlacement, setResolvedPlacement] = useState(placement)
   const showTimeoutRef = useRef<number | null>(null)
   const hideTimeoutRef = useRef<number | null>(null)
   const closeTimeoutRef = useRef<number | null>(null)
+  const exitTimerRef = useRef<number | null>(null)
   const triggerRef = useRef<HTMLDivElement>(null)
   const popupRef = useRef<HTMLDivElement>(null)
   const flipCheckedRef = useRef(false)
@@ -200,6 +202,18 @@ export function Popover({
   // Ref to read current visibility inside stable callbacks
   const visibleRef = useRef(visible)
   visibleRef.current = visible
+
+  // Detect external close (controlled open goes false without hide()) during render
+  const prevVisibleRef = useRef(visible)
+  if (prevVisibleRef.current !== visible) {
+    prevVisibleRef.current = visible
+    if (!visible && isAnimating && !isExiting) {
+      setIsExiting(true)
+    }
+    if (visible && isExiting) {
+      setIsExiting(false)
+    }
+  }
 
   const triggers = Array.isArray(trigger) ? trigger : [trigger]
 
@@ -281,12 +295,30 @@ export function Popover({
     else show()
   }, [visible, show, hide])
 
+  // Exit animation for external (programmatic) close
+  useEffect(() => {
+    if (isExiting) {
+      setIsAnimating(false)
+      exitTimerRef.current = window.setTimeout(() => {
+        setIsExiting(false)
+        exitTimerRef.current = null
+      }, 150)
+      return () => {
+        if (exitTimerRef.current) {
+          clearTimeout(exitTimerRef.current)
+          exitTimerRef.current = null
+        }
+      }
+    }
+  }, [isExiting])
+
   // Cleanup timeouts
   useEffect(() => {
     return () => {
       if (showTimeoutRef.current) clearTimeout(showTimeoutRef.current)
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current)
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current)
+      if (exitTimerRef.current) clearTimeout(exitTimerRef.current)
     }
   }, [])
 
@@ -459,7 +491,7 @@ export function Popover({
 
   // ─── Render ────────────────────────────────────────────
 
-  const popup = visible && typeof document !== 'undefined'
+  const popup = (visible || isExiting) && typeof document !== 'undefined'
     ? createPortal(
         <div
           ref={popupRef}

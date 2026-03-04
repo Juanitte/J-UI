@@ -164,6 +164,10 @@ export type { SelectProps, SelectOption, SelectOptionGroup, SelectMode, SelectSi
 export { Slider } from './Slider'
 export type { SliderProps, SliderRef, SliderRangeConfig, SliderSemanticSlot, SliderClassNames, SliderStyles, SliderMarks, SliderMarkLabel, SliderTooltipConfig } from './Slider'
 
+// Spinner
+export { Spinner } from './Spinner'
+export type { SpinnerProps, SpinnerType, SpinnerSize, SpinnerSemanticSlot, SpinnerClassNames, SpinnerStyles } from './Spinner'
+
 // Switch
 export { Switch } from './Switch'
 export type { SwitchProps, SwitchRef, SwitchSize, SwitchSemanticSlot, SwitchClassNames, SwitchStyles } from './Switch'
@@ -183,6 +187,10 @@ export type { TransferProps, TransferItem, TransferDirection, TransferStatus, Tr
 // TreeSelect
 export { TreeSelect } from './TreeSelect'
 export type { TreeSelectProps, TreeSelectTreeData, TreeSelectSize, TreeSelectVariant, TreeSelectStatus, TreeSelectPlacement, TreeSelectShowCheckedStrategy, TreeSelectFieldNames, TreeSelectTagRenderProps, TreeSelectSemanticSlot, TreeSelectClassNames, TreeSelectStyles } from './TreeSelect'
+
+// Tree
+export { Tree } from './Tree'
+export type { TreeProps, DirectoryTreeProps, TreeData, TreeFieldNames, TreeCheckedKeys, TreeSelectInfo, TreeCheckInfo, TreeExpandInfo, TreeDragInfo, TreeDropInfo, TreeRightClickInfo, TreeSemanticSlot, TreeClassNames, TreeStyles } from './Tree'
 
 // Upload
 export { Upload } from './Upload'
@@ -211,3 +219,43 @@ export type { TagProps, CheckableTagProps, TagPresetColor, TagVariant, TagSemant
 // Timeline
 export { Timeline } from './Timeline'
 export type { TimelineProps, TimelineItemType, TimelineMode, TimelineVariant, TimelineSemanticSlot, TimelineClassNames, TimelineStyles } from './Timeline'
+
+// Tour
+export { Tour } from './Tour'
+export type { TourProps, TourStepConfig, TourPlacement, TourType, TourSemanticSlot, TourClassNames, TourStyles } from './Tour'
+
+// Alert
+export { Alert } from './Alert'
+export type { AlertProps, AlertType, AlertClosable, AlertSemanticSlot, AlertClassNames, AlertStyles } from './Alert'
+
+// Drawer
+export { Drawer } from './Drawer'
+export type { DrawerProps, DrawerPlacement, DrawerSize, DrawerSemanticSlot, DrawerClassNames, DrawerStyles } from './Drawer'
+
+// Modal
+export { Modal, useModal } from './Modal'
+export type { ModalProps, ModalMaskConfig, ModalSemanticSlot, ModalClassNames, ModalStyles, ModalConfirmType, ModalConfirmConfig, ModalInstance, ModalHookApi } from './Modal'
+
+// PopAlert
+export { usePopAlert } from './PopAlert'
+export type { PopAlertType, PopAlertPlacement, PopAlertSize, PopAlertConfig, PopAlertApi, PopAlertHookConfig, PopAlertSemanticSlot, PopAlertClassNames, PopAlertStyles } from './PopAlert'
+
+// PopConfirm
+export { PopConfirm } from './PopConfirm'
+export type { PopConfirmProps, PopConfirmSemanticSlot, PopConfirmClassNames, PopConfirmStyles } from './PopConfirm'
+
+// Placeholder
+export { Placeholder } from './Placeholder'
+export type { PlaceholderProps, PlaceholderSize, PlaceholderAvatarProps, PlaceholderTitleProps, PlaceholderParagraphProps, PlaceholderButtonProps, PlaceholderAvatarComponentProps, PlaceholderInputProps, PlaceholderImageProps, PlaceholderNodeProps, PlaceholderSemanticSlot, PlaceholderClassNames, PlaceholderStyles } from './Placeholder'
+
+// Progress
+export { Progress } from './Progress'
+export type { ProgressProps, ProgressType, ProgressStatus, ProgressSize, ProgressLinecap, ProgressGapPosition, ProgressStrokeColor, ProgressSuccessConfig, ProgressPercentPosition, ProgressSemanticSlot, ProgressClassNames, ProgressStyles } from './Progress'
+
+// Result
+export { Result } from './Result'
+export type { ResultProps, ResultStatus, ResultSemanticSlot, ResultClassNames, ResultStyles } from './Result'
+
+// Watermark
+export { Watermark } from './Watermark'
+export type { WatermarkProps, WatermarkFont, WatermarkSemanticSlot, WatermarkClassNames, WatermarkStyles } from './Watermark'

@@ -17,6 +17,7 @@ A modern, lightweight React component library with built-in theming support.
   - [Color System](#color-system)
   - [Theme Tokens](#theme-tokens)
 - [Components](#components)
+  - [Alert](#alert)
   - [AutoComplete](#autocomplete)
   - [Avatar](#avatar)
   - [Anchor](#anchor)
@@ -33,6 +34,7 @@ A modern, lightweight React component library with built-in theming support.
   - [DataDisplay](#datadisplay)
   - [DatePicker](#datepicker)
   - [Divider](#divider)
+  - [Drawer](#drawer)
   - [Dropdown](#dropdown)
   - [Empty](#empty)
   - [Form](#form)
@@ -44,15 +46,21 @@ A modern, lightweight React component library with built-in theming support.
   - [Layout](#layout)
   - [Menu](#menu)
   - [Mention](#mention)
+  - [Modal](#modal)
   - [NestedSelect](#nestedselect)
   - [Pagination](#pagination)
+  - [PopAlert](#popalert)
+  - [PopConfirm](#popconfirm)
   - [Popover](#popover)
+  - [Progress](#progress)
   - [QRCode](#qrcode)
   - [Radio](#radio)
   - [Rate](#rate)
+  - [Result](#result)
   - [Select](#select)
   - [Slider](#slider)
   - [Space](#space)
+  - [Spinner](#spinner)
   - [Splitter](#splitter)
   - [Steps](#steps)
   - [Statistic](#statistic)
@@ -64,10 +72,13 @@ A modern, lightweight React component library with built-in theming support.
   - [TimePicker](#timepicker)
   - [Timeline](#timeline)
   - [Toggle](#toggle)
+  - [Tour](#tour)
   - [Transfer](#transfer)
+  - [Tree](#tree)
   - [TreeSelect](#treeselect)
   - [Upload](#upload)
   - [Waterfall](#waterfall)
+  - [Watermark](#watermark)
   - [Tooltip](#tooltip)
 
 ## Features
@@ -387,6 +398,225 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 ---
 
 ## Components
+
+<details>
+<summary><strong>Alert</strong> - Feedback banner with type, icon, close, auto-dismiss, and error boundary</summary>
+
+### Alert
+
+`Alert` is a feedback component that displays contextual messages to the user. It supports four severity types (`success`, `info`, `warning`, `error`) with automatic color theming (light/dark aware via `color-mix`), an optional icon, a close button with slide-out animation, a custom action slot, and a full-width `banner` mode. The compound `Alert.ErrorBoundary` wraps children and renders an error alert when a React error is caught.
+
+```tsx
+import { Alert } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `type` | `'success' \| 'info' \| 'warning' \| 'error'` | `'info'` (or `'warning'` in banner mode) | Severity level — controls background, border, and icon color |
+| `title` | `ReactNode` | — | Main message text (bold when `description` is present) |
+| `description` | `ReactNode` | — | Secondary description below the title |
+| `showIcon` | `boolean` | `false` (or `true` in banner mode) | Show the type icon |
+| `icon` | `ReactNode` | — | Custom icon replacing the default type icon |
+| `closable` | `boolean \| AlertClosable` | `false` | Show close button; pass an object for `closeIcon`, `onClose`, and `afterClose` callbacks |
+| `action` | `ReactNode` | — | Extra content (e.g. a button) placed on the right side |
+| `banner` | `boolean` | `false` | Full-width banner mode: no border-radius, bottom border only, `showIcon` and `type='warning'` by default |
+| `className` | `string` | — | CSS class on the root element |
+| `style` | `CSSProperties` | — | Inline style on the root element |
+| `classNames` | `AlertClassNames` | — | Semantic class names per slot |
+| `styles` | `AlertStyles` | — | Semantic inline styles per slot |
+
+#### AlertClosable
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `closeIcon` | `ReactNode` | Custom close icon |
+| `onClose` | `(e: React.MouseEvent) => void` | Called when the close button is clicked |
+| `afterClose` | `() => void` | Called after the close animation completes |
+
+#### Alert.ErrorBoundary
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Content to wrap |
+| `title` | `ReactNode` | `'Something went wrong'` | Error alert title |
+| `description` | `ReactNode` | `error.message` | Error alert description |
+
+#### Types
+
+```ts
+type AlertType = 'success' | 'info' | 'warning' | 'error'
+
+type AlertSemanticSlot = 'root' | 'icon' | 'content' | 'message' | 'description' | 'action' | 'closeBtn'
+type AlertClassNames   = SemanticClassNames<AlertSemanticSlot>
+type AlertStyles       = SemanticStyles<AlertSemanticSlot>
+```
+
+#### Close animation
+
+When the alert is dismissed via the close button, the component:
+1. Fades out the alert card (opacity → 0, 250 ms ease).
+2. Collapses the wrapper height to 0 using `grid-template-rows: 0fr` (300 ms ease).
+3. After the collapse transition ends, calls `afterClose` and unmounts.
+
+#### Examples
+
+**1. Basic types**
+```tsx
+<Alert type="success" title="Operation completed successfully" />
+<Alert type="info"    title="A new version is available" />
+<Alert type="warning" title="Disk space running low" />
+<Alert type="error"   title="Failed to save changes" />
+```
+
+**2. With description**
+```tsx
+<Alert
+  type="success"
+  title="File uploaded"
+  description="document.pdf has been uploaded and is being processed. You will receive a notification once it's ready."
+  showIcon
+/>
+```
+
+**3. Show icon**
+```tsx
+<Alert type="info" title="Tip: press Ctrl+K for quick search" showIcon />
+```
+
+**4. Custom icon**
+```tsx
+<Alert type="info" title="Scheduled maintenance tonight" icon={<span>🔧</span>} showIcon />
+```
+
+**5. Closable**
+```tsx
+<Alert
+  type="warning"
+  title="Your session will expire in 5 minutes"
+  closable
+  showIcon
+/>
+```
+
+**6. Closable with callbacks**
+```tsx
+<Alert
+  type="error"
+  title="Connection lost"
+  closable={{
+    onClose: () => console.log('Alert closed'),
+    afterClose: () => console.log('Close animation finished'),
+  }}
+  showIcon
+/>
+```
+
+**7. Custom close icon**
+```tsx
+<Alert
+  type="info"
+  title="Notification"
+  closable={{ closeIcon: <span>✕</span> }}
+/>
+```
+
+**8. Action slot**
+```tsx
+<Alert
+  type="warning"
+  title="Unsaved changes"
+  description="You have unsaved changes that will be lost."
+  showIcon
+  action={<button onClick={() => save()}>Save now</button>}
+  closable
+/>
+```
+
+**9. Banner mode**
+```tsx
+// Full-width banner — defaults to type="warning" and showIcon=true
+<Alert banner title="The site will be under maintenance from 2:00 AM to 4:00 AM." />
+```
+
+**10. Banner with custom type**
+```tsx
+<Alert banner type="error" title="Service outage detected. Our team has been notified." />
+```
+
+**11. Title only (no description)**
+```tsx
+<Alert type="info" title="Press Enter to confirm" showIcon />
+```
+
+**12. Description only (no title)**
+```tsx
+<Alert type="warning" description="Some features may not work as expected in this browser." showIcon />
+```
+
+**13. Error boundary**
+```tsx
+import { Alert } from 'j-ui'
+
+function RiskyWidget() {
+  // This might throw during render
+  return <div>{JSON.parse('invalid')}</div>
+}
+
+<Alert.ErrorBoundary title="Widget crashed" description="Please refresh the page.">
+  <RiskyWidget />
+</Alert.ErrorBoundary>
+```
+
+**14. Semantic styles**
+```tsx
+<Alert
+  type="success"
+  title="Payment received"
+  description="Your invoice has been updated."
+  showIcon
+  styles={{
+    root: { borderRadius: 12 },
+    message: { fontSize: '1rem' },
+    description: { fontStyle: 'italic' },
+  }}
+/>
+```
+
+**15. Multiple stacked alerts**
+```tsx
+import { useState } from 'react'
+import { Alert, Button } from 'j-ui'
+
+function Notifications() {
+  const [alerts, setAlerts] = useState([
+    { id: 1, type: 'info' as const, title: 'Welcome back!' },
+    { id: 2, type: 'warning' as const, title: 'Your trial expires tomorrow' },
+    { id: 3, type: 'success' as const, title: 'Profile updated' },
+  ])
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {alerts.map((a) => (
+        <Alert
+          key={a.id}
+          type={a.type}
+          title={a.title}
+          showIcon
+          closable={{
+            afterClose: () => setAlerts(prev => prev.filter(x => x.id !== a.id)),
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+```
+
+</details>
+
+---
 
 <details>
 <summary><strong>AutoComplete</strong> - Input with auto-suggestion dropdown</summary>
@@ -4039,6 +4269,297 @@ import { Divider } from 'j-ui'
 ---
 
 <details>
+<summary><strong>Drawer</strong> - Slide-in panel overlay with header, footer, and loading state</summary>
+
+### Drawer
+
+`Drawer` is a slide-in panel that overlays the page from any edge. It renders into a portal on `document.body`, locks body scroll while open, and slides in/out with a 300 ms CSS transition. The panel supports a header with title and extra actions, a scrollable body with an optional loading skeleton, a footer slot, ESC key dismissal, mask click to close, two preset sizes, and a `destroyOnClose` option to unmount content when closed.
+
+```tsx
+import { Drawer } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `open` | `boolean` | `false` | Whether the drawer is visible |
+| `onClose` | `(e: MouseEvent \| KeyboardEvent) => void` | — | Called when the user closes the drawer (close button, mask click, or ESC) |
+| `afterOpenChange` | `(open: boolean) => void` | — | Called after the open/close animation completes |
+| `placement` | `DrawerPlacement` | `'right'` | Which edge the panel slides from |
+| `size` | `DrawerSize` | `'default'` | Preset width/height: `'default'` = 378 px, `'large'` = 736 px |
+| `width` | `number \| string` | — | Custom width (overrides `size`, for left/right placement) |
+| `height` | `number \| string` | — | Custom height (overrides `size`, for top/bottom placement) |
+| `title` | `ReactNode` | — | Header title |
+| `extra` | `ReactNode` | — | Extra content in the header (e.g. action buttons), rendered after the title |
+| `footer` | `ReactNode` | — | Footer content below the body |
+| `closable` | `boolean` | `true` | Show the close button in the header |
+| `closeIcon` | `ReactNode` | — | Custom close icon |
+| `mask` | `boolean` | `true` | Show the semi-transparent backdrop |
+| `maskClosable` | `boolean` | `true` | Close the drawer when clicking the mask |
+| `keyboard` | `boolean` | `true` | Close the drawer on ESC key press |
+| `zIndex` | `number` | `1000` | z-index for the overlay |
+| `destroyOnClose` | `boolean` | `false` | Unmount body content when closed |
+| `loading` | `boolean` | `false` | Show an animated skeleton placeholder instead of children |
+| `children` | `ReactNode` | — | Body content |
+| `className` | `string` | — | CSS class on the panel element |
+| `style` | `CSSProperties` | — | Inline style on the panel element |
+| `classNames` | `DrawerClassNames` | — | Semantic class names per slot |
+| `styles` | `DrawerStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+type DrawerPlacement = 'right' | 'left' | 'top' | 'bottom'
+type DrawerSize      = 'default' | 'large'
+
+// Semantic slots
+type DrawerSemanticSlot = 'root' | 'mask' | 'header' | 'body' | 'footer' | 'closeBtn'
+type DrawerClassNames   = SemanticClassNames<DrawerSemanticSlot>
+type DrawerStyles       = SemanticStyles<DrawerSemanticSlot>
+```
+
+#### Animation
+
+- **Open:** The portal mounts, then a double-`requestAnimationFrame` triggers the slide-in (`transform: translate(0, 0)`) and mask fade-in (`opacity: 1`), both 300 ms ease.
+- **Close:** The panel slides out to its edge and the mask fades to transparent. After the transition ends, `afterOpenChange(false)` fires and the portal unmounts (or hides if `destroyOnClose` is `false`).
+- Body `overflow: hidden` is applied while mounted to prevent background scrolling.
+
+#### Examples
+
+**1. Basic right drawer**
+```tsx
+import { useState } from 'react'
+import { Drawer, Button } from 'j-ui'
+
+function App() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open Drawer</Button>
+      <Drawer
+        title="Basic Drawer"
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <p>Some content inside the drawer.</p>
+      </Drawer>
+    </>
+  )
+}
+```
+
+**2. Left placement**
+```tsx
+<Drawer title="Left Drawer" placement="left" open={open} onClose={close}>
+  <p>Slides in from the left edge.</p>
+</Drawer>
+```
+
+**3. Top placement**
+```tsx
+<Drawer title="Top Drawer" placement="top" open={open} onClose={close}>
+  <p>Slides down from the top.</p>
+</Drawer>
+```
+
+**4. Bottom placement**
+```tsx
+<Drawer title="Bottom Drawer" placement="bottom" open={open} onClose={close}>
+  <p>Slides up from the bottom.</p>
+</Drawer>
+```
+
+**5. Large size**
+```tsx
+<Drawer title="Large Drawer" size="large" open={open} onClose={close}>
+  <p>736 px wide panel.</p>
+</Drawer>
+```
+
+**6. Custom width**
+```tsx
+<Drawer title="Custom Width" width={500} open={open} onClose={close}>
+  <p>Exactly 500 px wide.</p>
+</Drawer>
+```
+
+**7. Custom height (top/bottom)**
+```tsx
+<Drawer title="Short Top Panel" placement="top" height="30vh" open={open} onClose={close}>
+  <p>30% of the viewport height.</p>
+</Drawer>
+```
+
+**8. With extra header actions**
+```tsx
+<Drawer
+  title="Settings"
+  extra={<Button size="small" type="primary" onClick={save}>Save</Button>}
+  open={open}
+  onClose={close}
+>
+  <p>Form content here.</p>
+</Drawer>
+```
+
+**9. With footer**
+```tsx
+<Drawer
+  title="Edit Profile"
+  footer={
+    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+      <Button onClick={close}>Cancel</Button>
+      <Button type="primary" onClick={save}>Save</Button>
+    </div>
+  }
+  open={open}
+  onClose={close}
+>
+  <p>Form fields here.</p>
+</Drawer>
+```
+
+**10. No close button**
+```tsx
+<Drawer title="No Close Button" closable={false} open={open} onClose={close}>
+  <p>User must click the mask or press ESC to close.</p>
+</Drawer>
+```
+
+**11. Custom close icon**
+```tsx
+<Drawer title="Custom Icon" closeIcon={<span>✕</span>} open={open} onClose={close}>
+  <p>Custom × icon in the header.</p>
+</Drawer>
+```
+
+**12. No mask**
+```tsx
+<Drawer title="No Mask" mask={false} open={open} onClose={close}>
+  <p>The background is still interactive.</p>
+</Drawer>
+```
+
+**13. Mask not closable**
+```tsx
+<Drawer title="Mask not closable" maskClosable={false} open={open} onClose={close}>
+  <p>Clicking the backdrop does not close the drawer.</p>
+</Drawer>
+```
+
+**14. Disable ESC key**
+```tsx
+<Drawer title="No ESC" keyboard={false} open={open} onClose={close}>
+  <p>Pressing Escape does nothing.</p>
+</Drawer>
+```
+
+**15. Destroy on close**
+```tsx
+<Drawer title="Destroy on close" destroyOnClose open={open} onClose={close}>
+  <p>Content is unmounted when the drawer closes, resetting internal state.</p>
+</Drawer>
+```
+
+**16. Loading state**
+```tsx
+const [loading, setLoading] = useState(true)
+
+<Drawer title="User Details" loading={loading} open={open} onClose={close}>
+  <p>This content is hidden while loading.</p>
+</Drawer>
+```
+
+**17. afterOpenChange callback**
+```tsx
+<Drawer
+  title="Animated"
+  open={open}
+  onClose={close}
+  afterOpenChange={(isOpen) => {
+    console.log(isOpen ? 'Fully opened' : 'Fully closed')
+  }}
+>
+  <p>Check the console.</p>
+</Drawer>
+```
+
+**18. Semantic styles**
+```tsx
+<Drawer
+  title="Styled Drawer"
+  open={open}
+  onClose={close}
+  styles={{
+    root: { backgroundColor: '#fafafa' },
+    header: { borderBottom: '2px solid #1677ff' },
+    body: { padding: '2rem' },
+    footer: { borderTop: '2px solid #1677ff' },
+    mask: { backgroundColor: 'rgba(0,0,0,0.7)' },
+  }}
+  footer={<span>Custom styled footer</span>}
+>
+  <p>Custom styled content.</p>
+</Drawer>
+```
+
+**19. Full-featured example**
+```tsx
+import { useState } from 'react'
+import { Drawer, Button } from 'j-ui'
+
+function SettingsPanel() {
+  const [open, setOpen]       = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleOpen = () => {
+    setOpen(true)
+    setLoading(true)
+    setTimeout(() => setLoading(false), 1200)
+  }
+
+  return (
+    <>
+      <Button onClick={handleOpen}>Open Settings</Button>
+      <Drawer
+        title="Application Settings"
+        placement="right"
+        size="large"
+        open={open}
+        onClose={() => setOpen(false)}
+        loading={loading}
+        extra={<Button size="small" onClick={() => setOpen(false)}>Reset</Button>}
+        footer={
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="primary" onClick={() => { /* save */ setOpen(false) }}>
+              Apply Changes
+            </Button>
+          </div>
+        }
+        afterOpenChange={(isOpen) => {
+          if (!isOpen) console.log('Drawer fully closed')
+        }}
+      >
+        <h3>General</h3>
+        <p>Language, timezone, notifications…</p>
+        <h3>Appearance</h3>
+        <p>Theme, font size, density…</p>
+        <h3>Privacy</h3>
+        <p>Data sharing, cookies…</p>
+      </Drawer>
+    </>
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Dropdown</strong> - Contextual overlay menus</summary>
 
 ### Dropdown
@@ -6748,6 +7269,433 @@ const [options, setOptions] = useState([])
 ---
 
 <details>
+<summary><strong>Modal</strong> - Dialog overlay with header, footer, confirm dialogs, and useModal hook</summary>
+
+### Modal
+
+`Modal` is a dialog component that renders in a portal on `document.body`. It supports a header with title, a scrollable body, a flexible footer (default Cancel + OK buttons, custom `ReactNode`, render function, or `null` to hide), ESC key dismissal, mask click to close, optional mask blur, `centered` vertical alignment, async `onOk` with `confirmLoading` spinner, a body loading skeleton, `modalRender` for custom wrappers (e.g. draggable), and `destroyOnClose`. The `useModal()` hook provides programmatic confirm/info/success/warning/error dialogs with `destroy` and `update` control.
+
+```tsx
+import { Modal, useModal } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `open` | `boolean` | `false` | Whether the modal is visible |
+| `onClose` | `(e: MouseEvent \| KeyboardEvent) => void` | — | Called when the user closes the modal (X button, mask click, or ESC) |
+| `onOk` | `(e: MouseEvent) => void` | — | Called when the OK button is clicked |
+| `afterOpenChange` | `(open: boolean) => void` | — | Called after the open/close animation completes |
+| `title` | `ReactNode` | — | Header title |
+| `footer` | `ReactNode \| null \| ((params) => ReactNode)` | `undefined` | `undefined` = Cancel + OK; `null` = no footer; `ReactNode` = custom content; function = render with `{ OkBtn, CancelBtn }` |
+| `children` | `ReactNode` | — | Modal body content |
+| `closable` | `boolean` | `true` | Show the close button (×) in the top-right corner |
+| `closeIcon` | `ReactNode` | — | Custom close icon |
+| `maskClosable` | `boolean` | `true` | Close the modal when clicking the mask |
+| `keyboard` | `boolean` | `true` | Close the modal on ESC key press |
+| `width` | `number \| string` | `'32rem'` | Dialog width |
+| `centered` | `boolean` | `false` | Vertically center the dialog |
+| `okText` | `ReactNode` | `'OK'` | OK button label |
+| `cancelText` | `ReactNode` | `'Cancel'` | Cancel button label |
+| `okButtonProps` | `Record<string, unknown>` | — | Extra props spread onto the OK `<button>` (e.g. `style`, `disabled`) |
+| `cancelButtonProps` | `Record<string, unknown>` | — | Extra props spread onto the Cancel `<button>` |
+| `confirmLoading` | `boolean` | `false` | Show a spinning icon on the OK button and disable it |
+| `loading` | `boolean` | `false` | Show an animated skeleton in the body instead of children |
+| `destroyOnClose` | `boolean` | `false` | Unmount body content when the modal closes |
+| `mask` | `boolean \| ModalMaskConfig` | `true` | Show backdrop; `{ blur: true }` enables a frosted-glass blur effect |
+| `zIndex` | `number` | `1000` | z-index for the overlay |
+| `modalRender` | `(node: ReactNode) => ReactNode` | — | Custom wrapper for the dialog panel (e.g. to make it draggable) |
+| `className` | `string` | — | CSS class on the dialog panel |
+| `style` | `CSSProperties` | — | Inline style on the dialog panel |
+| `classNames` | `ModalClassNames` | — | Semantic class names per slot |
+| `styles` | `ModalStyles` | — | Semantic inline styles per slot |
+
+#### ModalMaskConfig
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `blur` | `boolean` | `false` | Apply `backdrop-filter: blur(6px)` to the mask (frosted glass) |
+
+#### Types
+
+```ts
+type ModalSemanticSlot = 'root' | 'mask' | 'header' | 'body' | 'footer' | 'closeBtn' | 'content'
+type ModalClassNames   = SemanticClassNames<ModalSemanticSlot>
+type ModalStyles       = SemanticStyles<ModalSemanticSlot>
+```
+
+#### Footer render function
+
+When `footer` is a function, it receives `{ OkBtn, CancelBtn }` — the pre-configured button components — so you can reorder them or add custom elements alongside:
+
+```tsx
+footer={({ OkBtn, CancelBtn }) => (
+  <>
+    <span style={{ flex: 1 }}>Step 1 of 3</span>
+    <CancelBtn />
+    <OkBtn />
+  </>
+)}
+```
+
+#### Animation
+
+- **Open:** double `requestAnimationFrame` triggers `scale(1)` + `opacity: 1` on the dialog panel (250 ms ease); mask fades in simultaneously (300 ms ease).
+- **Close:** panel scales back to `0.85` and fades out; after the transition ends `afterOpenChange(false)` fires and the portal unmounts.
+- Body `overflow: hidden` is applied while mounted to prevent background scrolling.
+
+#### useModal hook
+
+```ts
+const [modal, contextHolder] = useModal()
+```
+
+Place `contextHolder` in your JSX tree. Then call methods on `modal`:
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `modal.confirm(config)` | `ModalInstance` | Two-button confirm dialog |
+| `modal.info(config)` | `ModalInstance` | One-button info dialog |
+| `modal.success(config)` | `ModalInstance` | One-button success dialog |
+| `modal.warning(config)` | `ModalInstance` | One-button warning dialog |
+| `modal.error(config)` | `ModalInstance` | One-button error dialog |
+| `modal.destroyAll()` | `void` | Close all open confirm dialogs |
+
+Each method returns a `ModalInstance`:
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `destroy` | `() => void` | Programmatically close the dialog |
+| `update` | `(config: Partial<ModalConfirmConfig>) => void` | Update title, content, or other config live |
+
+#### ModalConfirmConfig
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `title` | `ReactNode` | — | Dialog title |
+| `content` | `ReactNode` | — | Dialog body text |
+| `icon` | `ReactNode` | type icon | Custom icon |
+| `okText` | `ReactNode` | `'OK'` | OK button label |
+| `cancelText` | `ReactNode` | `'Cancel'` | Cancel button label (confirm only) |
+| `onOk` | `() => void \| Promise<void>` | — | OK handler; returning a Promise enables async loading state |
+| `onCancel` | `() => void` | — | Cancel handler |
+| `bordered` | `boolean` | `true` (non-confirm) | Show a colored border matching the dialog type |
+| `closable` | `boolean` | `false` | Show a close button |
+| `centered` | `boolean` | — | Vertically center the dialog |
+| `width` | `number \| string` | `'26rem'` | Dialog width |
+| `maskClosable` | `boolean` | `false` | Close on mask click |
+| `keyboard` | `boolean` | `true` | Close on ESC |
+| `zIndex` | `number` | `1000` | z-index |
+| `className` | `string` | — | CSS class |
+| `style` | `CSSProperties` | — | Inline style |
+
+#### Examples
+
+**1. Basic modal**
+```tsx
+import { useState } from 'react'
+import { Modal, Button } from 'j-ui'
+
+function App() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open Modal</Button>
+      <Modal
+        title="Basic Modal"
+        open={open}
+        onClose={() => setOpen(false)}
+        onOk={() => setOpen(false)}
+      >
+        <p>Modal body content goes here.</p>
+      </Modal>
+    </>
+  )
+}
+```
+
+**2. Centered**
+```tsx
+<Modal title="Centered" centered open={open} onClose={close} onOk={close}>
+  <p>Vertically centered on the viewport.</p>
+</Modal>
+```
+
+**3. Custom width**
+```tsx
+<Modal title="Wide" width={800} open={open} onClose={close} onOk={close}>
+  <p>800 px wide dialog.</p>
+</Modal>
+```
+
+**4. No footer**
+```tsx
+<Modal title="No Footer" footer={null} open={open} onClose={close}>
+  <p>This modal has no footer at all.</p>
+</Modal>
+```
+
+**5. Custom footer with render function**
+```tsx
+<Modal
+  title="Custom Footer"
+  open={open}
+  onClose={close}
+  onOk={save}
+  footer={({ OkBtn, CancelBtn }) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+      <Button variant="danger" onClick={handleDelete}>Delete</Button>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <CancelBtn />
+        <OkBtn />
+      </div>
+    </div>
+  )}
+>
+  <p>Footer with a danger action on the left.</p>
+</Modal>
+```
+
+**6. Custom footer as ReactNode**
+```tsx
+<Modal
+  title="ReactNode Footer"
+  footer={<Button onClick={close}>Got it</Button>}
+  open={open}
+  onClose={close}
+>
+  <p>Single acknowledgement button.</p>
+</Modal>
+```
+
+**7. Async OK with confirmLoading**
+```tsx
+const [loading, setLoading] = useState(false)
+
+const handleOk = async () => {
+  setLoading(true)
+  await submitForm()
+  setLoading(false)
+  setOpen(false)
+}
+
+<Modal
+  title="Submit Form"
+  open={open}
+  onClose={() => setOpen(false)}
+  onOk={handleOk}
+  confirmLoading={loading}
+>
+  <p>Click OK to submit.</p>
+</Modal>
+```
+
+**8. Loading skeleton**
+```tsx
+<Modal title="Loading Data" loading={loading} open={open} onClose={close} onOk={close}>
+  <p>This is hidden while loading.</p>
+</Modal>
+```
+
+**9. Frosted-glass mask**
+```tsx
+<Modal title="Blur Backdrop" mask={{ blur: true }} open={open} onClose={close} onOk={close}>
+  <p>The background is blurred behind the modal.</p>
+</Modal>
+```
+
+**10. No mask**
+```tsx
+<Modal title="No Mask" mask={false} open={open} onClose={close} onOk={close}>
+  <p>The background remains fully interactive.</p>
+</Modal>
+```
+
+**11. Mask not closable, no ESC**
+```tsx
+<Modal title="Sticky" maskClosable={false} keyboard={false} open={open} onClose={close} onOk={close}>
+  <p>Can only be closed with the × button or footer buttons.</p>
+</Modal>
+```
+
+**12. No close button**
+```tsx
+<Modal title="No Close Button" closable={false} open={open} onClose={close} onOk={close}>
+  <p>Use the footer buttons to dismiss.</p>
+</Modal>
+```
+
+**13. Custom close icon**
+```tsx
+<Modal title="Custom Icon" closeIcon={<span>✕</span>} open={open} onClose={close} onOk={close}>
+  <p>Custom × icon.</p>
+</Modal>
+```
+
+**14. Custom OK/Cancel text**
+```tsx
+<Modal
+  title="Confirm Deletion"
+  okText="Yes, delete"
+  cancelText="Keep it"
+  open={open}
+  onClose={() => setOpen(false)}
+  onOk={handleDelete}
+>
+  <p>Are you sure you want to delete this item?</p>
+</Modal>
+```
+
+**15. Destroy on close**
+```tsx
+<Modal title="Fresh State" destroyOnClose open={open} onClose={close} onOk={close}>
+  <input placeholder="Reset on next open" />
+</Modal>
+```
+
+**16. modalRender (draggable)**
+```tsx
+import Draggable from 'react-draggable'
+
+<Modal
+  title="Drag me"
+  open={open}
+  onClose={close}
+  onOk={close}
+  modalRender={(node) => <Draggable>{node as React.ReactElement}</Draggable>}
+>
+  <p>You can drag this dialog around.</p>
+</Modal>
+```
+
+**17. Semantic styles**
+```tsx
+<Modal
+  title="Styled Modal"
+  open={open}
+  onClose={close}
+  onOk={close}
+  styles={{
+    mask: { backgroundColor: 'rgba(0,0,0,0.7)' },
+    header: { backgroundColor: '#f0f4ff', borderBottom: '2px solid #1677ff' },
+    body: { padding: '2rem' },
+    footer: { backgroundColor: '#f0f4ff', borderTop: '2px solid #1677ff' },
+  }}
+>
+  <p>Custom styled sections.</p>
+</Modal>
+```
+
+**18. useModal — confirm dialog**
+```tsx
+import { useModal, Button } from 'j-ui'
+
+function App() {
+  const [modal, contextHolder] = useModal()
+
+  const handleDelete = () => {
+    modal.confirm({
+      title: 'Delete item?',
+      content: 'This action cannot be undone.',
+      okText: 'Delete',
+      cancelText: 'Keep',
+      onOk: async () => {
+        await deleteItem()
+      },
+      onCancel: () => console.log('Cancelled'),
+    })
+  }
+
+  return (
+    <>
+      {contextHolder}
+      <Button onClick={handleDelete}>Delete</Button>
+    </>
+  )
+}
+```
+
+**19. useModal — info / success / warning / error**
+```tsx
+modal.info({    title: 'Update available',  content: 'Refresh to get the latest version.' })
+modal.success({ title: 'Payment received',  content: 'Your invoice has been updated.' })
+modal.warning({ title: 'Low disk space',    content: 'Free up space to continue.' })
+modal.error({   title: 'Upload failed',     content: 'Please check your connection.' })
+```
+
+**20. useModal — destroy and update**
+```tsx
+const instance = modal.confirm({
+  title: 'Processing…',
+  content: 'Please wait.',
+  onOk: async () => { await longTask() },
+})
+
+// Update while open
+instance.update({ title: 'Almost done…' })
+
+// Or close it programmatically
+instance.destroy()
+
+// Close all at once
+modal.destroyAll()
+```
+
+**21. Full form modal**
+```tsx
+import { useState } from 'react'
+import { Modal, Button } from 'j-ui'
+
+interface UserForm { name: string; email: string }
+
+function EditUserModal({ user, onSave, onCancel }: {
+  user: UserForm
+  onSave: (u: UserForm) => Promise<void>
+  onCancel: () => void
+}) {
+  const [form, setForm]     = useState(user)
+  const [saving, setSaving] = useState(false)
+
+  const handleOk = async () => {
+    setSaving(true)
+    try { await onSave(form) }
+    finally { setSaving(false) }
+  }
+
+  return (
+    <Modal
+      title="Edit User"
+      open
+      onClose={onCancel}
+      onOk={handleOk}
+      confirmLoading={saving}
+      okText="Save"
+      centered
+      destroyOnClose
+      width="28rem"
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <label>
+          Name
+          <input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} />
+        </label>
+        <label>
+          Email
+          <input value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} />
+        </label>
+      </div>
+    </Modal>
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>NestedSelect</strong> - Cascading hierarchical selection with search and multiple mode</summary>
 
 ### NestedSelect
@@ -7195,6 +8143,459 @@ const [page, setPage] = useState(1)
 ---
 
 <details>
+<summary><strong>PopAlert</strong> - Floating toast notifications via hook API</summary>
+
+### PopAlert
+
+`PopAlert` is a hook-based toast notification system. Call `usePopAlert()` to get an `api` object and a `contextHolder` node. Place `contextHolder` anywhere in your JSX to mount the portal, then call `api.success()`, `api.error()`, etc. from anywhere in the component tree. Notifications appear as floating pill cards at any of 8 screen positions, animate in/out, auto-dismiss after a configurable duration, pause on hover, support a shrinking progress bar, optional secondary description text, and allow update-in-place via a stable `key`.
+
+```tsx
+import { usePopAlert } from 'j-ui'
+```
+
+#### usePopAlert(config?)
+
+```ts
+const [api, contextHolder] = usePopAlert(hookConfig?: PopAlertHookConfig)
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `placement` | `PopAlertPlacement` | `'top'` | Where notifications appear on screen |
+| `offset` | `number \| string` | `'0.5rem'` | Distance from the screen edge |
+| `size` | `PopAlertSize` | `'md'` | Default pill size for all notifications |
+| `duration` | `number` | `3` | Default auto-close time in seconds (`0` = never) |
+| `maxCount` | `number` | `Infinity` | Maximum number of simultaneous notifications (oldest exits when exceeded) |
+
+#### PopAlertApi
+
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `api.success` | `(content, duration?) => void` | Show a success notification |
+| `api.error` | `(content, duration?) => void` | Show an error notification |
+| `api.info` | `(content, duration?) => void` | Show an info notification |
+| `api.warning` | `(content, duration?) => void` | Show a warning notification |
+| `api.loading` | `(content, duration?) => void` | Show a loading notification (spinning icon) |
+| `api.open` | `(config: PopAlertConfig) => void` | Full control — pass a complete config object |
+| `api.destroy` | `(key?) => void` | Dismiss one notification by key, or all if no key given |
+
+#### PopAlertConfig (api.open)
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `content` | `ReactNode` | — | **Required.** Notification message |
+| `description` | `ReactNode` | — | Secondary text shown below `content` in a smaller, muted style |
+| `type` | `PopAlertType` | — | **Required** for `api.open`. Severity level |
+| `duration` | `number` | hook default | Auto-close in seconds; `0` = never |
+| `key` | `string` | auto | Unique key — pass the same key to update an existing notification in-place |
+| `icon` | `ReactNode` | — | Custom icon replacing the default type icon |
+| `closable` | `boolean` | `false` | Show a manual close button |
+| `showProgress` | `boolean` | `false` | Show a shrinking progress bar for the remaining time |
+| `pauseOnHover` | `boolean` | `true` | Pause the auto-close timer while the cursor is on the notification |
+| `size` | `PopAlertSize` | hook default | Override pill size for this notification |
+| `onClose` | `() => void` | — | Called after the exit animation completes |
+| `className` | `string` | — | CSS class on the card |
+| `style` | `CSSProperties` | — | Inline style on the card |
+| `classNames` | `PopAlertClassNames` | — | Semantic class names per slot |
+| `styles` | `PopAlertStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+type PopAlertType      = 'success' | 'info' | 'warning' | 'error' | 'loading'
+type PopAlertPlacement = 'top' | 'topLeft' | 'topRight' | 'right' | 'bottomRight' | 'bottom' | 'bottomLeft' | 'left'
+type PopAlertSize      = 'sm' | 'md' | 'lg'
+
+type PopAlertSemanticSlot = 'root' | 'icon' | 'content' | 'description'
+type PopAlertClassNames   = SemanticClassNames<PopAlertSemanticSlot>
+type PopAlertStyles       = SemanticStyles<PopAlertSemanticSlot>
+```
+
+#### Animation
+
+- **Enter:** slides in from the edge + fades in (`max-height`, `opacity`, `transform` — 300 ms). Enter direction mirrors the placement edge.
+- **Exit:** slides out halfway toward the edge + fades out + collapses height (300 ms). The gap left by the removed card collapses smoothly with `margin-bottom: 0`.
+- **Update-in-place:** when `api.open` is called with an existing `key`, the card plays a brief scale+fade pulse (300 ms) and the progress bar resets.
+- **Pause on hover:** `animationPlayState: paused` on the progress bar; elapsed time is tracked in a ref so the timer resumes correctly.
+
+#### Examples
+
+**1. Basic usage**
+```tsx
+import { usePopAlert } from 'j-ui'
+
+function App() {
+  const [api, contextHolder] = usePopAlert()
+
+  return (
+    <>
+      {contextHolder}
+      <button onClick={() => api.success('Changes saved!')}>Success</button>
+      <button onClick={() => api.error('Something went wrong.')}>Error</button>
+      <button onClick={() => api.info('New version available.')}>Info</button>
+      <button onClick={() => api.warning('Disk space low.')}>Warning</button>
+    </>
+  )
+}
+```
+
+**2. Custom duration**
+```tsx
+api.success('Auto-closes in 8 seconds', 8)
+api.error('Stays until dismissed', 0)
+```
+
+**3. Loading then success (update-in-place)**
+```tsx
+api.open({ type: 'loading', content: 'Saving…', key: 'save', duration: 0 })
+
+await saveData()
+
+api.open({ type: 'success', content: 'Saved!', key: 'save', duration: 3 })
+```
+
+**4. Placement options**
+```tsx
+const [api, contextHolder] = usePopAlert({ placement: 'bottomRight' })
+// All notifications appear at the bottom-right corner
+```
+
+**5. Limit simultaneous notifications**
+```tsx
+const [api, contextHolder] = usePopAlert({ maxCount: 3 })
+// Oldest notification exits automatically when a 4th is added
+```
+
+**6. Closable with progress bar**
+```tsx
+api.open({
+  type: 'info',
+  content: 'Auto-closing in 5 seconds',
+  duration: 5,
+  closable: true,
+  showProgress: true,
+})
+```
+
+**7. Disable hover pause**
+```tsx
+api.open({
+  type: 'warning',
+  content: 'Timer continues on hover',
+  duration: 4,
+  pauseOnHover: false,
+})
+```
+
+**8. Custom icon**
+```tsx
+api.open({
+  type: 'info',
+  content: 'Maintenance scheduled tonight',
+  icon: <span>🔧</span>,
+})
+```
+
+**9. Destroy all**
+```tsx
+<button onClick={() => api.destroy()}>Clear all</button>
+```
+
+**10. Destroy specific**
+```tsx
+api.open({ type: 'loading', content: 'Processing…', key: 'job-1', duration: 0 })
+// later:
+api.destroy('job-1')
+```
+
+**11. Large size with onClose callback**
+```tsx
+api.open({
+  type: 'success',
+  content: 'File uploaded successfully',
+  size: 'lg',
+  duration: 4,
+  onClose: () => console.log('Toast gone'),
+})
+```
+
+**12. Hook-level defaults**
+```tsx
+const [api, contextHolder] = usePopAlert({
+  placement: 'topRight',
+  offset: '1rem',
+  size: 'sm',
+  duration: 5,
+  maxCount: 5,
+})
+```
+
+**13. Notification with description**
+```tsx
+api.open({
+  type: 'info',
+  content: 'File ready to download',
+  description: 'report-q1-2026.pdf · 2.4 MB',
+  duration: 6,
+  closable: true,
+})
+```
+
+**14. Semantic styles**
+```tsx
+api.open({
+  type: 'info',
+  content: 'Custom styled notification',
+  description: 'Additional detail text',
+  styles: {
+    root: { borderRadius: 24, fontWeight: 600 },
+    icon: { color: '#722ed1' },
+    description: { fontStyle: 'italic' },
+  },
+})
+```
+
+**15. Full workflow example**
+```tsx
+import { useState } from 'react'
+import { usePopAlert, Button } from 'j-ui'
+
+export function UploadButton() {
+  const [api, contextHolder] = usePopAlert({
+    placement: 'topRight',
+    maxCount: 4,
+  })
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async () => {
+    setUploading(true)
+    api.open({
+      type: 'loading',
+      content: 'Uploading file…',
+      key: 'upload',
+      duration: 0,
+    })
+    try {
+      await fakeUpload()
+      api.open({
+        type: 'success',
+        content: 'File uploaded!',
+        key: 'upload',
+        duration: 4,
+        showProgress: true,
+        closable: true,
+      })
+    } catch {
+      api.open({
+        type: 'error',
+        content: 'Upload failed. Try again.',
+        key: 'upload',
+        duration: 6,
+        closable: true,
+      })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <>
+      {contextHolder}
+      <Button loading={uploading} onClick={handleUpload}>Upload</Button>
+    </>
+  )
+}
+
+function fakeUpload() {
+  return new Promise<void>((resolve, reject) =>
+    setTimeout(() => (Math.random() > 0.3 ? resolve() : reject()), 2000)
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>PopConfirm</strong> - Confirmation popover with OK / Cancel actions</summary>
+
+### PopConfirm
+
+`PopConfirm` displays a lightweight confirmation popover next to a trigger element. It renders a warning icon, a required title, an optional description, and OK / Cancel action buttons. If `onConfirm` returns a Promise the OK button shows a loading spinner until the promise settles. Built on top of `Popover` — all placement, trigger, and delay options from `Popover` are available.
+
+```tsx
+import { PopConfirm } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `ReactNode` | — | **Required.** Main question text shown in the popover |
+| `description` | `ReactNode` | — | Optional secondary descriptive text below the title |
+| `icon` | `ReactNode \| null` | warning icon | Icon before the title. Pass `null` to hide it |
+| `onConfirm` | `() => void \| Promise<void>` | — | Called on OK click. Returning a Promise activates loading state until it settles |
+| `onCancel` | `() => void` | — | Called on Cancel click |
+| `okText` | `ReactNode` | `'OK'` | Label for the OK button |
+| `cancelText` | `ReactNode` | `'Cancel'` | Label for the Cancel button |
+| `okButtonProps` | `Record<string, unknown>` | — | Extra props spread onto the OK `<button>` element |
+| `cancelButtonProps` | `Record<string, unknown>` | — | Extra props spread onto the Cancel `<button>` element |
+| `showCancel` | `boolean` | `true` | Whether to render the Cancel button |
+| `disabled` | `boolean` | `false` | Prevent the popover from opening |
+| `children` | `ReactNode` | — | **Required.** Trigger element |
+| `placement` | `PopoverPlacement` | `'top'` | Popover position relative to the trigger |
+| `trigger` | `PopoverTrigger \| PopoverTrigger[]` | `'click'` | Interaction that opens the popover |
+| `open` | `boolean` | — | Controlled open state |
+| `onOpenChange` | `(open: boolean) => void` | — | Called when open state changes |
+| `arrow` | `boolean` | `true` | Show the arrow indicator |
+| `mouseEnterDelay` | `number` | — | Delay in ms before showing on hover |
+| `mouseLeaveDelay` | `number` | — | Delay in ms before hiding on mouse leave |
+| `className` | `string` | — | CSS class on the popover panel |
+| `style` | `CSSProperties` | — | Inline style on the popover panel |
+| `classNames` | `PopConfirmClassNames` | — | Semantic class names per slot |
+| `styles` | `PopConfirmStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+type PopConfirmSemanticSlot = 'root' | 'icon' | 'title' | 'description' | 'buttons'
+type PopConfirmClassNames   = SemanticClassNames<PopConfirmSemanticSlot>
+type PopConfirmStyles       = SemanticStyles<PopConfirmSemanticSlot>
+
+// Inherited from Popover:
+type PopoverPlacement = 'top' | 'topLeft' | 'topRight' | 'right' | 'rightTop' | 'rightBottom'
+                      | 'bottom' | 'bottomLeft' | 'bottomRight' | 'left' | 'leftTop' | 'leftBottom'
+type PopoverTrigger   = 'hover' | 'click' | 'focus' | 'contextMenu'
+```
+
+#### Behavior
+
+- **Async confirm:** when `onConfirm` returns a `Promise`, the OK button becomes disabled and shows a spinning indicator. If the promise resolves the popover closes; if it rejects the popover stays open so the user can retry.
+- **Controlled / uncontrolled:** omit `open` for uncontrolled mode (the component manages visibility internally); provide `open` + `onOpenChange` for controlled mode.
+- **Disabled:** when `disabled={true}` the trigger click is ignored and the popover never opens.
+
+#### Examples
+
+**1. Basic delete confirmation**
+```tsx
+import { PopConfirm, Button } from 'j-ui'
+
+<PopConfirm
+  title="Delete this record?"
+  onConfirm={() => deleteRecord(id)}
+>
+  <Button variant="danger">Delete</Button>
+</PopConfirm>
+```
+
+**2. With description**
+```tsx
+<PopConfirm
+  title="Delete this record?"
+  description="This action cannot be undone."
+  onConfirm={() => deleteRecord(id)}
+>
+  <Button variant="danger">Delete</Button>
+</PopConfirm>
+```
+
+**3. Async confirm with loading state**
+```tsx
+<PopConfirm
+  title="Submit for review?"
+  onConfirm={async () => {
+    await submitToServer()
+    // popover closes automatically on resolve
+  }}
+>
+  <Button>Submit</Button>
+</PopConfirm>
+```
+
+**4. Custom button labels**
+```tsx
+<PopConfirm
+  title="Log out of all devices?"
+  okText="Yes, log out"
+  cancelText="No, keep me in"
+  onConfirm={handleLogoutAll}
+>
+  <Button>Log out everywhere</Button>
+</PopConfirm>
+```
+
+**5. No icon, no cancel button**
+```tsx
+<PopConfirm
+  title="Mark all as read?"
+  icon={null}
+  showCancel={false}
+  onConfirm={markAllRead}
+>
+  <Button>Mark read</Button>
+</PopConfirm>
+```
+
+**6. Different placement**
+```tsx
+<PopConfirm
+  title="Are you sure?"
+  placement="bottomRight"
+  onConfirm={handleConfirm}
+>
+  <Button>Action</Button>
+</PopConfirm>
+```
+
+**7. Disabled**
+```tsx
+<PopConfirm
+  title="Are you sure?"
+  disabled={!hasPermission}
+  onConfirm={handleDelete}
+>
+  <Button disabled={!hasPermission}>Delete</Button>
+</PopConfirm>
+```
+
+**8. Controlled open state**
+```tsx
+const [open, setOpen] = useState(false)
+
+<PopConfirm
+  title="Save changes?"
+  open={open}
+  onOpenChange={setOpen}
+  onConfirm={handleSave}
+  onCancel={() => setOpen(false)}
+>
+  <Button onClick={() => setOpen(true)}>Save</Button>
+</PopConfirm>
+```
+
+**9. Semantic styles**
+```tsx
+<PopConfirm
+  title="Proceed?"
+  styles={{
+    root:  { minWidth: 240 },
+    icon:  { color: '#1677ff' },
+    title: { fontSize: '1rem' },
+    description: { color: '#888' },
+    buttons: { justifyContent: 'flex-start' },
+  }}
+  onConfirm={handleConfirm}
+>
+  <Button>Go</Button>
+</PopConfirm>
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Popover</strong> - Floating card with title and content</summary>
 
 ### Popover
@@ -7454,6 +8855,217 @@ const [open, setOpen] = useState(false)
 >
   <Avatar>JD</Avatar>
 </Popover>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Progress</strong> - Line, circle, and dashboard progress indicators</summary>
+
+### Progress
+
+`Progress` visualises completion as a line bar, a circular ring, or a dashboard (open-bottom arc). All three variants support gradient stroke colors, a secondary success segment, segmented (steps) mode, custom text formatting, and the full semantic-DOM slot system.
+
+```tsx
+import { Progress } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `percent` | `number` | `0` | Completion percentage (clamped to 0–100) |
+| `type` | `ProgressType` | `'line'` | Visual variant: `'line'`, `'circle'`, or `'dashboard'` |
+| `status` | `ProgressStatus` | auto | Override status. Auto-resolves to `'success'` at 100 %, otherwise `'normal'` |
+| `showInfo` | `boolean` | `true` | Show the percentage text or status icon |
+| `format` | `(percent, successPercent?) => ReactNode` | — | Custom info renderer. Return `null` or `false` to hide |
+| `strokeColor` | `ProgressStrokeColor` | — | Fill color — solid, per-step array, or gradient (see Types) |
+| `trailColor` | `string` | — | Color of the unfilled track |
+| `strokeLinecap` | `ProgressLinecap` | `'round'` | Cap style: `'round'`, `'butt'`, or `'square'` |
+| `strokeWidth` | `number` | `8` (line) / `6` (circle) | Track thickness in px (line) or % of diameter (circle/dashboard) |
+| `size` | `ProgressSize` | `'default'` | Preset or custom size (see Types) |
+| `success` | `ProgressSuccessConfig` | — | Overlay a filled success segment on top of the main stroke |
+| `steps` | `number` | — | Split the bar into N discrete segments |
+| `percentPosition` | `ProgressPercentPosition` | — | **Line only.** Where to render the info text (see Types) |
+| `width` | `number` | `120` | **Circle / dashboard only.** SVG canvas size in px |
+| `gapDegree` | `number` | `75` | **Dashboard only.** Arc gap angle in degrees (0–295) |
+| `gapPosition` | `ProgressGapPosition` | `'bottom'` | **Dashboard only.** Where the gap sits |
+| `className` | `string` | — | CSS class on the root element |
+| `style` | `CSSProperties` | — | Inline style on the root element |
+| `classNames` | `ProgressClassNames` | — | Semantic class names per slot |
+| `styles` | `ProgressStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+type ProgressType        = 'line' | 'circle' | 'dashboard'
+type ProgressStatus      = 'normal' | 'active' | 'success' | 'exception'
+type ProgressLinecap     = 'round' | 'butt' | 'square'
+type ProgressGapPosition = 'top' | 'bottom' | 'left' | 'right'
+
+// Size:
+//   'small'          → strokeHeight 6 px, circle canvas 80 px
+//   'default'        → strokeHeight 8 px, circle canvas 120 px
+//   number (line)    → explicit strokeHeight
+//   number (circle)  → explicit canvas size
+//   [width, height]  → line only: explicit track width + stroke height
+type ProgressSize = 'small' | 'default' | number | [number, number]
+
+// strokeColor variants:
+//   string                        → solid CSS color
+//   string[]                      → per-step colors (steps mode)
+//   { from, to, direction? }      → linear-gradient shorthand (line only)
+//   Record<string, string>        → gradient stops, e.g. { '0%': '#f00', '100%': '#0f0' }
+type ProgressStrokeColor =
+  | string
+  | string[]
+  | { from: string; to: string; direction?: string }
+  | Record<string, string>
+
+interface ProgressSuccessConfig {
+  percent?:     number  // Success segment size (0-100)
+  strokeColor?: string  // Success segment color (default: colorSuccess)
+}
+
+interface ProgressPercentPosition {
+  type?:  'inner' | 'outer'           // default 'outer'
+  align?: 'start' | 'center' | 'end'  // default 'end'
+}
+
+type ProgressSemanticSlot = 'root' | 'trail' | 'stroke' | 'text'
+type ProgressClassNames   = SemanticClassNames<ProgressSemanticSlot>
+type ProgressStyles       = SemanticStyles<ProgressSemanticSlot>
+```
+
+#### Status & Info
+
+| Status | Color | Info shown |
+|--------|-------|-----------|
+| `normal` | primary | `"X%"` |
+| `active` | primary + shimmer | `"X%"` |
+| `success` | success | ✓ check icon |
+| `exception` | error | × close icon |
+
+- **Line** renders outline icons (`CheckCircleIcon` / `CloseCircleIcon`).
+- **Circle / dashboard** renders minimal stroke icons (`CheckIcon` / `CloseIcon`).
+- When `width ≤ 20` px the info text moves into a `Tooltip` instead of rendering inside the SVG.
+
+#### Examples
+
+**1. Basic line**
+```tsx
+<Progress percent={60} />
+```
+
+**2. Status variants**
+```tsx
+<Progress percent={60} status="active" />
+<Progress percent={100} />           {/* auto → success */}
+<Progress percent={40} status="exception" />
+```
+
+**3. Small size**
+```tsx
+<Progress percent={50} size="small" />
+```
+
+**4. Fixed width bar**
+```tsx
+<Progress percent={75} size={[300, 10]} />
+```
+
+**5. Custom stroke color**
+```tsx
+<Progress percent={70} strokeColor="#722ed1" />
+```
+
+**6. Gradient stroke**
+```tsx
+<Progress percent={80} strokeColor={{ from: '#108ee9', to: '#87d068' }} />
+```
+
+**7. Inner text position**
+```tsx
+<Progress
+  percent={65}
+  strokeWidth={20}
+  percentPosition={{ type: 'inner', align: 'center' }}
+/>
+```
+
+**8. Segmented steps**
+```tsx
+<Progress percent={60} steps={5} />
+```
+
+**9. Steps with per-step colors**
+```tsx
+<Progress
+  percent={80}
+  steps={5}
+  strokeColor={['#f5222d', '#fa8c16', '#fadb14', '#52c41a', '#1677ff']}
+/>
+```
+
+**10. Success segment overlay**
+```tsx
+<Progress percent={70} success={{ percent: 30 }} />
+```
+
+**11. Circle**
+```tsx
+<Progress type="circle" percent={75} />
+```
+
+**12. Circle with gradient stops**
+```tsx
+<Progress
+  type="circle"
+  percent={80}
+  strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }}
+/>
+```
+
+**13. Circle segmented**
+```tsx
+<Progress type="circle" percent={60} steps={6} width={100} />
+```
+
+**14. Dashboard**
+```tsx
+<Progress type="dashboard" percent={75} />
+```
+
+**15. Dashboard with custom gap**
+```tsx
+<Progress type="dashboard" percent={60} gapDegree={120} gapPosition="bottom" />
+```
+
+**16. Hide info text**
+```tsx
+<Progress percent={50} showInfo={false} />
+```
+
+**17. Custom formatter**
+```tsx
+<Progress
+  percent={75}
+  format={(pct) => <strong>{pct} / 100</strong>}
+/>
+```
+
+**18. Semantic styles**
+```tsx
+<Progress
+  percent={60}
+  styles={{
+    trail:  { backgroundColor: '#f0f0f0' },
+    stroke: { background: '#722ed1' },
+    text:   { color: '#722ed1', fontWeight: 700 },
+  }}
+/>
 ```
 
 </details>
@@ -8128,6 +9740,174 @@ const [value, setValue] = useState(4)
   defaultValue={3}
   styles={{
     character: { color: '#ff4d4f', fontSize: '2rem' },
+  }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Result</strong> - Full-page feedback state display</summary>
+
+### Result
+
+`Result` displays a centred feedback screen for operation outcomes. It supports four semantic statuses (`success`, `error`, `warning`, `info`) with matching SVG icons, three HTTP-error statuses (`403`, `404`, `500`) with illustrated scenes, an optional title, subtitle, action area, and extra content panel.
+
+```tsx
+import { Result } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `status` | `ResultStatus` | `'info'` | Visual preset — semantic or HTTP error code |
+| `icon` | `ReactNode` | — | Custom icon/illustration. Overrides the status icon |
+| `title` | `ReactNode` | — | Large heading text |
+| `subTitle` | `ReactNode` | — | Smaller descriptive text below the title |
+| `extra` | `ReactNode` | — | Action area (buttons, links). Rendered as a centred flex row |
+| `children` | `ReactNode` | — | Additional content rendered below `extra` in a left-aligned panel with a subtle background |
+| `className` | `string` | — | CSS class on the root element |
+| `style` | `CSSProperties` | — | Inline style on the root element |
+| `classNames` | `ResultClassNames` | — | Semantic class names per slot |
+| `styles` | `ResultStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+// Semantic statuses use a coloured SVG icon:
+//   'success' → colorSuccess  ✓ filled circle
+//   'error'   → colorError    × filled circle
+//   'warning' → colorWarning  ⚠ filled triangle
+//   'info'    → colorPrimary  ℹ filled circle  (default)
+//
+// HTTP error statuses render an illustrated SVG scene:
+//   403 → colorWarning  shield + padlock (forbidden)
+//   404 → colorPrimary  torn page + magnifying glass (not found)
+//   500 → colorError    server rack + warning triangle (server error)
+type ResultStatus = 'success' | 'error' | 'info' | 'warning' | 403 | 404 | 500
+
+type ResultSemanticSlot = 'root' | 'icon' | 'title' | 'subtitle' | 'extra' | 'content'
+type ResultClassNames   = SemanticClassNames<ResultSemanticSlot>
+type ResultStyles       = SemanticStyles<ResultSemanticSlot>
+```
+
+#### Layout
+
+The root is centred (`text-align: center`, `padding: 3rem 2rem`). Slots render top-to-bottom:
+
+1. **icon** — semantic icons at `4.5rem` font-size; HTTP illustrations at natural SVG size (250 × 200)
+2. **title** — `1.5rem`, weight 600
+3. **subtitle** — `0.875rem`, muted colour
+4. **extra** — centred flex row with `0.5rem` gap
+5. **content** (children) — left-aligned block with subtle background, `1.5rem` padding, rounded corners
+
+#### Examples
+
+**1. Success**
+```tsx
+<Result
+  status="success"
+  title="Payment complete"
+  subTitle="Order #20250304 has been processed."
+  extra={<Button>View order</Button>}
+/>
+```
+
+**2. Error**
+```tsx
+<Result
+  status="error"
+  title="Submission failed"
+  subTitle="Please check the form and try again."
+  extra={<Button>Go back</Button>}
+/>
+```
+
+**3. Warning**
+```tsx
+<Result
+  status="warning"
+  title="Pending approval"
+  subTitle="Your request is awaiting review."
+/>
+```
+
+**4. Info (default)**
+```tsx
+<Result
+  title="Coming soon"
+  subTitle="This feature is under construction."
+/>
+```
+
+**5. 403 — Forbidden**
+```tsx
+<Result
+  status={403}
+  title="403"
+  subTitle="You do not have permission to access this page."
+  extra={<Button onClick={() => navigate('/')}>Back home</Button>}
+/>
+```
+
+**6. 404 — Not found**
+```tsx
+<Result
+  status={404}
+  title="404"
+  subTitle="The page you visited does not exist."
+  extra={<Button onClick={() => navigate('/')}>Back home</Button>}
+/>
+```
+
+**7. 500 — Server error**
+```tsx
+<Result
+  status={500}
+  title="500"
+  subTitle="Sorry, something went wrong on our end."
+  extra={<Button onClick={() => window.location.reload()}>Retry</Button>}
+/>
+```
+
+**8. Custom icon**
+```tsx
+<Result
+  icon={<span style={{ fontSize: '4rem' }}>🎉</span>}
+  title="You're all set!"
+  subTitle="Your account is ready to use."
+  extra={<Button>Get started</Button>}
+/>
+```
+
+**9. With extra content panel**
+```tsx
+<Result
+  status="error"
+  title="Upload failed"
+  subTitle="The following files could not be processed:"
+  extra={<Button>Try again</Button>}
+>
+  <ul>
+    <li>photo.heic — unsupported format</li>
+    <li>report.exe — blocked file type</li>
+  </ul>
+</Result>
+```
+
+**10. Semantic styles**
+```tsx
+<Result
+  status="success"
+  title="Done!"
+  styles={{
+    root:     { padding: '2rem' },
+    title:    { color: '#52c41a', fontSize: '2rem' },
+    subtitle: { fontSize: '1rem' },
+    extra:    { marginTop: '2rem' },
   }}
 />
 ```
@@ -8842,6 +10622,154 @@ interface CompactItemContextValue {
   <Input style={{ flex: 1 }} />
   <Button>Search</Button>
 </Space.Compact>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Spinner</strong> - Loading indicator with 7 animation styles</summary>
+
+### Spinner
+
+`Spinner` is a flexible loading indicator with seven animation variants, three sizes, optional tip text, delay support, progress mode, fullscreen overlay, and content-wrapping mode. It operates in three rendering modes depending on whether children and `fullscreen` are provided.
+
+```tsx
+import { Spinner } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `spinning` | `boolean` | `true` | Whether the spinner is active |
+| `type` | `SpinnerType` | `'gradient'` | Animation style |
+| `size` | `SpinnerSize` | `'default'` | Spinner size |
+| `delay` | `number` | — | Milliseconds to wait before showing (avoids flicker on fast operations) |
+| `indicator` | `ReactNode` | — | Fully custom indicator element. Replaces the `type` animation |
+| `tip` | `ReactNode` | — | Text shown below the spinner. For the `pulse` type it becomes the pulsing text itself (defaults to `'Loading...'`) |
+| `fullscreen` | `boolean` | `false` | Cover the entire viewport with a dark overlay |
+| `percent` | `number \| 'auto'` | — | Switch to progress-circle mode. `'auto'` = indeterminate arc; `0–100` = deterministic fill (turns green at 100) |
+| `children` | `ReactNode` | — | Content to overlay while loading |
+| `className` | `string` | — | CSS class on the root element |
+| `style` | `CSSProperties` | — | Inline style on the root element |
+| `classNames` | `SpinnerClassNames` | — | Semantic class names per slot |
+| `styles` | `SpinnerStyles` | — | Semantic inline styles per slot |
+
+#### Types
+
+```ts
+// 7 animation styles:
+//   'gradient' — rotating conic-gradient comet arc (default)
+//   'ring'     — rotating SVG ring with 25 % visible arc
+//   'classic'  — 4 orbiting corner dots (Ant Design style)
+//   'dots'     — 3 bouncing dots in a row
+//   'bars'     — 8 iOS-style radiating bars with fade
+//   'pulse'    — pulsing text (tip prop or "Loading..."); no separate tip shown
+//   'dash'     — Material-style morphing SVG dash
+type SpinnerType = 'gradient' | 'ring' | 'classic' | 'dots' | 'bars' | 'pulse' | 'dash'
+
+// Sizes:
+//   'small'   — 1 rem  (16 px) indicator, 0.75 rem tip
+//   'default' — 1.5 rem (24 px) indicator, 0.875 rem tip
+//   'large'   — 2.5 rem (40 px) indicator, 1 rem tip
+type SpinnerSize = 'small' | 'default' | 'large'
+
+type SpinnerSemanticSlot = 'root' | 'indicator' | 'tip' | 'overlay' | 'content'
+type SpinnerClassNames   = SemanticClassNames<SpinnerSemanticSlot>
+type SpinnerStyles       = SemanticStyles<SpinnerSemanticSlot>
+```
+
+#### Rendering modes
+
+| Condition | Mode | Behaviour |
+|-----------|------|-----------|
+| No `children`, no `fullscreen` | **Standalone** | Renders an `inline-flex` spinner; hidden when `spinning` is false |
+| Has `children` | **Container** | Wraps children; when spinning, applies `opacity 0.5` + `blur(1px)` + disables pointer events; spinner centred in an absolute overlay |
+| `fullscreen={true}` | **Fullscreen** | Fixed `inset-0` dark overlay (`rgba(0,0,0,0.45)`) with spinner centred; hidden when `spinning` is false |
+
+#### Examples
+
+**1. Standalone**
+```tsx
+<Spinner />
+```
+
+**2. Animation types**
+```tsx
+<Spinner type="gradient" />
+<Spinner type="ring" />
+<Spinner type="classic" />
+<Spinner type="dots" />
+<Spinner type="bars" />
+<Spinner type="pulse" />
+<Spinner type="dash" />
+```
+
+**3. Sizes**
+```tsx
+<Spinner size="small" />
+<Spinner size="default" />
+<Spinner size="large" />
+```
+
+**4. With tip text**
+```tsx
+<Spinner tip="Loading data…" />
+```
+
+**5. Pulse with custom text**
+```tsx
+<Spinner type="pulse" tip="Please wait…" />
+```
+
+**6. Delay (avoids flicker)**
+```tsx
+<Spinner delay={500} />
+```
+
+**7. Controlled visibility**
+```tsx
+<Spinner spinning={isLoading} />
+```
+
+**8. Progress circle — determinate**
+```tsx
+<Spinner percent={65} />
+```
+
+**9. Progress circle — indeterminate**
+```tsx
+<Spinner percent="auto" />
+```
+
+**10. Content overlay**
+```tsx
+<Spinner spinning={isLoading} tip="Saving…">
+  <form>…</form>
+</Spinner>
+```
+
+**11. Fullscreen overlay**
+```tsx
+<Spinner fullscreen spinning={isSubmitting} tip="Submitting…" />
+```
+
+**12. Custom indicator**
+```tsx
+<Spinner indicator={<img src="/logo.gif" width={32} />} tip="Brewing…" />
+```
+
+**13. Semantic styles**
+```tsx
+<Spinner
+  tip="Loading…"
+  styles={{
+    indicator: { gap: '0.75rem' },
+    tip:       { color: '#722ed1', fontWeight: 600 },
+  }}
+/>
 ```
 
 </details>
@@ -11942,6 +13870,375 @@ function ProductCatalog() {
 ---
 
 <details>
+<summary><strong>Tour</strong> - Step-by-step guided walkthrough with spotlight overlay</summary>
+
+### Tour
+
+`Tour` is a guided walkthrough component that highlights UI elements one by one using an SVG spotlight mask. It is ideal for onboarding flows, feature discovery, and interactive product demos. The popup card follows the highlighted element with 13 placement options, supports two visual themes, and offers full control over step navigation, indicators, and action buttons.
+
+```tsx
+import { Tour } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `steps` | `TourStepConfig[]` | — | Array of step configurations |
+| `open` | `boolean` | — | Whether the tour is visible (controlled) |
+| `current` | `number` | — | Active step index (controlled) |
+| `onChange` | `(current: number) => void` | — | Called on step change |
+| `onClose` | `() => void` | — | Called when the tour closes |
+| `onFinish` | `() => void` | — | Called when the last step's Next button is clicked |
+| `mask` | `boolean` | `true` | Show SVG spotlight mask |
+| `arrow` | `boolean` | `true` | Show arrow pointing at the target |
+| `type` | `TourType` | `'default'` | Card visual theme |
+| `placement` | `TourPlacement` | `'bottom'` | Default popup placement (overridden per step) |
+| `gap` | `{ offset?: number; radius?: number }` | `{ offset: 6, radius: 2 }` | Spotlight padding (px) and corner radius (px) |
+| `closeIcon` | `ReactNode \| false` | — | Custom close icon; `false` hides it entirely |
+| `disabledInteraction` | `boolean` | — | Block pointer events on the highlighted element |
+| `scrollIntoViewOptions` | `boolean \| ScrollIntoViewOptions` | `true` | Auto-scroll target into view; `true` uses `{ block: 'center', behavior: 'instant' }` |
+| `indicatorsRender` | `(current: number, total: number) => ReactNode` | — | Custom step indicator renderer |
+| `actionsRender` | `(actions: ReactNode, info: ActionsInfo) => ReactNode` | — | Custom action buttons renderer (replaces footer buttons) |
+| `zIndex` | `number` | `1001` | z-index for overlay and popup |
+| `className` | `string` | — | CSS class on the popup card |
+| `style` | `CSSProperties` | — | Inline style on the popup card |
+| `classNames` | `TourClassNames` | — | Semantic class names per slot |
+| `styles` | `TourStyles` | — | Semantic inline styles per slot |
+
+#### TourStepConfig
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `target` | `HTMLElement \| (() => HTMLElement \| null) \| null` | — | Element to highlight; `null` centers the popup |
+| `title` | `ReactNode` | — | Step title |
+| `description` | `ReactNode` | — | Step body text |
+| `cover` | `ReactNode` | — | Media content above the title (e.g. an image) |
+| `placement` | `TourPlacement` | inherited | Override placement for this step |
+| `arrow` | `boolean` | inherited | Override arrow visibility for this step |
+| `mask` | `boolean` | inherited | Override mask visibility for this step |
+| `type` | `TourType` | inherited | Override card theme for this step |
+| `nextButtonProps` | `{ children?: ReactNode; onClick?: () => void }` | — | Customize the Next / Finish button |
+| `prevButtonProps` | `{ children?: ReactNode; onClick?: () => void }` | — | Customize the Previous button |
+| `scrollIntoViewOptions` | `boolean \| ScrollIntoViewOptions` | inherited | Override scroll behavior for this step |
+
+#### Types
+
+```ts
+type TourPlacement =
+  | 'center'
+  | 'top' | 'topLeft' | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left' | 'leftTop' | 'leftBottom'
+  | 'right' | 'rightTop' | 'rightBottom'
+
+type TourType = 'default' | 'primary'
+
+// actionsRender info argument
+interface ActionsInfo {
+  current: number
+  total: number
+  goTo: (step: number) => void
+  close: () => void
+}
+
+// Semantic slots
+type TourSemanticSlot =
+  | 'root' | 'mask' | 'popup' | 'header'
+  | 'title' | 'description' | 'footer'
+  | 'arrow' | 'close' | 'cover' | 'indicators'
+
+type TourClassNames = SemanticClassNames<TourSemanticSlot>
+type TourStyles     = SemanticStyles<TourSemanticSlot>
+```
+
+#### Examples
+
+**1. Basic guided tour**
+```tsx
+import { useRef, useState } from 'react'
+import { Tour } from 'j-ui'
+
+function App() {
+  const btnRef  = useRef<HTMLButtonElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+
+  const steps = [
+    {
+      target: () => btnRef.current,
+      title: 'Create a new item',
+      description: 'Click here to start creating a new entry.',
+    },
+    {
+      target: () => cardRef.current,
+      title: 'Your results appear here',
+      description: 'This card shows the output of your actions.',
+      placement: 'right' as const,
+    },
+  ]
+
+  return (
+    <>
+      <button ref={btnRef} onClick={() => {}}>New item</button>
+      <div ref={cardRef} style={{ marginTop: 24 }}>Result card</div>
+      <button onClick={() => setOpen(true)}>Start Tour</button>
+
+      <Tour
+        steps={steps}
+        open={open}
+        onClose={() => setOpen(false)}
+        onFinish={() => setOpen(false)}
+      />
+    </>
+  )
+}
+```
+
+**2. Primary theme**
+```tsx
+<Tour
+  steps={steps}
+  open={open}
+  type="primary"
+  onClose={() => setOpen(false)}
+  onFinish={() => setOpen(false)}
+/>
+```
+
+**3. No mask (transparent overlay)**
+```tsx
+<Tour steps={steps} open={open} mask={false} onClose={() => setOpen(false)} onFinish={() => setOpen(false)} />
+```
+
+**4. Center placement — no target element**
+```tsx
+const steps = [
+  {
+    target: null,           // null → popup centers on the viewport
+    title: 'Welcome to the App',
+    description: 'This quick tour will walk you through the key features.',
+    placement: 'center' as const,
+  },
+]
+```
+
+**5. Per-step overrides**
+```tsx
+const steps = [
+  {
+    target: () => step1Ref.current,
+    title: 'Step 1 — Default',
+    description: 'Uses the global type and mask settings.',
+  },
+  {
+    target: () => step2Ref.current,
+    title: 'Step 2 — Primary',
+    description: 'This step overrides the card theme.',
+    type: 'primary' as const,
+    mask: false,
+    arrow: false,
+  },
+]
+
+<Tour steps={steps} open={open} type="default" mask onClose={close} onFinish={close} />
+```
+
+**6. Custom button labels per step**
+```tsx
+const steps = [
+  {
+    target: () => ref1.current,
+    title: 'Introduction',
+    nextButtonProps: { children: 'Get Started →' },
+  },
+  {
+    target: () => ref2.current,
+    title: 'Final Step',
+    nextButtonProps: { children: 'Done ✓' },
+    prevButtonProps: { children: '← Back' },
+  },
+]
+```
+
+**7. Custom step indicators**
+```tsx
+<Tour
+  steps={steps}
+  open={open}
+  onClose={close}
+  onFinish={close}
+  indicatorsRender={(current, total) => (
+    <span style={{ fontSize: 12, color: '#888' }}>
+      Step {current + 1} of {total}
+    </span>
+  )}
+/>
+```
+
+**8. Custom action buttons (actionsRender)**
+```tsx
+<Tour
+  steps={steps}
+  open={open}
+  onClose={close}
+  onFinish={close}
+  actionsRender={(_actions, { current, total, goTo, close }) => (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      {current > 0 && (
+        <button onClick={() => goTo(current - 1)}>Back</button>
+      )}
+      <span>{current + 1} / {total}</span>
+      {current < total - 1
+        ? <button onClick={() => goTo(current + 1)}>Continue</button>
+        : <button onClick={close}>Finish</button>
+      }
+    </div>
+  )}
+/>
+```
+
+**9. Disable interaction with highlighted element**
+```tsx
+// Prevents the user from clicking the highlighted button while the tour is active
+<Tour
+  steps={steps}
+  open={open}
+  disabledInteraction
+  onClose={close}
+  onFinish={close}
+/>
+```
+
+**10. Cover image**
+```tsx
+const steps = [
+  {
+    target: () => featureRef.current,
+    cover: <img src="/tour-preview.png" alt="Feature preview" style={{ width: '100%', borderRadius: 8 }} />,
+    title: 'New Dashboard',
+    description: 'Get a bird's-eye view of all your metrics.',
+  },
+]
+```
+
+**11. Hide close button**
+```tsx
+<Tour steps={steps} open={open} closeIcon={false} onFinish={close} />
+```
+
+**12. Controlled step navigation**
+```tsx
+const [open, setOpen]       = useState(false)
+const [current, setCurrent] = useState(0)
+
+<Tour
+  steps={steps}
+  open={open}
+  current={current}
+  onChange={setCurrent}
+  onClose={() => { setOpen(false); setCurrent(0) }}
+  onFinish={() => { setOpen(false); setCurrent(0) }}
+/>
+```
+
+**13. Wider spotlight gap with rounded corners**
+```tsx
+<Tour
+  steps={steps}
+  open={open}
+  gap={{ offset: 12, radius: 8 }}
+  onClose={close}
+  onFinish={close}
+/>
+```
+
+**14. Custom scroll behavior**
+```tsx
+<Tour
+  steps={steps}
+  open={open}
+  scrollIntoViewOptions={{ block: 'start', behavior: 'smooth' }}
+  onClose={close}
+  onFinish={close}
+/>
+```
+
+**15. Full onboarding walkthrough**
+```tsx
+import { useRef, useState } from 'react'
+import { Tour, Button } from 'j-ui'
+
+export function OnboardingTour() {
+  const navRef     = useRef<HTMLElement>(null)
+  const searchRef  = useRef<HTMLInputElement>(null)
+  const tableRef   = useRef<HTMLTableElement>(null)
+  const settingRef = useRef<HTMLButtonElement>(null)
+
+  const [open, setOpen]       = useState(false)
+  const [current, setCurrent] = useState(0)
+
+  const steps = [
+    {
+      target: () => navRef.current,
+      title: 'Navigation',
+      description: 'Use the sidebar to switch between sections.',
+      placement: 'right' as const,
+    },
+    {
+      target: () => searchRef.current,
+      title: 'Global Search',
+      description: 'Search across all records instantly.',
+      type: 'primary' as const,
+    },
+    {
+      target: () => tableRef.current,
+      title: 'Data Table',
+      description: 'Sort, filter, and paginate your data here.',
+      placement: 'top' as const,
+      nextButtonProps: { children: 'Almost done!' },
+    },
+    {
+      target: () => settingRef.current,
+      title: 'Settings',
+      description: 'Customize your workspace from here.',
+      nextButtonProps: { children: 'Finish Tour' },
+    },
+  ]
+
+  const close = () => { setOpen(false); setCurrent(0) }
+
+  return (
+    <>
+      <nav ref={navRef}>Sidebar</nav>
+      <input ref={searchRef} placeholder="Search…" />
+      <table ref={tableRef}><tbody><tr><td>Data</td></tr></tbody></table>
+      <button ref={settingRef}>⚙ Settings</button>
+
+      <Button onClick={() => { setCurrent(0); setOpen(true) }}>
+        Start Onboarding
+      </Button>
+
+      <Tour
+        steps={steps}
+        open={open}
+        current={current}
+        onChange={setCurrent}
+        onClose={close}
+        onFinish={close}
+        gap={{ offset: 8, radius: 4 }}
+        scrollIntoViewOptions={{ block: 'center', behavior: 'smooth' }}
+      />
+    </>
+  )
+}
+```
+
+</details>
+
+---
+
+<details>
 <summary><strong>Transfer</strong> - Dual-list item transfer</summary>
 
 ### Transfer
@@ -12160,6 +14457,408 @@ const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   onSelectChange={(sourceSelected, targetSelected) => {
     setSelectedKeys([...sourceSelected, ...targetSelected]);
   }}
+/>
+```
+
+</details>
+
+---
+
+<details>
+<summary><strong>Tree</strong> - Hierarchical tree view with selection, checkboxes, and drag-and-drop</summary>
+
+### Tree
+
+`Tree` is a hierarchical tree component for displaying and interacting with nested data. It supports node selection, checkbox checking with cascade propagation, expand/collapse with animations, `showLine` guides, custom icons, async data loading, drag-and-drop reordering, virtual scrolling for large datasets, and full keyboard navigation. The compound `Tree.DirectoryTree` variant is preconfigured with folder/file icons and click-to-expand behavior.
+
+```tsx
+import { Tree } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `treeData` | `TreeData[]` | `[]` | Hierarchical data array |
+| `fieldNames` | `TreeFieldNames` | — | Remap `key`, `title`, `children` field names |
+| `checkable` | `boolean` | `false` | Show checkboxes on each node |
+| `checkedKeys` | `(string \| number)[] \| TreeCheckedKeys` | — | Controlled checked keys |
+| `defaultCheckedKeys` | `(string \| number)[]` | — | Initial checked keys (uncontrolled) |
+| `checkStrictly` | `boolean` | `false` | Disable cascade check propagation to parents/children |
+| `selectable` | `boolean` | `true` | Allow node selection |
+| `selectedKeys` | `(string \| number)[]` | — | Controlled selected keys |
+| `defaultSelectedKeys` | `(string \| number)[]` | — | Initial selected keys (uncontrolled) |
+| `multiple` | `boolean` | `false` | Allow selecting multiple nodes simultaneously |
+| `expandedKeys` | `(string \| number)[]` | — | Controlled expanded keys |
+| `defaultExpandedKeys` | `(string \| number)[]` | — | Initial expanded keys (uncontrolled) |
+| `defaultExpandAll` | `boolean` | `false` | Expand all nodes on mount |
+| `autoExpandParent` | `boolean` | `false` | Auto-expand parent nodes of the initially expanded/selected keys |
+| `showLine` | `boolean \| { showLeafIcon?: ReactNode }` | `false` | Show indent guide lines; optionally show a custom leaf icon |
+| `showIcon` | `boolean` | `false` | Show node icons |
+| `icon` | `ReactNode \| ((props) => ReactNode)` | — | Global icon for all nodes (overridden per-node by `TreeData.icon`) |
+| `switcherIcon` | `ReactNode \| ((props) => ReactNode)` | — | Custom expand/collapse icon |
+| `disabled` | `boolean` | `false` | Disable all nodes globally |
+| `height` | `number` | — | Enable virtual scrolling with a fixed container height (px) |
+| `titleRender` | `(node: TreeData) => ReactNode` | — | Custom renderer for node titles |
+| `filterTreeNode` | `(node: TreeData) => boolean` | — | Highlight matching nodes (non-matching are dimmed) |
+| `loadData` | `(node: TreeData) => Promise<void>` | — | Async child loader; called when expanding a non-leaf node |
+| `draggable` | `boolean \| ((node) => boolean) \| { icon?, nodeDraggable? }` | `false` | Enable drag-and-drop; selectively enable per node |
+| `onSelect` | `(keys, info: TreeSelectInfo) => void` | — | Called when a node is selected |
+| `onCheck` | `(keys, info: TreeCheckInfo) => void` | — | Called when a checkbox is toggled |
+| `onExpand` | `(keys, info: TreeExpandInfo) => void` | — | Called when a node is expanded or collapsed |
+| `onDragStart` | `(info: TreeDragInfo) => void` | — | Drag start event |
+| `onDragEnter` | `(info: TreeDragInfo) => void` | — | Drag enter event |
+| `onDragOver` | `(info: TreeDragInfo) => void` | — | Drag over event |
+| `onDragLeave` | `(info: TreeDragInfo) => void` | — | Drag leave event |
+| `onDragEnd` | `(info: TreeDragInfo) => void` | — | Drag end event |
+| `onDrop` | `(info: TreeDropInfo) => void` | — | Drop event |
+| `onRightClick` | `(info: TreeRightClickInfo) => void` | — | Right-click / context menu on a node |
+| `onLoad` | `(loadedKeys, info) => void` | — | Called after async data loading completes |
+| `className` | `string` | — | CSS class on the root element |
+| `style` | `CSSProperties` | — | Inline style on the root element |
+| `classNames` | `TreeClassNames` | — | Semantic class names per slot |
+| `styles` | `TreeStyles` | — | Semantic inline styles per slot |
+
+#### TreeData
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `key` | `string \| number` | **Required.** Unique node identifier |
+| `title` | `ReactNode` | Node label |
+| `children` | `TreeData[]` | Child nodes |
+| `disabled` | `boolean` | Disable selection and checking for this node |
+| `disableCheckbox` | `boolean` | Disable checkbox only (node remains selectable) |
+| `selectable` | `boolean` | Override selectability for this node |
+| `checkable` | `boolean` | Override checkbox visibility for this node |
+| `isLeaf` | `boolean` | Force leaf status (prevents async load trigger) |
+| `icon` | `ReactNode \| ((props) => ReactNode)` | Per-node icon (overrides global `icon`) |
+
+#### Callback types
+
+```ts
+interface TreeSelectInfo {
+  selected: boolean
+  selectedNodes: TreeData[]
+  node: TreeData
+  event: React.MouseEvent
+}
+
+interface TreeCheckInfo {
+  checked: boolean
+  checkedNodes: TreeData[]
+  node: TreeData
+  event: React.MouseEvent
+  halfCheckedKeys: (string | number)[]
+}
+
+interface TreeExpandInfo {
+  expanded: boolean
+  node: TreeData
+}
+
+interface TreeDropInfo {
+  event: React.DragEvent
+  node: TreeData        // drop target
+  dragNode: TreeData    // dragged node
+  dropPosition: -1 | 0 | 1  // -1 = before, 0 = inside, 1 = after
+  dropToGap: boolean    // true when dropPosition !== 0
+}
+```
+
+#### Tree.DirectoryTree
+
+`Tree.DirectoryTree` extends `Tree` with directory-style defaults: folder/file icons enabled, click-to-expand, and multi-selection on by default.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `expandAction` | `'click' \| 'doubleClick' \| false` | `'click'` | What triggers expand/collapse |
+
+#### Semantic slots
+
+```ts
+type TreeSemanticSlot = 'root' | 'node' | 'nodeContent' | 'switcher' | 'checkbox' | 'title' | 'icon'
+type TreeClassNames   = SemanticClassNames<TreeSemanticSlot>
+type TreeStyles       = SemanticStyles<TreeSemanticSlot>
+```
+
+#### Keyboard navigation
+
+| Key | Action |
+|-----|--------|
+| `↑` / `↓` | Move focus between visible nodes |
+| `→` | Expand node, or move to first child if already expanded |
+| `←` | Collapse node, or move to parent if already collapsed |
+| `Enter` / `Space` | Toggle check (if `checkable`) or select the focused node |
+| `Home` | Focus the first visible node |
+| `End` | Focus the last visible node |
+
+#### Examples
+
+**1. Basic tree**
+```tsx
+import { Tree } from 'j-ui'
+
+const data = [
+  {
+    key: '1',
+    title: 'Animals',
+    children: [
+      { key: '1-1', title: 'Mammals', children: [
+        { key: '1-1-1', title: 'Dog' },
+        { key: '1-1-2', title: 'Cat' },
+      ]},
+      { key: '1-2', title: 'Birds', children: [
+        { key: '1-2-1', title: 'Eagle' },
+      ]},
+    ],
+  },
+  {
+    key: '2',
+    title: 'Plants',
+    children: [
+      { key: '2-1', title: 'Flowers' },
+      { key: '2-2', title: 'Trees' },
+    ],
+  },
+]
+
+<Tree treeData={data} defaultExpandedKeys={['1']} />
+```
+
+**2. Checkable with cascade propagation**
+```tsx
+const [checkedKeys, setCheckedKeys] = useState<string[]>([])
+
+<Tree
+  treeData={data}
+  checkable
+  checkedKeys={checkedKeys}
+  onCheck={(keys) => setCheckedKeys(keys as string[])}
+/>
+```
+
+**3. Multiple selection**
+```tsx
+<Tree treeData={data} multiple defaultExpandAll />
+```
+
+**4. Show guide lines**
+```tsx
+<Tree treeData={data} showLine defaultExpandAll />
+```
+
+**5. Show lines with custom leaf icon**
+```tsx
+import { FileOutlined } from 'some-icons'
+
+<Tree
+  treeData={data}
+  showLine={{ showLeafIcon: <FileOutlined /> }}
+  defaultExpandAll
+/>
+```
+
+**6. Custom switcher icon**
+```tsx
+<Tree
+  treeData={data}
+  switcherIcon={({ expanded }) => (
+    <span style={{ fontSize: 10 }}>{expanded ? '▼' : '▶'}</span>
+  )}
+/>
+```
+
+**7. Node icons**
+```tsx
+<Tree
+  treeData={data}
+  showIcon
+  icon={({ isLeaf }) => isLeaf ? '📄' : '📁'}
+/>
+```
+
+**8. Custom title renderer (with search highlight)**
+```tsx
+const [search, setSearch] = useState('')
+
+<Tree
+  treeData={data}
+  titleRender={(node) => {
+    const title = String(node.title)
+    if (!search || !title.toLowerCase().includes(search.toLowerCase())) return title
+    const idx = title.toLowerCase().indexOf(search.toLowerCase())
+    return (
+      <>
+        {title.slice(0, idx)}
+        <mark style={{ backgroundColor: '#ffe58f', padding: 0 }}>{title.slice(idx, idx + search.length)}</mark>
+        {title.slice(idx + search.length)}
+      </>
+    )
+  }}
+  filterTreeNode={(node) =>
+    String(node.title).toLowerCase().includes(search.toLowerCase())
+  }
+/>
+```
+
+**9. Disabled nodes**
+```tsx
+const data = [
+  { key: '1', title: 'Enabled' },
+  { key: '2', title: 'Disabled', disabled: true },
+  { key: '3', title: 'Checkbox disabled', disableCheckbox: true },
+]
+
+<Tree treeData={data} checkable />
+```
+
+**10. Async data loading**
+```tsx
+const [treeData, setTreeData] = useState([
+  { key: '1', title: 'Load children on expand' },
+])
+
+async function loadData(node: TreeData) {
+  await new Promise(r => setTimeout(r, 1000))
+  setTreeData(prev => [...prev].map(n =>
+    n.key === node.key
+      ? { ...n, children: [
+          { key: `${node.key}-1`, title: `${node.title} - Child 1` },
+          { key: `${node.key}-2`, title: `${node.title} - Child 2` },
+        ]}
+      : n,
+  ))
+}
+
+<Tree treeData={treeData} loadData={loadData} />
+```
+
+**11. Virtual scrolling (large datasets)**
+```tsx
+const bigData = Array.from({ length: 1000 }, (_, i) => ({
+  key: String(i),
+  title: `Node ${i}`,
+}))
+
+<Tree treeData={bigData} height={400} />
+```
+
+**12. Drag-and-drop reorder**
+```tsx
+const [treeData, setTreeData] = useState(initialData)
+
+function onDrop({ node, dragNode, dropPosition, dropToGap }: TreeDropInfo) {
+  // Simple flat reorder for illustration
+  const dragKey = dragNode.key
+  const dropKey = node.key
+
+  const flatten = (nodes: TreeData[]): TreeData[] =>
+    nodes.flatMap(n => [n, ...flatten(n.children ?? [])])
+
+  const flat = flatten(treeData)
+  const dragIdx = flat.findIndex(n => n.key === dragKey)
+  const dropIdx = flat.findIndex(n => n.key === dropKey)
+
+  if (dragIdx === -1 || dropIdx === -1) return
+
+  const newData = [...treeData]
+  // Full reorder logic depends on your data structure
+  console.log('Drop', dragKey, dropToGap ? 'gap' : 'into', dropKey, 'position', dropPosition)
+}
+
+<Tree treeData={treeData} draggable onDrop={onDrop} />
+```
+
+**13. Right-click context menu**
+```tsx
+const [menuNode, setMenuNode] = useState<TreeData | null>(null)
+
+<Tree
+  treeData={data}
+  onRightClick={({ event, node }) => {
+    event.preventDefault()
+    setMenuNode(node)
+  }}
+/>
+{menuNode && (
+  <div style={{ position: 'fixed', background: '#fff', border: '1px solid #ccc', padding: '0.5rem' }}>
+    <div>Rename {String(menuNode.title)}</div>
+    <div>Delete</div>
+  </div>
+)}
+```
+
+**14. Custom field names**
+```tsx
+const data = [
+  { id: 'a', label: 'Root', items: [
+    { id: 'b', label: 'Child' },
+  ]},
+]
+
+<Tree
+  treeData={data as any}
+  fieldNames={{ key: 'id', title: 'label', children: 'items' }}
+/>
+```
+
+**15. Directory tree**
+```tsx
+import { Tree } from 'j-ui'
+
+const files = [
+  {
+    key: 'src',
+    title: 'src',
+    children: [
+      { key: 'src/components', title: 'components', children: [
+        { key: 'src/components/Button.tsx', title: 'Button.tsx', isLeaf: true },
+        { key: 'src/components/Input.tsx',  title: 'Input.tsx',  isLeaf: true },
+      ]},
+      { key: 'src/index.ts', title: 'index.ts', isLeaf: true },
+    ],
+  },
+  { key: 'package.json', title: 'package.json', isLeaf: true },
+]
+
+<Tree.DirectoryTree treeData={files} defaultExpandAll />
+```
+
+**16. DirectoryTree with double-click to expand**
+```tsx
+<Tree.DirectoryTree
+  treeData={files}
+  expandAction="doubleClick"
+  onSelect={(keys, { node }) => console.log('Selected:', node.title)}
+/>
+```
+
+**17. Strictly independent checkboxes (no cascade)**
+```tsx
+const [checked, setChecked] = useState<string[]>([])
+
+<Tree
+  treeData={data}
+  checkable
+  checkStrictly
+  checkedKeys={checked}
+  onCheck={(keys) => {
+    // keys is TreeCheckedKeys when checkStrictly=true
+    const { checked: c } = keys as { checked: string[]; halfChecked: string[] }
+    setChecked(c)
+  }}
+/>
+```
+
+**18. Semantic styles customization**
+```tsx
+<Tree
+  treeData={data}
+  styles={{
+    root: { backgroundColor: '#fafafa', borderRadius: 8, padding: '0.5rem' },
+    node: { borderRadius: 6 },
+  }}
+  defaultExpandAll
 />
 ```
 
@@ -13061,6 +15760,165 @@ The waterfall layout uses a "shortest column first" algorithm:
 3. Known heights (`height` prop) are used for initial layout
 4. Dynamic heights are measured after render and layout adjusts accordingly
 5. With `fresh=true`, items are continuously monitored for size changes
+
+</details>
+
+---
+
+<details>
+<summary><strong>Watermark</strong> - Tiled text or image watermark overlay</summary>
+
+### Watermark
+
+`Watermark` renders a repeating, non-interactive overlay on top of its children. The watermark tile is generated on an offscreen `<canvas>` (DPR-aware) and applied as a CSS `background-image` repeat pattern. Supports text (single or multi-line) and image sources, rotation, tile spacing, and font customisation.
+
+```tsx
+import { Watermark } from 'j-ui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `content` | `string \| string[]` | — | Text watermark. Pass an array for multi-line text |
+| `image` | `string` | — | Image URL. Takes priority over `content` when provided |
+| `rotate` | `number` | `-22` | Rotation angle in degrees |
+| `width` | `number` | `120` | Content area width of each tile in px |
+| `height` | `number` | `64` | Content area height of each tile in px |
+| `gap` | `[number, number]` | `[100, 100]` | `[gapX, gapY]` — spacing between tiles in px |
+| `offset` | `[number, number]` | `[0, 0]` | `[offsetX, offsetY]` — `background-position` shift in px |
+| `zIndex` | `number` | `9` | z-index of the watermark overlay |
+| `font` | `WatermarkFont` | — | Font options for text watermarks |
+| `children` | `ReactNode` | — | Content rendered underneath the watermark |
+| `className` | `string` | — | CSS class on the root wrapper |
+| `style` | `CSSProperties` | — | Inline style on the root wrapper |
+| `classNames` | `WatermarkClassNames` | — | Semantic class names per slot |
+| `styles` | `WatermarkStyles` | — | Semantic inline styles per slot |
+
+#### WatermarkFont
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `color` | `string` | theme `colorText` at 15 % opacity | Text color. Accepts any CSS color or `rgba()`. When the resolved color has no alpha channel, `globalAlpha = 0.15` is applied automatically |
+| `fontSize` | `number` | `16` | Font size in px |
+| `fontWeight` | `'normal' \| 'lighter' \| 'bold' \| 'bolder' \| number` | `'normal'` | Font weight |
+| `fontStyle` | `'none' \| 'normal' \| 'italic' \| 'oblique'` | `'normal'` | Font style |
+| `fontFamily` | `string` | `'sans-serif'` | Font family |
+
+#### Types
+
+```ts
+interface WatermarkFont {
+  color?:      string
+  fontSize?:   number
+  fontWeight?: 'normal' | 'lighter' | 'bold' | 'bolder' | number
+  fontStyle?:  'none' | 'normal' | 'italic' | 'oblique'
+  fontFamily?: string
+}
+
+type WatermarkSemanticSlot = 'root' | 'watermark'
+type WatermarkClassNames   = SemanticClassNames<WatermarkSemanticSlot>
+type WatermarkStyles       = SemanticStyles<WatermarkSemanticSlot>
+```
+
+#### Behaviour
+
+- The root wrapper is `position: relative`; the watermark overlay is `position: absolute; inset: 0; pointer-events: none` so it never blocks clicks or selection.
+- The canvas tile size is `(width + gapX) × (height + gapY)`. Content is drawn centred inside the tile, then rotated at the tile centre.
+- **Image mode:** loaded with `crossOrigin="anonymous"`. If the image fails to load, no watermark is shown.
+- **CSS variables:** if `font.color` is a CSS variable (e.g. `var(--j-color-text)`), it is resolved to its computed RGB value before drawing on the canvas.
+- The canvas is scaled by `window.devicePixelRatio` for crisp rendering on high-DPI displays.
+- The watermark re-generates whenever any relevant prop changes.
+
+#### Examples
+
+**1. Text watermark**
+```tsx
+<Watermark content="Confidential">
+  <div style={{ height: 300, background: '#fafafa' }} />
+</Watermark>
+```
+
+**2. Multi-line text**
+```tsx
+<Watermark content={['ACME Corp', 'Internal use only']}>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**3. Image watermark**
+```tsx
+<Watermark image="/logo.png" width={80} height={40}>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**4. Custom rotation**
+```tsx
+<Watermark content="Draft" rotate={-45}>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**5. Custom font**
+```tsx
+<Watermark
+  content="Confidential"
+  font={{
+    color: 'rgba(220, 0, 0, 0.2)',
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    fontFamily: 'Georgia, serif',
+  }}
+>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**6. Tile spacing**
+```tsx
+<Watermark content="Draft" gap={[60, 60]}>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**7. Tile size**
+```tsx
+<Watermark content="Internal" width={160} height={80}>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**8. z-index control**
+```tsx
+<Watermark content="Preview" zIndex={100}>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
+
+**9. Wrapping real content**
+```tsx
+<Watermark content="Confidential">
+  <article>
+    <h2>Annual Report 2025</h2>
+    <p>Financial summary…</p>
+  </article>
+</Watermark>
+```
+
+**10. Semantic styles**
+```tsx
+<Watermark
+  content="Draft"
+  styles={{
+    root:      { borderRadius: 8, overflow: 'hidden' },
+    watermark: { opacity: 0.5 },
+  }}
+>
+  <div style={{ height: 300 }} />
+</Watermark>
+```
 
 </details>
 

@@ -44,15 +44,27 @@ import { RadioSection } from './sections/RadioSection'
 import { RateSection } from './sections/RateSection'
 import { SelectSection } from './sections/SelectSection'
 import { SliderSection } from './sections/SliderSection'
+import { SpinnerSection } from './sections/SpinnerSection'
 import { SwitchSection } from './sections/SwitchSection'
 import { TimePickerSection } from './sections/TimePickerSection'
 import { ToggleSection } from './sections/ToggleSection'
 import { TransferSection } from './sections/TransferSection'
 import { TreeSelectSection } from './sections/TreeSelectSection'
+import { TreeSection } from './sections/TreeSection'
 import { UploadSection } from './sections/UploadSection'
 import { AvatarSection } from './sections/AvatarSection'
 import { TagSection } from './sections/TagSection'
 import { TimelineSection } from './sections/TimelineSection'
+import { TourSection } from './sections/TourSection'
+import { AlertSection } from './sections/AlertSection'
+import { DrawerSection } from './sections/DrawerSection'
+import { ModalSection } from './sections/ModalSection'
+import { PopAlertSection } from './sections/PopAlertSection'
+import { PopConfirmSection } from './sections/PopConfirmSection'
+import { PlaceholderSection } from './sections/PlaceholderSection'
+import { ProgressSection } from './sections/ProgressSection'
+import { ResultSection } from './sections/ResultSection'
+import { WatermarkSection } from './sections/WatermarkSection'
 import { ThemeSection } from './sections/ThemeSection'
 
 export function Playground() {
@@ -349,6 +361,11 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('slider')}
             />
             <NavItem
+              label="Spinner"
+              active={activeSection === 'spinner'}
+              onClick={() => handleNavClick('spinner')}
+            />
+            <NavItem
               label="Switch"
               active={activeSection === 'switch'}
               onClick={() => handleNavClick('switch')}
@@ -369,6 +386,11 @@ function PlaygroundContent() {
               onClick={() => handleNavClick('transfer')}
             />
             <NavItem
+              label="Tree"
+              active={activeSection === 'tree'}
+              onClick={() => handleNavClick('tree')}
+            />
+            <NavItem
               label="TreeSelect"
               active={activeSection === 'treeselect'}
               onClick={() => handleNavClick('treeselect')}
@@ -387,6 +409,56 @@ function PlaygroundContent() {
               label="Timeline"
               active={activeSection === 'timeline'}
               onClick={() => handleNavClick('timeline')}
+            />
+            <NavItem
+              label="Tour"
+              active={activeSection === 'tour'}
+              onClick={() => handleNavClick('tour')}
+            />
+            <NavItem
+              label="Alert"
+              active={activeSection === 'alert'}
+              onClick={() => handleNavClick('alert')}
+            />
+            <NavItem
+              label="Drawer"
+              active={activeSection === 'drawer'}
+              onClick={() => handleNavClick('drawer')}
+            />
+            <NavItem
+              label="Modal"
+              active={activeSection === 'modal'}
+              onClick={() => handleNavClick('modal')}
+            />
+            <NavItem
+              label="PopAlert"
+              active={activeSection === 'popalert'}
+              onClick={() => handleNavClick('popalert')}
+            />
+            <NavItem
+              label="PopConfirm"
+              active={activeSection === 'popconfirm'}
+              onClick={() => handleNavClick('popconfirm')}
+            />
+            <NavItem
+              label="Placeholder"
+              active={activeSection === 'placeholder'}
+              onClick={() => handleNavClick('placeholder')}
+            />
+            <NavItem
+              label="Progress"
+              active={activeSection === 'progress'}
+              onClick={() => handleNavClick('progress')}
+            />
+            <NavItem
+              label="Result"
+              active={activeSection === 'result'}
+              onClick={() => handleNavClick('result')}
+            />
+            <NavItem
+              label="Watermark"
+              active={activeSection === 'watermark'}
+              onClick={() => handleNavClick('watermark')}
             />
             <NavItem
               label="Avatar"
@@ -527,14 +599,26 @@ function PlaygroundContent() {
         {activeSection === 'rate' && <RateSection />}
         {activeSection === 'select' && <SelectSection />}
         {activeSection === 'slider' && <SliderSection />}
+        {activeSection === 'spinner' && <SpinnerSection />}
         {activeSection === 'switch' && <SwitchSection />}
         {activeSection === 'timepicker' && <TimePickerSection />}
         {activeSection === 'toggle' && <ToggleSection />}
         {activeSection === 'transfer' && <TransferSection />}
+        {activeSection === 'tree' && <TreeSection />}
         {activeSection === 'treeselect' && <TreeSelectSection />}
         {activeSection === 'upload' && <UploadSection />}
         {activeSection === 'tag' && <TagSection />}
         {activeSection === 'timeline' && <TimelineSection />}
+        {activeSection === 'tour' && <TourSection />}
+        {activeSection === 'alert' && <AlertSection />}
+        {activeSection === 'drawer' && <DrawerSection />}
+        {activeSection === 'modal' && <ModalSection />}
+        {activeSection === 'popalert' && <PopAlertSection />}
+        {activeSection === 'popconfirm' && <PopConfirmSection />}
+        {activeSection === 'placeholder' && <PlaceholderSection />}
+        {activeSection === 'progress' && <ProgressSection />}
+        {activeSection === 'result' && <ResultSection />}
+        {activeSection === 'watermark' && <WatermarkSection />}
         {activeSection === 'avatar' && <AvatarSection />}
         {activeSection === 'theme' && <ThemeSection />}
       </main>

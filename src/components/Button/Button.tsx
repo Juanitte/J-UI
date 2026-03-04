@@ -240,8 +240,9 @@ export function Button({
     ? { border: `1px solid ${ct.border}` }
     : {}
 
-  // Determinar si tiene gradiente
+  // Determinar si tiene gradiente o color custom
   const hasGradient = Boolean(gradient || gradientCss)
+  const hasCustomBg = Boolean(style?.backgroundColor || styles?.root?.backgroundColor)
 
   // Estilos de gradiente
   const getGradientStyles = (): React.CSSProperties | null => {
@@ -307,9 +308,9 @@ export function Button({
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!isDisabled) {
-      if (hasGradient) {
-        // Para gradientes usamos filter en lugar de cambiar el background
-        e.currentTarget.style.filter = 'brightness(1.1)'
+      if (hasGradient || hasCustomBg) {
+        // Para gradientes y colores custom usamos filter en lugar de cambiar el background
+        e.currentTarget.style.filter = 'brightness(1.15)'
       } else {
         Object.assign(e.currentTarget.style, variantHoverStyles[variant])
       }
@@ -321,7 +322,7 @@ export function Button({
   }
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (hasGradient) {
+    if (hasGradient || hasCustomBg) {
       e.currentTarget.style.filter = ''
     } else {
       Object.assign(e.currentTarget.style, variantStyles[variant])
