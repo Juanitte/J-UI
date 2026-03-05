@@ -167,6 +167,8 @@ export function Tabs({
     defaultActiveKey ?? items[0]?.key ?? '',
   )
   const currentKey = isControlled ? activeKey! : internalKey
+  const currentKeyRef = useRef(currentKey)
+  currentKeyRef.current = currentKey
 
   const handleTabChange = useCallback(
     (key: string) => {
@@ -544,6 +546,7 @@ export function Tabs({
       fontWeight: isActive ? 600 : 400,
       opacity: item.disabled ? 0.5 : 1,
       whiteSpace: 'nowrap',
+      outline: 'none',
       transition: 'color 0.2s, background-color 0.2s',
       flexShrink: 0,
       position: 'relative',
@@ -571,11 +574,11 @@ export function Tabs({
         border: `1px solid ${tokens.colorBorder}`,
         borderRadius: borderRadiusMap[tabPosition],
         height: sizeConfig.cardHeight,
-        ...(isActive && isTop ? { borderBottomColor: tokens.colorBg } : {}),
-        ...(isActive && isBottom ? { borderTopColor: tokens.colorBg } : {}),
-        ...(isActive && isLeft ? { borderRightColor: tokens.colorBg } : {}),
-        ...(isActive && !isTop && !isBottom && !isLeft
-          ? { borderLeftColor: tokens.colorBg }
+        ...(isTop ? { borderBottomColor: isActive ? tokens.colorBg : tokens.colorBorder } : {}),
+        ...(isBottom ? { borderTopColor: isActive ? tokens.colorBg : tokens.colorBorder } : {}),
+        ...(isLeft ? { borderRightColor: isActive ? tokens.colorBg : tokens.colorBorder } : {}),
+        ...(!isTop && !isBottom && !isLeft
+          ? { borderLeftColor: isActive ? tokens.colorBg : tokens.colorBorder }
           : {}),
       } as CSSProperties)
     }
@@ -726,21 +729,19 @@ export function Tabs({
                   onMouseEnter={(e) => {
                     if (item.disabled) return
                     const el = e.currentTarget as HTMLElement
-                    if (!isActive) {
-                      if (isCard) {
-                        el.style.color = tokens.colorPrimary
-                      } else {
-                        el.style.color = tokens.colorPrimaryHover
-                      }
+                    const active = currentKeyRef.current === item.key
+                    if (!active) {
+                      el.style.color = isCard ? tokens.colorPrimary : tokens.colorPrimaryHover
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (item.disabled) return
                     const el = e.currentTarget as HTMLElement
-                    if (!isActive) {
+                    const active = currentKeyRef.current === item.key
+                    if (!active) {
                       el.style.color = tokens.colorText
                     }
-                    if (isCard && !isActive) {
+                    if (isCard && !active) {
                       el.style.backgroundColor = tokens.colorBgSubtle
                     }
                   }}

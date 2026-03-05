@@ -100,7 +100,7 @@ function StatusIcon({ status, color }: { status: string; color: string }) {
 function Illustration403({ color }: { color: string }) {
   const muted = tokens.colorBgMuted
   return (
-    <svg width="250" height="200" viewBox="0 0 250 200" fill="none">
+    <svg width="250" height="200" viewBox="0 0 250 215" fill="none">
       {/* Shield body */}
       <path
         d="M125 20L45 60v50c0 47.5 34 91.8 80 100 46-8.2 80-52.5 80-100V60L125 20z"
