@@ -5533,7 +5533,7 @@ const [open, setOpen] = useState(false)
 ---
 
 <details>
-<parameter name="summary"><strong>Empty</strong> - Empty state placeholder with optional tumbleweed animation</summary>
+<summary><strong>Empty</strong> - Empty state placeholder with optional tumbleweed animation</summary>
 
 ### Empty
 
