@@ -102,13 +102,13 @@ A modern, lightweight React component library with built-in theming support.
 
 ```bash
 # npm
-npm install inoui
+npm install @juanitte/inoui
 
 # yarn
-yarn add inoui
+yarn add @juanitte/inoui
 
 # pnpm
-pnpm add inoui
+pnpm add @juanitte/inoui
 ```
 
 ## Quick Start
@@ -116,7 +116,7 @@ pnpm add inoui
 Wrap your application with `ThemeProvider` and start using components:
 
 ```tsx
-import { ThemeProvider, Button, Tooltip } from 'inoui'
+import { ThemeProvider, Button, Tooltip } from '@juanitte/inoui'
 
 function App() {
   return (
@@ -205,7 +205,7 @@ const { mode, setMode, toggleMode } = useTheme()
 #### Example
 
 ```tsx
-import { useTheme, Button } from 'inoui'
+import { useTheme, Button } from '@juanitte/inoui'
 
 function ThemeToggle() {
   const { mode, toggleMode } = useTheme()
@@ -271,7 +271,7 @@ Ino-UI provides a `tokens` object with typed references to all CSS variables. Th
 #### Import
 
 ```tsx
-import { tokens } from 'inoui'
+import { tokens } from '@juanitte/inoui'
 ```
 
 #### Usage
@@ -416,12 +416,12 @@ import {
   omit, classNames,
   BREAKPOINT_VALUES, BREAKPOINT_ORDER, getResponsiveValue,
   useEvent, useMergedState, useWindowWidth, useBreakpoint,
-} from 'inoui'
+} from '@juanitte/inoui'
 import type {
   ScrollToOptions, ClassValue,
   Breakpoint, ResponsiveValue,
   UseMergedStateOptions,
-} from 'inoui'
+} from '@juanitte/inoui'
 ```
 
 ---
@@ -433,7 +433,7 @@ import type {
 Returns the browser's native scrollbar width in pixels. The result is cached after the first call.
 
 ```tsx
-import { getScrollBarSize } from 'inoui'
+import { getScrollBarSize } from '@juanitte/inoui'
 
 const width = getScrollBarSize()      // e.g. 17 (cached)
 const fresh = getScrollBarSize(true)  // re-measures even if cached
@@ -446,8 +446,8 @@ Returns `0` in SSR / non-DOM environments.
 Smoothly scrolls a container to a target vertical position using an easeInOutCubic easing curve.
 
 ```tsx
-import { scrollTo } from 'inoui'
-import type { ScrollToOptions } from 'inoui'
+import { scrollTo } from '@juanitte/inoui'
+import type { ScrollToOptions } from '@juanitte/inoui'
 
 scrollTo(500)                        // scroll window to y=500
 scrollTo(0, {
@@ -468,7 +468,7 @@ scrollTo(0, {
 Returns `true` when running in a real browser environment (DOM is available). SSR-safe alternative to checking `typeof window !== 'undefined'`.
 
 ```tsx
-import { canUseDom } from 'inoui'
+import { canUseDom } from '@juanitte/inoui'
 
 if (canUseDom()) {
   // safe to access document, window, etc.
@@ -484,7 +484,7 @@ if (canUseDom()) {
 Returns a shallow copy of `obj` with the specified keys removed. Fully typed.
 
 ```tsx
-import { omit } from 'inoui'
+import { omit } from '@juanitte/inoui'
 
 const clean = omit(props, ['className', 'style'])
 // clean is typed as Omit<typeof props, 'className' | 'style'>
@@ -495,8 +495,8 @@ const clean = omit(props, ['className', 'style'])
 Builds a class name string from any mix of strings, numbers, objects, and arrays — falsy values are automatically ignored.
 
 ```tsx
-import { classNames } from 'inoui'
-import type { ClassValue } from 'inoui'
+import { classNames } from '@juanitte/inoui'
+import type { ClassValue } from '@juanitte/inoui'
 
 classNames('foo', undefined, 'bar')           // 'foo bar'
 classNames({ active: true, disabled: false }) // 'active'
@@ -510,8 +510,8 @@ classNames(['a', ['b', 'c']], 'z')            // 'a b c z'
 These utilities implement a shared responsive breakpoint system used by [Avatar](#avatar), [DataDisplay](#datadisplay), [Grid](#grid), and [Waterfall](#waterfall).
 
 ```tsx
-import { BREAKPOINT_VALUES, BREAKPOINT_ORDER, getResponsiveValue } from 'inoui'
-import type { Breakpoint, ResponsiveValue } from 'inoui'
+import { BREAKPOINT_VALUES, BREAKPOINT_ORDER, getResponsiveValue } from '@juanitte/inoui'
+import type { Breakpoint, ResponsiveValue } from '@juanitte/inoui'
 ```
 
 #### `Breakpoint` type
@@ -554,7 +554,7 @@ type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>
 Resolves a `ResponsiveValue<T>` to a concrete value given the current window width. If `value` is a scalar it is returned as-is; if it is an object, the largest active breakpoint wins.
 
 ```tsx
-import { getResponsiveValue } from 'inoui'
+import { getResponsiveValue } from '@juanitte/inoui'
 
 getResponsiveValue(3, 1024)                        // 3
 getResponsiveValue({ xs: 1, md: 2, xl: 4 }, 1024) // 2  (lg ≥ md, xl not yet active)
@@ -569,7 +569,7 @@ getResponsiveValue({ xs: 1, md: 2, xl: 4 }, 1024) // 2  (lg ≥ md, xl not yet a
 Returns a stable function reference that always calls the latest version of `fn`. The returned reference never changes between renders, so it is safe to pass to memoized children without causing re-renders.
 
 ```tsx
-import { useEvent } from 'inoui'
+import { useEvent } from '@juanitte/inoui'
 
 const handleClick = useEvent((e: MouseEvent) => {
   console.log(count) // always reads the latest `count`
@@ -581,8 +581,8 @@ const handleClick = useEvent((e: MouseEvent) => {
 Merges controlled and uncontrolled state into a single interface. Behaves like `useState` but also accepts an optional `value` / `onChange` pair for controlled use.
 
 ```tsx
-import { useMergedState } from 'inoui'
-import type { UseMergedStateOptions } from 'inoui'
+import { useMergedState } from '@juanitte/inoui'
+import type { UseMergedStateOptions } from '@juanitte/inoui'
 
 // Uncontrolled
 const [value, setValue] = useMergedState('hello')
@@ -606,7 +606,7 @@ const [value, setValue] = useMergedState('hello', {
 Returns the current `window.innerWidth`, updating on every resize event. SSR-safe — returns `1200` on the server.
 
 ```tsx
-import { useWindowWidth } from 'inoui'
+import { useWindowWidth } from '@juanitte/inoui'
 
 function MyComponent() {
   const width = useWindowWidth()
@@ -619,7 +619,7 @@ function MyComponent() {
 Returns a map of active breakpoints based on the current window width.
 
 ```tsx
-import { useBreakpoint } from 'inoui'
+import { useBreakpoint } from '@juanitte/inoui'
 
 function MyComponent() {
   const screens = useBreakpoint()
@@ -642,7 +642,7 @@ Returns `Record<Breakpoint, boolean>` where each key is `true` if the window wid
 `Affix` keeps its children pinned to the top or bottom of the viewport (or a custom scroll container) once the user scrolls past a defined threshold. A placeholder `div` of equal size replaces the content in the normal flow so the page layout does not jump when the element becomes fixed.
 
 ```tsx
-import { Affix } from 'inoui'
+import { Affix } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -750,7 +750,7 @@ const containerRef = useRef<HTMLDivElement>(null)
 `Alert` is a feedback component that displays contextual messages to the user. It supports four severity types (`success`, `info`, `warning`, `error`) with automatic color theming (light/dark aware via `color-mix`), an optional icon, a close button with slide-out animation, a custom action slot, and a full-width `banner` mode. The compound `Alert.ErrorBoundary` wraps children and renders an error alert when a React error is caught.
 
 ```tsx
-import { Alert } from 'inoui'
+import { Alert } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -900,7 +900,7 @@ When the alert is dismissed via the close button, the component:
 
 **13. Error boundary**
 ```tsx
-import { Alert } from 'inoui'
+import { Alert } from '@juanitte/inoui'
 
 function RiskyWidget() {
   // This might throw during render
@@ -930,7 +930,7 @@ function RiskyWidget() {
 **15. Multiple stacked alerts**
 ```tsx
 import { useState } from 'react'
-import { Alert, Button } from 'inoui'
+import { Alert, Button } from '@juanitte/inoui'
 
 function Notifications() {
   const [alerts, setAlerts] = useState([
@@ -971,7 +971,7 @@ An input component with auto-complete suggestions. Supports filtering, grouped o
 #### Import
 
 ```tsx
-import { AutoComplete } from 'inoui'
+import { AutoComplete } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -1213,7 +1213,7 @@ const [options, setOptions] = useState([])
 
 **Import:**
 ```tsx
-import { Avatar } from 'inoui';
+import { Avatar } from '@juanitte/inoui';
 ```
 
 #### Avatar Props
@@ -1284,7 +1284,7 @@ See [Breakpoint Utilities](#breakpoint-utilities) for the full type definitions 
 
 **Basic usage with image:**
 ```tsx
-import { Avatar } from 'inoui';
+import { Avatar } from '@juanitte/inoui';
 
 <Avatar src="https://i.pravatar.cc/150?img=1" alt="User" />
 ```
@@ -1412,7 +1412,7 @@ A navigation component that renders a list of anchor links and highlights the cu
 #### Import
 
 ```tsx
-import { Anchor } from 'inoui'
+import { Anchor } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -1539,14 +1539,14 @@ interface AnchorLinkItemProps {
 `App` is a thin root-level provider that internally calls `useModal()` and `usePopAlert()`, mounts their `contextHolder` nodes, and exposes both APIs through React context. Any descendant component can call `App.useApp()` to access `modal` and `notification` without managing hooks or `contextHolder` placement itself.
 
 ```tsx
-import { App } from 'inoui'
+import { App } from '@juanitte/inoui'
 ```
 
 #### Setup
 
 ```tsx
 // main.tsx (or your app entry point)
-import { App } from 'inoui'
+import { App } from '@juanitte/inoui'
 
 createRoot(document.getElementById('root')!).render(
   <App>
@@ -1592,7 +1592,7 @@ interface AppContextValue {
 
 **1. Basic setup**
 ```tsx
-import { App } from 'inoui'
+import { App } from '@juanitte/inoui'
 
 createRoot(document.getElementById('root')!).render(
   <App>
@@ -1610,7 +1610,7 @@ createRoot(document.getElementById('root')!).render(
 
 **3. Using App.useApp() in a child component**
 ```tsx
-import { App, Button } from 'inoui'
+import { App, Button } from '@juanitte/inoui'
 
 function DeleteButton({ id }: { id: number }) {
   const { modal, notification } = App.useApp()
@@ -1676,7 +1676,7 @@ A small numerical value or status indicator for UI elements. Wraps any content w
 #### Import
 
 ```tsx
-import { Badge } from 'inoui'
+import { Badge } from '@juanitte/inoui'
 ```
 
 #### Badge Props
@@ -1812,7 +1812,7 @@ A navigation component that displays the current location within a hierarchical 
 #### Import
 
 ```tsx
-import { Breadcrumb } from 'inoui'
+import { Breadcrumb } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -1989,7 +1989,7 @@ A floating action button (FAB) component for quick actions, with support for bad
 #### Import
 
 ```tsx
-import { Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon } from 'inoui'
+import { Bubble, BackToTopIcon, ChatIcon, BellIcon, CloseIcon } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -2274,7 +2274,7 @@ A versatile button component with multiple variants, sizes, and states.
 #### Import
 
 ```tsx
-import { Button } from 'inoui'
+import { Button } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -2437,7 +2437,7 @@ Also accepts all standard `<button>` HTML attributes.
 #### Import
 
 ```tsx
-import { Card } from 'inoui'
+import { Card } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -2646,7 +2646,7 @@ interface CardStyles {
 **Card.Meta with avatar:**
 
 ```tsx
-import { Card, Avatar } from 'inoui'
+import { Card, Avatar } from '@juanitte/inoui'
 
 <Card>
   <Card.Meta
@@ -2725,7 +2725,7 @@ const [activeTab, setActiveTab] = useState('photos')
 
 **Import:**
 ```tsx
-import { Calendar } from 'inoui';
+import { Calendar } from '@juanitte/inoui';
 ```
 
 #### Props
@@ -2815,7 +2815,7 @@ Use `CalendarAdapterProvider` to set adapter for all calendars in a subtree.
 
 **Basic usage:**
 ```tsx
-import { Calendar } from 'inoui';
+import { Calendar } from '@juanitte/inoui';
 
 <Calendar
   onChange={(date) => console.log('Selected:', date)}
@@ -2962,8 +2962,8 @@ const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
 **With Day.js adapter:**
 ```tsx
-import { Calendar, CalendarAdapterProvider } from 'inoui';
-import { DayJSAdapter } from 'inoui/adapters';
+import { Calendar, CalendarAdapterProvider } from '@juanitte/inoui';
+import { DayJSAdapter } from '@juanitte/inoui/adapters';
 import dayjs from 'dayjs';
 
 const adapter = new DayJSAdapter();
@@ -3002,7 +3002,7 @@ const adapter = new DayJSAdapter();
 #### Import
 
 ```tsx
-import { Carousel } from 'inoui'
+import { Carousel } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -3258,7 +3258,7 @@ A checkbox component for toggling boolean values with support for indeterminate 
 #### Import
 
 ```tsx
-import { Checkbox } from 'inoui'
+import { Checkbox } from '@juanitte/inoui'
 ```
 
 #### Checkbox Props
@@ -3433,7 +3433,7 @@ A full-featured color picker with saturation-brightness panel, hue and alpha sli
 #### Import
 
 ```tsx
-import { ColorPicker } from 'inoui'
+import { ColorPicker } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -3623,7 +3623,7 @@ const [color, setColor] = useState('#ff6b6b')
 #### Import
 
 ```tsx
-import { Collapse } from 'inoui'
+import { Collapse } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -4016,7 +4016,7 @@ const [activeKeys, setActiveKeys] = useState<string[]>(['1'])
 `ConfigProvider` is a context provider that configures global defaults for all descendant Ino-UI components. It can be nested — each level inherits from its parent and only overrides the keys it supplies. `ConfigProvider.useConfig()` reads the nearest provider's value and never throws; outside any provider it returns the `en_US` defaults.
 
 ```tsx
-import { ConfigProvider } from 'inoui'
+import { ConfigProvider } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -4084,7 +4084,7 @@ interface FormLocale {
 #### Built-in locales
 
 ```ts
-import { en_US, es_ES } from 'inoui'
+import { en_US, es_ES } from '@juanitte/inoui'
 ```
 
 | Export | locale | Coverage |
@@ -4106,7 +4106,7 @@ import { en_US, es_ES } from 'inoui'
 
 **1. Global locale**
 ```tsx
-import { ConfigProvider, es_ES } from 'inoui'
+import { ConfigProvider, es_ES } from '@juanitte/inoui'
 
 <ConfigProvider locale={es_ES}>
   <App />
@@ -4145,7 +4145,7 @@ import { ConfigProvider, es_ES } from 'inoui'
 
 **5. Custom locale (partial override)**
 ```tsx
-import { en_US } from 'inoui'
+import { en_US } from '@juanitte/inoui'
 
 const myLocale = {
   ...en_US,
@@ -4159,7 +4159,7 @@ const myLocale = {
 
 **6. Reading config in a custom component**
 ```tsx
-import { ConfigProvider } from 'inoui'
+import { ConfigProvider } from '@juanitte/inoui'
 
 function MyField() {
   const { componentSize, componentDisabled } = ConfigProvider.useConfig()
@@ -4186,7 +4186,7 @@ function MyField() {
 #### Import
 
 ```tsx
-import { DataDisplay } from 'inoui'
+import { DataDisplay } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -4503,7 +4503,7 @@ A comprehensive date picker with calendar panel, multiple picker modes (date, we
 #### Import
 
 ```tsx
-import { DatePicker } from 'inoui'
+import { DatePicker } from '@juanitte/inoui'
 ```
 
 #### DatePicker Props
@@ -4803,7 +4803,7 @@ const [range, setRange] = useState<[Date, Date] | null>(null)
 />
 
 // Pluggable adapter (e.g., dayjs, date-fns)
-import { DayjsAdapter } from 'inoui/adapters/dayjs'
+import { DayjsAdapter } from '@juanitte/inoui/adapters/dayjs'
 <DatePicker adapter={new DayjsAdapter()} />
 ```
 
@@ -4821,7 +4821,7 @@ A separator component for dividing content sections, with optional text and mult
 #### Import
 
 ```tsx
-import { Divider } from 'inoui'
+import { Divider } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -4926,7 +4926,7 @@ import { Divider } from 'inoui'
 `Drawer` is a slide-in panel that overlays the page from any edge. It renders into a portal on `document.body`, locks body scroll while open, and slides in/out with a 300 ms CSS transition. The panel supports a header with title and extra actions, a scrollable body with an optional loading skeleton, a footer slot, ESC key dismissal, mask click to close, two preset sizes, and a `destroyOnClose` option to unmount content when closed.
 
 ```tsx
-import { Drawer } from 'inoui'
+import { Drawer } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -4980,7 +4980,7 @@ type DrawerStyles       = SemanticStyles<DrawerSemanticSlot>
 **1. Basic right drawer**
 ```tsx
 import { useState } from 'react'
-import { Drawer, Button } from 'inoui'
+import { Drawer, Button } from '@juanitte/inoui'
 
 function App() {
   const [open, setOpen] = useState(false)
@@ -5158,7 +5158,7 @@ const [loading, setLoading] = useState(true)
 **19. Full-featured example**
 ```tsx
 import { useState } from 'react'
-import { Drawer, Button } from 'inoui'
+import { Drawer, Button } from '@juanitte/inoui'
 
 function SettingsPanel() {
   const [open, setOpen]       = useState(false)
@@ -5219,7 +5219,7 @@ A contextual menu component triggered by hover, click, or right-click. Supports 
 #### Import
 
 ```tsx
-import { Dropdown } from 'inoui'
+import { Dropdown } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -5542,7 +5542,7 @@ const [open, setOpen] = useState(false)
 #### Import
 
 ```tsx
-import { Empty } from 'inoui'
+import { Empty } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -5722,7 +5722,7 @@ A comprehensive form component with field-level validation (required, type, min/
 #### Import
 
 ```tsx
-import { Form } from 'inoui'
+import { Form } from '@juanitte/inoui'
 ```
 
 #### Form Props
@@ -6114,7 +6114,7 @@ A comprehensive input component with support for text input, text areas, search,
 #### Import
 
 ```tsx
-import { Input } from 'inoui'
+import { Input } from '@juanitte/inoui'
 ```
 
 #### Input Props
@@ -6361,7 +6361,7 @@ const inputRef = useRef<InputRef>(null)
 #### Import
 
 ```tsx
-import { Image } from 'inoui'
+import { Image } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -6660,7 +6660,7 @@ A numeric input component with increment/decrement controls, keyboard navigation
 #### Import
 
 ```tsx
-import { InputNumber } from 'inoui'
+import { InputNumber } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -6873,7 +6873,7 @@ A flexible box layout component for arranging elements with CSS Flexbox.
 #### Import
 
 ```tsx
-import { Flex } from 'inoui'
+import { Flex } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -6992,9 +6992,9 @@ A responsive grid system based on 24 columns with Row and Col components.
 #### Import
 
 ```tsx
-import { Grid, Row, Col } from 'inoui'
+import { Grid, Row, Col } from '@juanitte/inoui'
 // or
-import { Grid } from 'inoui'
+import { Grid } from '@juanitte/inoui'
 // Use as Grid.Row and Grid.Col
 ```
 
@@ -7135,11 +7135,11 @@ A complete page layout system with Header, Footer, Sider, and Content components
 #### Import
 
 ```tsx
-import { Layout } from 'inoui'
+import { Layout } from '@juanitte/inoui'
 // Use as Layout, Layout.Header, Layout.Sider, Layout.Content, Layout.Footer
 
 // Or import individually
-import { Layout, Header, Footer, Content, Sider } from 'inoui'
+import { Layout, Header, Footer, Content, Sider } from '@juanitte/inoui'
 ```
 
 #### Layout Props
@@ -7333,7 +7333,7 @@ function MyLayout() {
 Access sider context from child components:
 
 ```tsx
-import { useSider } from 'inoui'
+import { useSider } from '@juanitte/inoui'
 
 function MenuComponent() {
   const { siderCollapsed } = useSider()
@@ -7360,7 +7360,7 @@ A versatile navigation menu component supporting vertical, horizontal, and inlin
 #### Import
 
 ```tsx
-import { Menu } from 'inoui'
+import { Menu } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -7685,7 +7685,7 @@ A textarea component with mention detection and autocomplete dropdown. Detects m
 #### Import
 
 ```tsx
-import { Mention } from 'inoui'
+import { Mention } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -7930,7 +7930,7 @@ const [options, setOptions] = useState([])
 `Modal` is a dialog component that renders in a portal on `document.body`. It supports a header with title, a scrollable body, a flexible footer (default Cancel + OK buttons, custom `ReactNode`, render function, or `null` to hide), ESC key dismissal, mask click to close, optional mask blur, `centered` vertical alignment, async `onOk` with `confirmLoading` spinner, a body loading skeleton, `modalRender` for custom wrappers (e.g. draggable), and `destroyOnClose`. The `useModal()` hook provides programmatic confirm/info/success/warning/error dialogs with `destroy` and `update` control.
 
 ```tsx
-import { Modal, useModal } from 'inoui'
+import { Modal, useModal } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -8051,7 +8051,7 @@ Each method returns a `ModalInstance`:
 **1. Basic modal**
 ```tsx
 import { useState } from 'react'
-import { Modal, Button } from 'inoui'
+import { Modal, Button } from '@juanitte/inoui'
 
 function App() {
   const [open, setOpen] = useState(false)
@@ -8246,7 +8246,7 @@ import Draggable from 'react-draggable'
 
 **18. useModal — confirm dialog**
 ```tsx
-import { useModal, Button } from 'inoui'
+import { useModal, Button } from '@juanitte/inoui'
 
 function App() {
   const [modal, contextHolder] = useModal()
@@ -8302,7 +8302,7 @@ modal.destroyAll()
 **21. Full form modal**
 ```tsx
 import { useState } from 'react'
-import { Modal, Button } from 'inoui'
+import { Modal, Button } from '@juanitte/inoui'
 
 interface UserForm { name: string; email: string }
 
@@ -8361,7 +8361,7 @@ A cascading selection component for hierarchical data (e.g., province/city/distr
 #### Import
 
 ```tsx
-import { NestedSelect } from 'inoui'
+import { NestedSelect } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -8660,7 +8660,7 @@ A navigation component for splitting content across multiple pages. Supports con
 #### Import
 
 ```tsx
-import { Pagination } from 'inoui'
+import { Pagination } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -8808,7 +8808,7 @@ const [page, setPage] = useState(1)
 `PopAlert` is a hook-based toast notification system. Call `usePopAlert()` to get an `api` object and a `contextHolder` node. Place `contextHolder` anywhere in your JSX to mount the portal, then call `api.success()`, `api.error()`, etc. from anywhere in the component tree. Notifications appear as floating pill cards at any of 8 screen positions, animate in/out, auto-dismiss after a configurable duration, pause on hover, support a shrinking progress bar, optional secondary description text, and allow update-in-place via a stable `key`.
 
 ```tsx
-import { usePopAlert } from 'inoui'
+import { usePopAlert } from '@juanitte/inoui'
 ```
 
 #### usePopAlert(config?)
@@ -8882,7 +8882,7 @@ type PopAlertStyles       = SemanticStyles<PopAlertSemanticSlot>
 
 **1. Basic usage**
 ```tsx
-import { usePopAlert } from 'inoui'
+import { usePopAlert } from '@juanitte/inoui'
 
 function App() {
   const [api, contextHolder] = usePopAlert()
@@ -9018,7 +9018,7 @@ api.open({
 **15. Full workflow example**
 ```tsx
 import { useState } from 'react'
-import { usePopAlert, Button } from 'inoui'
+import { usePopAlert, Button } from '@juanitte/inoui'
 
 export function UploadButton() {
   const [api, contextHolder] = usePopAlert({
@@ -9085,7 +9085,7 @@ function fakeUpload() {
 `PopConfirm` displays a lightweight confirmation popover next to a trigger element. It renders a warning icon, a required title, an optional description, and OK / Cancel action buttons. If `onConfirm` returns a Promise the OK button shows a loading spinner until the promise settles. Built on top of `Popover` — all placement, trigger, and delay options from `Popover` are available.
 
 ```tsx
-import { PopConfirm } from 'inoui'
+import { PopConfirm } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -9139,7 +9139,7 @@ type PopoverTrigger   = 'hover' | 'click' | 'focus' | 'contextMenu'
 
 **1. Basic delete confirmation**
 ```tsx
-import { PopConfirm, Button } from 'inoui'
+import { PopConfirm, Button } from '@juanitte/inoui'
 
 <PopConfirm
   title="Delete this record?"
@@ -9265,7 +9265,7 @@ const [open, setOpen] = useState(false)
 #### Import
 
 ```tsx
-import { Popover } from 'inoui'
+import { Popover } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -9529,7 +9529,7 @@ const [open, setOpen] = useState(false)
 `Progress` visualises completion as a line bar, a circular ring, or a dashboard (open-bottom arc). All three variants support gradient stroke colors, a secondary success segment, segmented (steps) mode, custom text formatting, and the full semantic-DOM slot system.
 
 ```tsx
-import { Progress } from 'inoui'
+import { Progress } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -9742,7 +9742,7 @@ A component that generates QR codes from any text or URL. Supports canvas and SV
 #### Import
 
 ```tsx
-import { QRCode } from 'inoui'
+import { QRCode } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -9949,7 +9949,7 @@ This example shows how to wire all four statuses together — useful for one-tim
 
 ```tsx
 import { useState, useEffect, useRef } from 'react'
-import { QRCode } from 'inoui'
+import { QRCode } from '@juanitte/inoui'
 
 const EXPIRY_SECONDS = 60          // QR valid for 60 s
 const LOADING_DURATION_MS = 1500   // Simulate server round-trip
@@ -10055,7 +10055,7 @@ A radio button component for single selection. Includes Radio.Group for managing
 #### Import
 
 ```tsx
-import { Radio } from 'inoui'
+import { Radio } from '@juanitte/inoui'
 ```
 
 #### Radio Props
@@ -10278,7 +10278,7 @@ A star rating component for collecting user feedback. Supports customizable star
 #### Import
 
 ```tsx
-import { Rate } from 'inoui'
+import { Rate } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -10416,7 +10416,7 @@ const [value, setValue] = useState(4)
 `Result` displays a centred feedback screen for operation outcomes. It supports four semantic statuses (`success`, `error`, `warning`, `info`) with matching SVG icons, three HTTP-error statuses (`403`, `404`, `500`) with illustrated scenes, an optional title, subtitle, action area, and extra content panel.
 
 ```tsx
-import { Result } from 'inoui'
+import { Result } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -10586,7 +10586,7 @@ A powerful dropdown select component supporting single selection, multiple selec
 #### Import
 
 ```tsx
-import { Select } from 'inoui'
+import { Select } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -10882,7 +10882,7 @@ A versatile range slider component supporting single values, multi-handle ranges
 #### Import
 
 ```tsx
-import { Slider } from 'inoui'
+import { Slider } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -11149,7 +11149,7 @@ A component for setting spacing between inline elements. Supports horizontal/ver
 #### Import
 
 ```tsx
-import { Space } from 'inoui'
+import { Space } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -11296,7 +11296,7 @@ interface CompactItemContextValue {
 `Spinner` is a flexible loading indicator with seven animation variants, three sizes, optional tip text, delay support, progress mode, fullscreen overlay, and content-wrapping mode. It operates in three rendering modes depending on whether children and `fullscreen` are provided.
 
 ```tsx
-import { Spinner } from 'inoui'
+import { Spinner } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -11446,7 +11446,7 @@ A component for creating resizable split panels. Supports horizontal/vertical or
 #### Import
 
 ```tsx
-import { Splitter } from 'inoui'
+import { Splitter } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -11638,7 +11638,7 @@ A navigation component that guides users through a multi-step workflow. Supports
 #### Import
 
 ```tsx
-import { Steps } from 'inoui'
+import { Steps } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -11886,7 +11886,7 @@ A display component for formatted numbers, metrics, and KPIs. Includes `Statisti
 #### Import
 
 ```tsx
-import { Statistic } from 'inoui'
+import { Statistic } from '@juanitte/inoui'
 ```
 
 #### Props — `Statistic`
@@ -12025,7 +12025,7 @@ type CountdownStyles       = SemanticStyles<CountdownSemanticSlot>
 **6. Icon prefix**
 
 ```tsx
-import { UserIcon } from 'inoui/icons'
+import { UserIcon } from '@juanitte/inoui/icons'
 
 <Statistic
   title="Active Users"
@@ -12191,7 +12191,7 @@ A toggle switch component for binary on/off states. Supports two sizes, loading 
 #### Import
 
 ```tsx
-import { Switch } from 'inoui'
+import { Switch } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -12341,7 +12341,7 @@ A feature-rich data table supporting client-side and server-side scenarios. Incl
 #### Import
 
 ```tsx
-import { Table } from 'inoui'
+import { Table } from '@juanitte/inoui'
 ```
 
 #### Props — `TableProps<T>`
@@ -12919,7 +12919,7 @@ A tabbed navigation component for switching between content panels. Supports lin
 #### Import
 
 ```tsx
-import { Tabs } from 'inoui'
+import { Tabs } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -13162,7 +13162,7 @@ A compact label component for categorization, status display, and filtering. Sup
 #### Import
 
 ```tsx
-import { Tag } from 'inoui'
+import { Tag } from '@juanitte/inoui'
 ```
 
 #### Props — `Tag`
@@ -13336,7 +13336,7 @@ Clicking × triggers `onClose`. Call `e.preventDefault()` to keep the tag visibl
 **9. With leading icon**
 
 ```tsx
-import { StarIcon } from 'inoui/icons'
+import { StarIcon } from '@juanitte/inoui/icons'
 
 <Tag icon={<StarIcon />} color="gold">
   Featured
@@ -13491,7 +13491,7 @@ A typography component for displaying text with various styles, formatting optio
 #### Import
 
 ```tsx
-import { Text } from 'inoui'
+import { Text } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -13651,7 +13651,7 @@ A time selection component with digital columns or analog clock view. Supports 1
 #### Import
 
 ```tsx
-import { TimePicker } from 'inoui'
+import { TimePicker } from '@juanitte/inoui'
 ```
 
 #### TimePicker Props
@@ -13877,7 +13877,7 @@ A component for displaying a sequence of events in chronological order. Supports
 #### Import
 
 ```tsx
-import { Timeline } from 'inoui'
+import { Timeline } from '@juanitte/inoui'
 ```
 
 #### Props — `TimelineProps`
@@ -14007,7 +14007,7 @@ In three-column mode, `titleSpan` controls the label column width as a fraction 
 **5. Custom dot node**
 
 ```tsx
-import { ClockIcon, CheckIcon } from 'inoui/icons'
+import { ClockIcon, CheckIcon } from '@juanitte/inoui/icons'
 
 <Timeline
   items={[
@@ -14119,7 +14119,7 @@ Content appears on the left of the axis.
 **12. Pending with custom dot**
 
 ```tsx
-import { HourglassIcon } from 'inoui/icons'
+import { HourglassIcon } from '@juanitte/inoui/icons'
 
 <Timeline
   pending="Processing…"
@@ -14239,7 +14239,7 @@ A segmented control (also known as a segmented button or tab bar) that lets user
 #### Import
 
 ```tsx
-import { Toggle } from 'inoui'
+import { Toggle } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -14354,7 +14354,7 @@ const [period, setPeriod] = useState<string>('Week')
 **5. With icons**
 
 ```tsx
-import { ListIcon, GridIcon, MapIcon } from 'inoui/icons'
+import { ListIcon, GridIcon, MapIcon } from '@juanitte/inoui/icons'
 
 <Toggle
   options={[
@@ -14494,7 +14494,7 @@ Omit `label` (and provide no fallback icon) to render icon-only buttons.
 
 ```tsx
 import { useState } from 'react'
-import { Toggle } from 'inoui'
+import { Toggle } from '@juanitte/inoui'
 
 type View = 'grid' | 'list' | 'map'
 
@@ -14537,7 +14537,7 @@ function ProductCatalog() {
 `Tour` is a guided walkthrough component that highlights UI elements one by one using an SVG spotlight mask. It is ideal for onboarding flows, feature discovery, and interactive product demos. The popup card follows the highlighted element with 13 placement options, supports two visual themes, and offers full control over step navigation, indicators, and action buttons.
 
 ```tsx
-import { Tour } from 'inoui'
+import { Tour } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -14617,7 +14617,7 @@ type TourStyles     = SemanticStyles<TourSemanticSlot>
 **1. Basic guided tour**
 ```tsx
 import { useRef, useState } from 'react'
-import { Tour } from 'inoui'
+import { Tour } from '@juanitte/inoui'
 
 function App() {
   const btnRef  = useRef<HTMLButtonElement>(null)
@@ -14827,7 +14827,7 @@ const [current, setCurrent] = useState(0)
 **15. Full onboarding walkthrough**
 ```tsx
 import { useRef, useState } from 'react'
-import { Tour, Button } from 'inoui'
+import { Tour, Button } from '@juanitte/inoui'
 
 export function OnboardingTour() {
   const navRef     = useRef<HTMLElement>(null)
@@ -14907,7 +14907,7 @@ export function OnboardingTour() {
 
 **Import:**
 ```tsx
-import { Transfer } from 'inoui';
+import { Transfer } from '@juanitte/inoui';
 ```
 
 #### Props
@@ -14978,7 +14978,7 @@ type TransferDirection = 'left' | 'right';
 
 **Basic usage:**
 ```tsx
-import { Transfer } from 'inoui';
+import { Transfer } from '@juanitte/inoui';
 
 const [targetKeys, setTargetKeys] = useState<string[]>([]);
 
@@ -15132,7 +15132,7 @@ const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 `Tree` is a hierarchical tree component for displaying and interacting with nested data. It supports node selection, checkbox checking with cascade propagation, expand/collapse with animations, `showLine` guides, custom icons, async data loading, drag-and-drop reordering, virtual scrolling for large datasets, and full keyboard navigation. The compound `Tree.DirectoryTree` variant is preconfigured with folder/file icons and click-to-expand behavior.
 
 ```tsx
-import { Tree } from 'inoui'
+import { Tree } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -15256,7 +15256,7 @@ type TreeStyles       = SemanticStyles<TreeSemanticSlot>
 
 **1. Basic tree**
 ```tsx
-import { Tree } from 'inoui'
+import { Tree } from '@juanitte/inoui'
 
 const data = [
   {
@@ -15464,7 +15464,7 @@ const data = [
 
 **15. Directory tree**
 ```tsx
-import { Tree } from 'inoui'
+import { Tree } from '@juanitte/inoui'
 
 const files = [
   {
@@ -15535,7 +15535,7 @@ const [checked, setChecked] = useState<string[]>([])
 
 **Import:**
 ```tsx
-import { TreeSelect } from 'inoui';
+import { TreeSelect } from '@juanitte/inoui';
 ```
 
 #### Props
@@ -15661,7 +15661,7 @@ interface TreeSelectTagRenderProps {
 
 **Basic usage:**
 ```tsx
-import { TreeSelect } from 'inoui';
+import { TreeSelect } from '@juanitte/inoui';
 
 const treeData = [
   {
@@ -15872,7 +15872,7 @@ const dataWithDisabled = [
 
 **Import:**
 ```tsx
-import { Upload } from 'inoui';
+import { Upload } from '@juanitte/inoui';
 ```
 
 #### Props
@@ -15985,7 +15985,7 @@ interface UploadRef {
 
 **Basic usage:**
 ```tsx
-import { Upload, Button } from 'inoui';
+import { Upload, Button } from '@juanitte/inoui';
 
 <Upload
   action="/api/upload"
@@ -16238,7 +16238,7 @@ A masonry-style layout component that distributes items into columns based on av
 #### Import
 
 ```tsx
-import { Waterfall } from 'inoui'
+import { Waterfall } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -16435,7 +16435,7 @@ The waterfall layout uses a "shortest column first" algorithm:
 `Watermark` renders a repeating, non-interactive overlay on top of its children. The watermark tile is generated on an offscreen `<canvas>` (DPR-aware) and applied as a CSS `background-image` repeat pattern. Supports text (single or multi-line) and image sources, rotation, tile spacing, and font customisation.
 
 ```tsx
-import { Watermark } from 'inoui'
+import { Watermark } from '@juanitte/inoui'
 ```
 
 #### Props
@@ -16596,7 +16596,7 @@ A lightweight tooltip component for displaying additional information on hover o
 #### Import
 
 ```tsx
-import { Tooltip } from 'inoui'
+import { Tooltip } from '@juanitte/inoui'
 ```
 
 #### Props
