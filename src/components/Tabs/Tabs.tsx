@@ -167,9 +167,6 @@ export function Tabs({
     defaultActiveKey ?? items[0]?.key ?? '',
   )
   const currentKey = isControlled ? activeKey! : internalKey
-  const currentKeyRef = useRef(currentKey)
-  currentKeyRef.current = currentKey
-
   const handleTabChange = useCallback(
     (key: string) => {
       if (!isControlled) setInternalKey(key)
@@ -186,6 +183,9 @@ export function Tabs({
   const tabPaneAnimated = typeof animated === 'boolean' ? animated : animated.tabPane
 
   const sizeConfig = SIZE_CONFIG[size]
+
+  // ---- Hover tracking ----
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null)
 
   // ---- Refs for ink bar measurement ----
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map())
@@ -528,6 +528,7 @@ export function Tabs({
   const getTabStyle = (item: TabItem, isActive: boolean): CSSProperties => {
     const gutter = tabBarGutter ?? (isVertical ? 0 : isCard ? 2 : 0)
     const padding = isVertical ? sizeConfig.paddingV : sizeConfig.paddingH
+    const isHovered = hoveredKey === item.key && !item.disabled && !isActive
 
     const base: CSSProperties = {
       display: 'flex',
@@ -538,11 +539,13 @@ export function Tabs({
       cursor: item.disabled ? 'not-allowed' : 'pointer',
       color: item.disabled
         ? tokens.colorTextSubtle
-        : isActive
-          ? isCard
-            ? tokens.colorText
-            : tokens.colorPrimary
-          : tokens.colorText,
+        : isHovered
+          ? isCard ? tokens.colorPrimary : tokens.colorPrimaryHover
+          : isActive
+            ? isCard
+              ? tokens.colorText
+              : tokens.colorPrimary
+            : tokens.colorText,
       fontWeight: isActive ? 600 : 400,
       opacity: item.disabled ? 0.5 : 1,
       whiteSpace: 'nowrap',
@@ -570,7 +573,7 @@ export function Tabs({
       }
 
       Object.assign(base, {
-        backgroundColor: isActive ? tokens.colorBg : tokens.colorBgSubtle,
+        backgroundColor: isActive ? tokens.colorBg : isHovered ? tokens.colorBg : tokens.colorBgSubtle,
         border: `1px solid ${tokens.colorBorder}`,
         borderRadius: borderRadiusMap[tabPosition],
         height: sizeConfig.cardHeight,
@@ -726,24 +729,11 @@ export function Tabs({
                   style={{ ...tabStyle, ...styles?.tab }}
                   className={classNames?.tab}
                   onClick={(e) => handleClick(item, e)}
-                  onMouseEnter={(e) => {
-                    if (item.disabled) return
-                    const el = e.currentTarget as HTMLElement
-                    const active = currentKeyRef.current === item.key
-                    if (!active) {
-                      el.style.color = isCard ? tokens.colorPrimary : tokens.colorPrimaryHover
-                    }
+                  onMouseEnter={() => {
+                    if (!item.disabled) setHoveredKey(item.key)
                   }}
-                  onMouseLeave={(e) => {
-                    if (item.disabled) return
-                    const el = e.currentTarget as HTMLElement
-                    const active = currentKeyRef.current === item.key
-                    if (!active) {
-                      el.style.color = tokens.colorText
-                    }
-                    if (isCard && !active) {
-                      el.style.backgroundColor = tokens.colorBgSubtle
-                    }
+                  onMouseLeave={() => {
+                    setHoveredKey((prev) => prev === item.key ? null : prev)
                   }}
                 >
                   {item.icon && (
