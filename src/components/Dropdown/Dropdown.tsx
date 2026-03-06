@@ -7,11 +7,11 @@ import {
   useEffect,
   useLayoutEffect,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { Button } from '../Button'
 import type { ButtonVariant, ButtonSize, ButtonColor } from '../Button/Button'
+import './Dropdown.css'
 
 // ============================================================================
 // Types
@@ -185,15 +185,11 @@ function DropdownMenu({
 }) {
   const [hoveredSubmenu, setHoveredSubmenu] = useState<string | null>(null)
 
-  const menuStyle: CSSProperties = {
-    minWidth: isSubmenu ? '8.75rem' : '10rem',
-    backgroundColor: tokens.colorBg,
-    border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: '0.5rem',
-    boxShadow: tokens.shadowMd,
-    padding: '0.25rem 0',
-    ...(isSubmenu ? {} : styles?.overlay),
-  }
+  const menuClass = cx(
+    'ino-dropdown__menu',
+    { 'ino-dropdown__menu--submenu': isSubmenu },
+  )
+  const menuStyle: CSSProperties | undefined = !isSubmenu ? styles?.overlay : undefined
 
   const handleItemClick = (item: DropdownMenuItemType, e: ReactMouseEvent) => {
     if (item.disabled) return
@@ -203,19 +199,12 @@ function DropdownMenu({
   }
 
   return (
-    <div style={menuStyle} className={!isSubmenu ? classNames?.overlay : undefined}>
+    <div style={menuStyle} className={cx(menuClass, !isSubmenu ? classNames?.overlay : undefined)}>
       {items.map((item) => {
         // Divider
         if (item.type === 'divider') {
           return (
-            <div
-              key={item.key}
-              style={{
-                height: 1,
-                margin: '0.25rem 0',
-                backgroundColor: tokens.colorBorder,
-              }}
-            />
+            <div key={item.key} className="ino-dropdown__divider" />
           )
         }
 
@@ -223,14 +212,7 @@ function DropdownMenu({
         if (item.type === 'group') {
           return (
             <div key={item.key}>
-              <div
-                style={{
-                  padding: '0.3125rem 0.75rem',
-                  fontSize: '0.75rem',
-                  color: tokens.colorTextSubtle,
-                  fontWeight: 600,
-                }}
-              >
+              <div className="ino-dropdown__group-title">
                 {item.title}
               </div>
               {item.children?.map((child) => (
@@ -294,52 +276,41 @@ function MenuItem({
 }) {
   const hasChildren = item.children && item.children.length > 0
 
-  const itemStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.375rem 0.75rem',
-    fontSize: '0.875rem',
-    minHeight: '2.75rem',
-    cursor: item.disabled ? 'not-allowed' : 'pointer',
-    color: item.danger ? tokens.colorError : item.disabled ? tokens.colorTextSubtle : tokens.colorText,
-    opacity: item.disabled ? 0.5 : 1,
-    transition: 'background-color 0.15s ease',
-    position: hasChildren ? 'relative' : undefined,
-    ...styles?.item,
-  }
+  const itemClass = cx(
+    'ino-dropdown__item',
+    {
+      'ino-dropdown__item--danger': !!item.danger,
+      'ino-dropdown__item--disabled': !!item.disabled,
+      'ino-dropdown__item--has-children': !!hasChildren,
+    },
+    classNames?.item,
+  )
 
   return (
     <div
-      style={itemStyle}
-      className={classNames?.item}
+      className={itemClass}
+      style={styles?.item}
       onClick={!item.disabled && !hasChildren ? (e) => onItemClick(item, e) : undefined}
-      onMouseEnter={(e) => {
-        if (!item.disabled) {
-          ;(e.currentTarget as HTMLElement).style.backgroundColor = item.danger
-            ? tokens.colorErrorBg
-            : tokens.colorBgMuted
-        }
+      onMouseEnter={() => {
         if (hasChildren) setHoveredSubmenu(item.key)
       }}
-      onMouseLeave={(e) => {
-        ;(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
+      onMouseLeave={() => {
         if (hasChildren) setHoveredSubmenu(null)
       }}
     >
       {item.icon && (
-        <span style={{ display: 'inline-flex', fontSize: '0.875rem' }}>{item.icon}</span>
+        <span className="ino-dropdown__item-icon">{item.icon}</span>
       )}
-      <span style={{ flex: 1 }}>{item.label}</span>
+      <span className="ino-dropdown__item-label">{item.label}</span>
       {hasChildren && (
-        <span style={{ display: 'inline-flex', marginLeft: '0.25rem' }}>
+        <span className="ino-dropdown__item-chevron">
           <ChevronRightIcon />
         </span>
       )}
 
       {/* Submenu */}
       {hasChildren && hoveredSubmenu === item.key && (
-        <div style={{ position: 'absolute', left: '100%', top: -4, paddingLeft: '0.25rem' }}>
+        <div className="ino-dropdown__submenu">
           <DropdownMenu
             items={item.children!}
             globalOnClick={globalOnClick}
@@ -509,48 +480,36 @@ export function DropdownComponent({
 
   // Overlay container styles (includes padding for mouse bridge)
   const overlayContainerStyle: CSSProperties = {
-    position: 'absolute',
-    zIndex: 1050,
     ...placementPositionStyles[resolvedPlacement],
     opacity: isAnimating ? 1 : 0,
     transform: getAnimationTransform(resolvedPlacement, isAnimating),
-    transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
   }
 
   // Arrow style
-  const arrowBaseStyle: CSSProperties = {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    backgroundColor: tokens.colorBg,
-    borderRight: `1px solid ${tokens.colorBorder}`,
-    borderBottom: `1px solid ${tokens.colorBorder}`,
+  const arrowStyle: CSSProperties = {
     ...arrowPositionStyles[resolvedPlacement],
     ...styles?.arrow,
   }
 
-  const rootStyle = mergeSemanticStyle(
-    { position: 'relative', display: 'inline-flex' },
-    styles?.root,
-    style,
-  )
+  const rootClass = cx('ino-dropdown', className, classNames?.root)
+  const rootStyle: CSSProperties = { ...styles?.root, ...style }
 
   return (
     <div
       ref={rootRef}
       style={rootStyle}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      className={rootClass}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onContextMenu={handleContextMenu}
     >
-      <span onClick={handleClick} style={{ display: 'inline-flex' }}>
+      <span onClick={handleClick} className="ino-dropdown__trigger">
         {children}
       </span>
 
       {isOpen && (
-        <div ref={overlayRef} style={overlayContainerStyle}>
-          {arrow && <div style={arrowBaseStyle} className={classNames?.arrow} />}
+        <div ref={overlayRef} className="ino-dropdown__overlay-container" style={overlayContainerStyle}>
+          {arrow && <div style={arrowStyle} className={cx('ino-dropdown__arrow', classNames?.arrow)} />}
           {overlayContent}
         </div>
       )}
@@ -581,11 +540,8 @@ function DropdownButton({
 }: DropdownButtonProps) {
   return (
     <div
-      style={mergeSemanticStyle(
-        { display: 'inline-flex', ...style },
-        styles?.root,
-      )}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      style={{ ...style, ...styles?.root }}
+      className={cx('ino-dropdown-button', className, classNames?.root)}
     >
       <Button
         variant={variant}
@@ -594,7 +550,7 @@ function DropdownButton({
         disabled={disabled}
         loading={loading}
         onClick={onClick}
-        style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+        className="ino-dropdown-button__main"
       >
         {children}
       </Button>
@@ -612,14 +568,7 @@ function DropdownButton({
           size={size}
           disabled={disabled}
           icon={icon || <ChevronDownIcon />}
-          style={{
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            borderLeft: `1px solid rgba(255,255,255,0.2)`,
-            minWidth: 'auto',
-            paddingLeft: '0.5rem',
-            paddingRight: '0.5rem',
-          }}
+          className="ino-dropdown-button__icon"
         />
       </DropdownComponent>
     </div>

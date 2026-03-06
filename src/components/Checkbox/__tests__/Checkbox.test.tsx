@@ -126,11 +126,10 @@ describe('Checkbox', () => {
     expect(onChange).not.toHaveBeenCalled()
   })
 
-  it('applies opacity and not-allowed cursor when disabled', () => {
+  it('applies disabled class when disabled', () => {
     const { container } = render(<Checkbox disabled>Dim</Checkbox>)
     const label = container.querySelector('label')!
-    expect(label.style.opacity).toBe('0.5')
-    expect(label.style.cursor).toBe('not-allowed')
+    expect(label).toHaveClass('ino-checkbox--disabled')
   })
 
   // ---------- Indeterminate ----------
@@ -197,17 +196,11 @@ describe('Checkbox', () => {
 
   // ---------- Focus ring ----------
 
-  it('shows focus ring on focus and removes on blur', () => {
+  it('focus ring is handled via CSS :focus-visible', () => {
     const { container } = render(<Checkbox>Focus ring</Checkbox>)
-    const input = screen.getByRole('checkbox')
     const box = container.querySelector('label > span')! as HTMLElement
-
-    fireEvent.focus(input)
-    expect(box.style.boxShadow).toBeTruthy()
-
-    fireEvent.blur(input)
-    // boxShadow is explicitly set to 'none' when not focused
-    expect(box.style.boxShadow === '' || box.style.boxShadow === 'none').toBe(true)
+    // Focus ring is now CSS-only via :focus-visible pseudo-class on .ino-checkbox__box
+    expect(box).toHaveClass('ino-checkbox__box')
   })
 
   // ---------- Styling ----------

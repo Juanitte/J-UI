@@ -1,0 +1,119 @@
+/* ================================================================
+   Layout – BEM classes
+   ================================================================ */
+
+/* --- Block --- */
+.ino-layout {
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  min-height: 0;
+  background-color: var(--j-colorBgSubtle);
+}
+
+.ino-layout--has-sider {
+  flex-direction: row;
+}
+
+/* --- Header --- */
+.ino-layout__header {
+  flex: 0 0 auto;
+  height: 4rem;
+  padding: 0 1.5rem;
+  background-color: var(--j-colorBgMuted);
+  display: flex;
+  align-items: center;
+}
+
+/* --- Footer --- */
+.ino-layout__footer {
+  flex: 0 0 auto;
+  padding: 1.5rem 3.125rem;
+  background-color: var(--j-colorBgMuted);
+}
+
+/* --- Content --- */
+.ino-layout__content {
+  flex: auto;
+  min-height: 0;
+  padding: 1.5rem;
+}
+
+/* --- Sider --- */
+.ino-layout__sider {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.ino-layout__sider--dark {
+  background-color: #1f1f1f;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ino-layout__sider--light {
+  background-color: var(--j-colorBg);
+  color: var(--j-colorText);
+}
+
+/* --- Sider content wrapper --- */
+.ino-layout__sider-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* --- Sider trigger --- */
+.ino-layout__sider-trigger {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ino-layout__sider-trigger--dark {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.ino-layout__sider-trigger--light {
+  background-color: var(--j-colorBgMuted);
+}
+
+/* --- Zero-width trigger --- */
+.ino-layout__sider-trigger--zero {
+  position: absolute;
+  bottom: 3rem;
+  right: -2.25rem;
+  left: auto;
+  width: 2.25rem;
+  height: 2.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 0 0.25rem 0.25rem 0;
+  box-shadow: var(--j-shadowMd);
+}
+
+.ino-layout__sider-trigger--zero.ino-layout__sider-trigger--dark {
+  background-color: #2a2a2a;
+}
+
+.ino-layout__sider-trigger--zero.ino-layout__sider-trigger--light {
+  background-color: var(--j-colorBgMuted);
+}
+
+/* --- Trigger icon --- */
+.ino-layout__trigger-icon {
+  transition: transform 0.2s;
+}
+
+.ino-layout__trigger-icon--collapsed {
+  transform: rotate(180deg);
+}

@@ -1,0 +1,243 @@
+/* ================================================================
+   Transfer – BEM classes
+   ================================================================ */
+
+.ino-transfer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* --- List panel --- */
+.ino-transfer__list {
+  display: flex;
+  flex-direction: column;
+  width: 12rem;
+  height: 18rem;
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  background-color: var(--j-bg);
+  overflow: hidden;
+}
+
+/* Status borders */
+.ino-transfer--error .ino-transfer__list { border-color: var(--j-error); }
+.ino-transfer--warning .ino-transfer__list { border-color: var(--j-warning); }
+
+/* --- Header --- */
+.ino-transfer__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--j-border);
+  background-color: var(--j-bg-subtle);
+  color: var(--j-text);
+}
+
+.ino-transfer__header-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.ino-transfer__header-count {
+  flex: 1;
+  font-size: 0.75rem;
+  opacity: 0.65;
+  text-align: right;
+}
+
+/* --- Search --- */
+.ino-transfer__search {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--j-border);
+  color: var(--j-text-subtle);
+}
+
+.ino-transfer__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: var(--j-text);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* --- Body --- */
+.ino-transfer__body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+/* --- Item --- */
+.ino-transfer__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  min-height: 2rem;
+  transition: background-color 0.15s ease;
+  font-size: 0.8125rem;
+  color: var(--j-text);
+}
+
+.ino-transfer__item:hover:not(.ino-transfer__item--disabled) {
+  background-color: var(--j-bg-muted);
+}
+
+.ino-transfer__item--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ino-transfer__item:not(.ino-transfer__item--disabled) {
+  cursor: pointer;
+}
+
+/* --- Item remove button --- */
+.ino-transfer__item-remove {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  border: none;
+  background: none;
+  color: var(--j-text-muted);
+  cursor: pointer;
+  padding: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.ino-transfer__item:hover .ino-transfer__item-remove { opacity: 1; }
+.ino-transfer__item-remove:hover { color: var(--j-error); }
+
+/* --- Empty --- */
+.ino-transfer__empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--j-text-subtle);
+  font-size: 0.8125rem;
+}
+
+/* --- Operation (buttons between panels) --- */
+.ino-transfer__operation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ino-transfer__operation-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--j-border);
+  border-radius: 0.375rem;
+  background-color: var(--j-bg);
+  color: var(--j-text);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-family: inherit;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.ino-transfer__operation-btn:hover:not(:disabled) {
+  border-color: var(--j-primary);
+  color: var(--j-primary);
+}
+
+.ino-transfer__operation-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ino-transfer__operation-btn--active {
+  background-color: var(--j-primary);
+  border-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+}
+
+.ino-transfer__operation-btn--active:hover:not(:disabled) {
+  background-color: var(--j-primary-hover);
+  border-color: var(--j-primary-hover);
+  color: var(--j-primary-contrast);
+}
+
+/* --- Pagination --- */
+.ino-transfer__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.375rem;
+  border-top: 1px solid var(--j-border);
+  font-size: 0.75rem;
+  color: var(--j-text-muted);
+}
+
+.ino-transfer__pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: none;
+  color: var(--j-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ino-transfer__pagination-btn:hover:not(:disabled) {
+  background-color: var(--j-bg-muted);
+  color: var(--j-text);
+}
+
+.ino-transfer__pagination-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* --- Checkbox (inline) --- */
+.ino-transfer__checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 0.1875rem;
+  border: 2px solid var(--j-border);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  color: #fff;
+}
+
+.ino-transfer__checkbox--checked,
+.ino-transfer__checkbox--indeterminate {
+  border-color: var(--j-primary);
+  background-color: var(--j-primary);
+}
+
+.ino-transfer__checkbox--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Footer --- */
+.ino-transfer__footer {
+  padding: 0.375rem 0.75rem;
+  border-top: 1px solid var(--j-border);
+  font-size: 0.8125rem;
+}

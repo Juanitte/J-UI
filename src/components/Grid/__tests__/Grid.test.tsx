@@ -15,27 +15,27 @@ describe('Grid.Row', () => {
 
   it('renders as a flex container', () => {
     const { container } = render(<Grid.Row><div>C</div></Grid.Row>)
-    expect((container.firstChild as HTMLElement).style.display).toBe('flex')
+    expect(container.firstChild).toHaveClass('ino-row')
   })
 
   it('applies wrap by default', () => {
     const { container } = render(<Grid.Row><div>C</div></Grid.Row>)
-    expect((container.firstChild as HTMLElement).style.flexFlow).toBe('row wrap')
+    expect(container.firstChild).toHaveClass('ino-row--wrap')
   })
 
   it('applies nowrap when wrap=false', () => {
     const { container } = render(<Grid.Row wrap={false}><div>C</div></Grid.Row>)
-    expect((container.firstChild as HTMLElement).style.flexFlow).toBe('row nowrap')
+    expect(container.firstChild).toHaveClass('ino-row--nowrap')
   })
 
   it('applies align prop', () => {
     const { container } = render(<Grid.Row align="middle"><div>C</div></Grid.Row>)
-    expect((container.firstChild as HTMLElement).style.alignItems).toBe('center')
+    expect(container.firstChild).toHaveClass('ino-row--align-middle')
   })
 
   it('applies justify prop', () => {
     const { container } = render(<Grid.Row justify="center"><div>C</div></Grid.Row>)
-    expect((container.firstChild as HTMLElement).style.justifyContent).toBe('center')
+    expect(container.firstChild).toHaveClass('ino-row--justify-center')
   })
 
   it('applies numeric gutter as negative margins', () => {
@@ -90,7 +90,7 @@ describe('Grid.Col', () => {
       </Grid.Row>
     )
     const col = screen.getByText('Hidden').closest('div') as HTMLElement
-    expect(col.style.display).toBe('none')
+    expect(col).toHaveClass('ino-col--hidden')
   })
 
   it('applies order', () => {

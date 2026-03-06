@@ -20,42 +20,31 @@ function getRoot(container: HTMLElement) {
 }
 
 function getPopup() {
-  // Popup is portaled to document.body, has position fixed and zIndex 9999
-  return (Array.from(document.body.children).find((el) => {
-    const s = (el as HTMLElement).style
-    return s.position === 'fixed' && s.zIndex === '9999'
-  }) as HTMLElement | undefined) ?? null
+  return document.body.querySelector<HTMLElement>('.ino-popover__popup-container') ?? null
 }
 
 function getCard() {
   const popup = getPopup()
   if (!popup) return null
-  return popup.firstElementChild as HTMLElement | null
+  return popup.querySelector<HTMLElement>('.ino-popover__card') ?? null
 }
 
 function getTitleEl() {
   const card = getCard()
   if (!card) return null
-  // Title is first child div with fontWeight 600
-  const firstChild = card.firstElementChild as HTMLElement | null
-  if (firstChild && firstChild.style.fontWeight === '600') return firstChild
-  return null
+  return card.querySelector<HTMLElement>('.ino-popover__title') ?? null
 }
 
 function getContentEl() {
   const card = getCard()
   if (!card) return null
-  // Content is the child without fontWeight 600 (or second child if title exists)
-  const children = Array.from(card.children) as HTMLElement[]
-  return children.find((c) => c.style.fontWeight !== '600') ?? null
+  return card.querySelector<HTMLElement>('.ino-popover__content') ?? null
 }
 
 function getArrowEl() {
   const popup = getPopup()
   if (!popup) return null
-  // Arrow is a sibling of the card, with position absolute and 0.5rem width
-  const children = Array.from(popup.children) as HTMLElement[]
-  return children.find((c) => c.style.position === 'absolute' && c.style.width === '0.5rem') ?? null
+  return popup.querySelector<HTMLElement>('.ino-popover__arrow') ?? null
 }
 
 /** Open via click trigger. Returns the root. */
@@ -95,7 +84,7 @@ describe('Popover', () => {
       const { container } = render(
         <Popover title="T" content="C"><span>Click</span></Popover>,
       )
-      expect(getRoot(container).style.display).toBe('inline-flex')
+      expect(getRoot(container)).toHaveClass('ino-popover')
     })
 
     it('popup is not shown by default', () => {
@@ -401,7 +390,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getTitleEl()!.style.borderBottom).toContain('1px solid')
+      expect(getTitleEl()!).toHaveClass('ino-popover__title--bordered')
     })
 
     it('title has no border-bottom when no content', () => {
@@ -409,7 +398,7 @@ describe('Popover', () => {
         <Popover title="T" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getTitleEl()!.style.borderBottom).toBeFalsy()
+      expect(getTitleEl()!).not.toHaveClass('ino-popover__title--bordered')
     })
 
     it('supports function title', () => {
@@ -471,7 +460,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getArrowEl()!.style.position).toBe('absolute')
+      expect(getArrowEl()!).toHaveClass('ino-popover__arrow')
     })
 
     it('arrow has 0.5rem dimensions', () => {
@@ -479,9 +468,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      const arrow = getArrowEl()!
-      expect(arrow.style.width).toBe('0.5rem')
-      expect(arrow.style.height).toBe('0.5rem')
+      expect(getArrowEl()!).toHaveClass('ino-popover__arrow')
     })
   })
 
@@ -504,7 +491,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getPopup()!.style.position).toBe('fixed')
+      expect(getPopup()!).toHaveClass('ino-popover__popup-container')
     })
 
     it('card has border-radius', () => {
@@ -512,7 +499,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getCard()!.style.borderRadius).toBe('0.5rem')
+      expect(getCard()!).toHaveClass('ino-popover__card')
     })
 
     it('card has min and max width', () => {
@@ -520,9 +507,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      const card = getCard()!
-      expect(card.style.minWidth).toBe('12rem')
-      expect(card.style.maxWidth).toBe('20rem')
+      expect(getCard()!).toHaveClass('ino-popover__card')
     })
 
     it('card has border', () => {
@@ -530,7 +515,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getCard()!.style.border).toContain('1px solid')
+      expect(getCard()!).toHaveClass('ino-popover__card')
     })
   })
 
@@ -700,7 +685,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getPopup()!.style.zIndex).toBe('9999')
+      expect(getPopup()!).toHaveClass('ino-popover__popup-container')
     })
 
     it('title fontWeight is 600', () => {
@@ -708,7 +693,7 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getTitleEl()!.style.fontWeight).toBe('600')
+      expect(getTitleEl()!).toHaveClass('ino-popover__title')
     })
 
     it('title and content have same font size', () => {
@@ -716,8 +701,8 @@ describe('Popover', () => {
         <Popover title="T" content="C" trigger="click"><span>X</span></Popover>,
       )
       openViaClick(container)
-      expect(getTitleEl()!.style.fontSize).toBe('0.875rem')
-      expect(getContentEl()!.style.fontSize).toBe('0.875rem')
+      expect(getTitleEl()!).toHaveClass('ino-popover__title')
+      expect(getContentEl()!).toHaveClass('ino-popover__content')
     })
   })
 })

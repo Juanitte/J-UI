@@ -1,0 +1,90 @@
+/* ================================================================
+   Placeholder (Skeleton) – BEM classes
+   Width/height of individual bars stay inline (dynamic).
+   ================================================================ */
+
+/* --- Block --- */
+.ino-placeholder {
+  display: flex;
+  gap: 1rem;
+}
+
+/* --- Shimmer base (applied to active blocks) --- */
+.ino-placeholder__block {
+  background-color: var(--j-bg-muted);
+}
+
+.ino-placeholder__block--active {
+  background: linear-gradient(90deg, var(--j-bg-muted) 25%, var(--j-border) 37%, var(--j-bg-muted) 63%);
+  background-size: 200% 100%;
+  animation: j-placeholder-shimmer 1.5s ease-in-out infinite;
+}
+
+/* --- Content column --- */
+.ino-placeholder__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Paragraph container --- */
+.ino-placeholder__paragraph {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* --- Title bar --- */
+.ino-placeholder__title-bar {
+  height: 1rem;
+}
+
+/* --- Paragraph bar --- */
+.ino-placeholder__paragraph-bar {
+  height: 0.875rem;
+}
+
+/* --- Sub-components --- */
+
+/* Button placeholder */
+.ino-placeholder-button {
+  /* size set inline */
+}
+
+/* Avatar placeholder */
+.ino-placeholder-avatar {
+  flex-shrink: 0;
+}
+
+/* Input placeholder */
+.ino-placeholder-input {
+  width: 100%;
+}
+
+/* Image placeholder */
+.ino-placeholder-image {
+  width: 100%;
+  height: 100%;
+  min-height: 8rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Node placeholder */
+.ino-placeholder-node {
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.ino-placeholder-node--empty {
+  border: 1px dashed var(--j-border);
+  min-height: 4rem;
+  background-color: transparent;
+  background: none;
+  animation: none;
+}

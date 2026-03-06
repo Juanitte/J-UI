@@ -1,0 +1,159 @@
+/* ================================================================
+   Toggle (Segmented Control) – BEM classes
+   Uses fixed neutral tokens (no per-instance color prop).
+   ================================================================ */
+
+/* --- Block (track wrapper) --- */
+.ino-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--j-bgMuted);
+  box-sizing: border-box;
+}
+
+.ino-toggle--block {
+  display: flex;
+  width: 100%;
+}
+
+.ino-toggle--vertical {
+  flex-direction: column;
+  width: 100%;
+  align-items: stretch;
+}
+
+.ino-toggle:not(.ino-toggle--vertical) {
+  flex-direction: row;
+}
+
+.ino-toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Sizes --- */
+.ino-toggle--sm {
+  padding: 0.125rem;
+  border-radius: 0.375rem;
+}
+
+.ino-toggle--md {
+  padding: 0.125rem;
+  border-radius: 0.5rem;
+}
+
+.ino-toggle--lg {
+  padding: 0.125rem;
+  border-radius: 0.5rem;
+}
+
+/* --- Thumb (sliding background) --- */
+.ino-toggle__thumb {
+  position: absolute;
+  background-color: var(--j-bg);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ino-toggle--sm .ino-toggle__thumb { border-radius: 0.25rem; }
+.ino-toggle--md .ino-toggle__thumb { border-radius: 0.375rem; }
+.ino-toggle--lg .ino-toggle__thumb { border-radius: 0.375rem; }
+
+/* --- Item --- */
+.ino-toggle__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-family: inherit;
+  color: var(--j-textMuted);
+  font-weight: 400;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, font-weight 0.2s ease;
+  z-index: 1;
+}
+
+.ino-toggle__item--selected {
+  color: var(--j-text);
+  font-weight: 600;
+}
+
+.ino-toggle__item--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Hover: unselected items */
+.ino-toggle__item:not(.ino-toggle__item--selected):not(.ino-toggle__item--disabled):hover {
+  color: var(--j-text);
+}
+
+/* Sizes for items */
+.ino-toggle--sm .ino-toggle__item {
+  padding: 0 0.4375rem;
+  font-size: 0.75rem;
+}
+
+.ino-toggle--sm:not(.ino-toggle--vertical) .ino-toggle__item {
+  height: calc(1.5rem - 0.125rem * 2);
+}
+
+.ino-toggle--sm.ino-toggle--vertical .ino-toggle__item {
+  padding: 0.4375rem;
+}
+
+.ino-toggle--md .ino-toggle__item {
+  padding: 0 0.6875rem;
+  font-size: 0.875rem;
+}
+
+.ino-toggle--md:not(.ino-toggle--vertical) .ino-toggle__item {
+  height: calc(2rem - 0.125rem * 2);
+}
+
+.ino-toggle--md.ino-toggle--vertical .ino-toggle__item {
+  padding: 0.6875rem;
+}
+
+.ino-toggle--lg .ino-toggle__item {
+  padding: 0 0.75rem;
+  font-size: 1rem;
+}
+
+.ino-toggle--lg:not(.ino-toggle--vertical) .ino-toggle__item {
+  height: calc(2.5rem - 0.125rem * 2);
+}
+
+.ino-toggle--lg.ino-toggle--vertical .ino-toggle__item {
+  padding: 0.75rem;
+}
+
+/* Flex for block mode */
+.ino-toggle--block:not(.ino-toggle--vertical) .ino-toggle__item {
+  flex: 1;
+}
+
+/* Item thumb radius */
+.ino-toggle--sm .ino-toggle__item { border-radius: 0.25rem; }
+.ino-toggle--md .ino-toggle__item { border-radius: 0.375rem; }
+.ino-toggle--lg .ino-toggle__item { border-radius: 0.375rem; }
+
+/* --- Icon wrapper --- */
+.ino-toggle__icon {
+  display: inline-flex;
+  line-height: 0;
+}
+
+/* --- Hidden radio input --- */
+.ino-toggle__radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}

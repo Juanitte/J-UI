@@ -16,6 +16,8 @@ A modern, lightweight React component library with built-in theming support.
   - [useTheme Hook](#usetheme-hook)
   - [Color System](#color-system)
   - [Theme Tokens](#theme-tokens)
+- [Semantic DOM Styling](#semantic-dom-styling)
+  - [CSS Class Customization](#css-class-customization)
 - [Utils](#utils)
   - [DOM Utilities](#dom-utilities)
   - [Object Utilities](#object-utilities)
@@ -80,6 +82,7 @@ A modern, lightweight React component library with built-in theming support.
   - [TimePicker](#timepicker)
   - [Timeline](#timeline)
   - [Toggle](#toggle)
+  - [Tooltip](#tooltip)
   - [Tour](#tour)
   - [Transfer](#transfer)
   - [Tree](#tree)
@@ -87,7 +90,6 @@ A modern, lightweight React component library with built-in theming support.
   - [Upload](#upload)
   - [Waterfall](#waterfall)
   - [Watermark](#watermark)
-  - [Tooltip](#tooltip)
 
 ## Features
 
@@ -113,9 +115,10 @@ pnpm add @juanitte/inoui
 
 ## Quick Start
 
-Wrap your application with `ThemeProvider` and start using components:
+Import the stylesheet once in your app entry point, wrap your application with `ThemeProvider`, and start using components:
 
 ```tsx
+import '@juanitte/inoui/styles.css'
 import { ThemeProvider, Button, Tooltip } from '@juanitte/inoui'
 
 function App() {
@@ -403,6 +406,43 @@ For `className`, the component-level `className` prop and `classNames.root` are 
 | Text | `root`, `content`, `copyButton`, `expandButton` |
 | Tooltip | `root`, `popup`, `arrow` |
 | Waterfall | `root`, `column`, `item` |
+
+### CSS Class Customization
+
+All components use [BEM](https://getbem.com/) class names with the `ino-` prefix, which you can target directly in your stylesheets.
+
+**Naming convention:**
+
+| Pattern | Example | Description |
+|---------|---------|-------------|
+| `ino-{block}` | `ino-btn` | Component root |
+| `ino-{block}--{modifier}` | `ino-btn--primary`, `ino-btn--sm` | Variant, size, or state |
+| `ino-{block}__{element}` | `ino-btn__icon` | Internal part |
+
+**Example — custom button styles:**
+
+```css
+/* Your stylesheet — loaded after ino-ui */
+.ino-btn--primary {
+  border-radius: 999px;
+}
+
+.ino-tag--sm {
+  font-size: 0.7rem;
+}
+```
+
+You can combine this with the `classNames` prop for scoped overrides:
+
+```tsx
+<Button classNames={{ root: 'my-btn' }}>Click</Button>
+```
+
+```css
+.my-btn {
+  border-radius: 999px;
+}
+```
 
 ---
 
@@ -14530,6 +14570,259 @@ function ProductCatalog() {
 ---
 
 <details>
+<summary><strong>Tooltip</strong> - Lightweight hover tooltips with 12 placements and color presets</summary>
+
+### Tooltip
+
+A lightweight tooltip component for displaying additional information on hover or focus. Renders into a portal (`document.body`), supports 12 placements, auto-flip on viewport overflow, an optional arrow with `pointAtCenter` mode, and colorful presets.
+
+#### Import
+
+```tsx
+import { Tooltip } from '@juanitte/inoui'
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `content` | `ReactNode` | — | **Required.** Tooltip content |
+| `children` | `ReactNode` | — | **Required.** Trigger element |
+| `placement` | `TooltipPlacement` | `'top'` | Preferred placement — 12 options |
+| `position` | `TooltipPlacement` | — | **Deprecated.** Use `placement` instead |
+| `arrow` | `boolean \| { pointAtCenter: boolean }` | `true` | Show arrow; pass `{ pointAtCenter: true }` to center it on corner placements |
+| `color` | `string` | — | Preset color name or any CSS color — colorizes the tooltip background |
+| `autoAdjustOverflow` | `boolean` | `true` | Flip to the opposite side when the tooltip overflows the viewport |
+| `delay` | `number` | `200` | Delay before showing (ms) |
+| `disabled` | `boolean` | `false` | Disable tooltip |
+| `className` | `string` | — | Root CSS class |
+| `style` | `CSSProperties` | — | Root inline style |
+| `classNames` | `TooltipClassNames` | — | Semantic class names per slot |
+| `styles` | `TooltipStyles` | — | Semantic inline styles per slot |
+
+#### Type Definitions
+
+```ts
+type TooltipPlacement =
+  | 'top' | 'topLeft' | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left' | 'leftTop' | 'leftBottom'
+  | 'right' | 'rightTop' | 'rightBottom'
+
+type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
+type TooltipClassNames   = SemanticClassNames<TooltipSemanticSlot>
+type TooltipStyles       = SemanticStyles<TooltipSemanticSlot>
+```
+
+#### Placements
+
+All 12 placements relative to the trigger element:
+
+```
+         topLeft   top   topRight
+  leftTop  ┌─────────────────┐  rightTop
+  left     │    trigger      │  right
+  leftBottom └─────────────────┘  rightBottom
+       bottomLeft  bottom  bottomRight
+```
+
+#### Preset Colors
+
+| Name | Hex |
+|------|-----|
+| `'blue'` | `#1677ff` |
+| `'geekblue'` | `#2f54eb` |
+| `'purple'` | `#722ed1` |
+| `'cyan'` | `#13c2c2` |
+| `'green'` | `#52c41a` |
+| `'lime'` | `#a0d911` |
+| `'yellow'` | `#fadb14` |
+| `'gold'` | `#faad14` |
+| `'orange'` | `#fa8c16` |
+| `'volcano'` | `#fa541c` |
+| `'red'` | `#f5222d` |
+| `'pink'` / `'magenta'` | `#eb2f96` |
+
+Any other string is used as-is (hex, rgb, hsl…).
+
+#### Semantic DOM
+
+| Slot | Element | Description |
+|------|---------|-------------|
+| `root` | `<div>` | Inline wrapper around the trigger element |
+| `popup` | `<div>` | Tooltip popup — portaled to `document.body` |
+| `arrow` | `<div>` | Arrow pointing at the trigger |
+
+#### Examples
+
+**1. Basic**
+
+```tsx
+<Tooltip content="This is a tooltip">
+  <Button>Hover me</Button>
+</Tooltip>
+```
+
+---
+
+**2. All 12 placements**
+
+```tsx
+<Tooltip content="Top center"       placement="top">          <Button>top</Button>          </Tooltip>
+<Tooltip content="Top left"         placement="topLeft">      <Button>topLeft</Button>      </Tooltip>
+<Tooltip content="Top right"        placement="topRight">     <Button>topRight</Button>     </Tooltip>
+<Tooltip content="Bottom center"    placement="bottom">       <Button>bottom</Button>       </Tooltip>
+<Tooltip content="Bottom left"      placement="bottomLeft">   <Button>bottomLeft</Button>   </Tooltip>
+<Tooltip content="Bottom right"     placement="bottomRight">  <Button>bottomRight</Button>  </Tooltip>
+<Tooltip content="Left center"      placement="left">         <Button>left</Button>         </Tooltip>
+<Tooltip content="Left top"         placement="leftTop">      <Button>leftTop</Button>      </Tooltip>
+<Tooltip content="Left bottom"      placement="leftBottom">   <Button>leftBottom</Button>   </Tooltip>
+<Tooltip content="Right center"     placement="right">        <Button>right</Button>        </Tooltip>
+<Tooltip content="Right top"        placement="rightTop">     <Button>rightTop</Button>     </Tooltip>
+<Tooltip content="Right bottom"     placement="rightBottom">  <Button>rightBottom</Button>  </Tooltip>
+```
+
+---
+
+**3. No arrow**
+
+```tsx
+<Tooltip content="No arrow" arrow={false}>
+  <Button>Hover</Button>
+</Tooltip>
+```
+
+---
+
+**4. Arrow pointing at center (corner placements)**
+
+```tsx
+<Tooltip content="Centered arrow" placement="topLeft" arrow={{ pointAtCenter: true }}>
+  <Button>topLeft + pointAtCenter</Button>
+</Tooltip>
+```
+
+---
+
+**5. Preset color**
+
+```tsx
+<Tooltip content="Success action" color="green">
+  <Button>Green</Button>
+</Tooltip>
+
+<Tooltip content="Danger zone" color="red">
+  <Button>Red</Button>
+</Tooltip>
+
+<Tooltip content="Information" color="blue">
+  <Button>Blue</Button>
+</Tooltip>
+```
+
+---
+
+**6. Custom CSS color**
+
+```tsx
+<Tooltip content="Brand tooltip" color="#722ed1">
+  <Button>Custom purple</Button>
+</Tooltip>
+```
+
+---
+
+**7. Disable auto-flip**
+
+```tsx
+<Tooltip content="Always on top" placement="top" autoAdjustOverflow={false}>
+  <Button>No flip</Button>
+</Tooltip>
+```
+
+---
+
+**8. Custom delay**
+
+```tsx
+<Tooltip content="Instant" delay={0}>
+  <Button>No delay</Button>
+</Tooltip>
+
+<Tooltip content="Slow reveal" delay={800}>
+  <Button>800 ms delay</Button>
+</Tooltip>
+```
+
+---
+
+**9. Disabled**
+
+```tsx
+<Tooltip content="Won't show" disabled>
+  <Button>Disabled tooltip</Button>
+</Tooltip>
+```
+
+---
+
+**10. Rich content**
+
+```tsx
+<Tooltip
+  content={
+    <div>
+      <strong>Keyboard shortcut</strong>
+      <p style={{ margin: '0.25rem 0 0', opacity: 0.85 }}>⌘ + K to open command palette</p>
+    </div>
+  }
+  placement="bottom"
+>
+  <Button>Hover for shortcut</Button>
+</Tooltip>
+```
+
+---
+
+**11. Semantic style customization**
+
+```tsx
+<Tooltip
+  content="Styled tooltip"
+  styles={{
+    popup: { borderRadius: '0.75rem', fontSize: '0.75rem', padding: '0.375rem 0.625rem' },
+  }}
+>
+  <Button>Custom style</Button>
+</Tooltip>
+```
+
+---
+
+**12. Wrapping a disabled element**
+
+Disabled elements do not fire mouse events. Wrap them in a `<span>` so the Tooltip trigger receives events correctly.
+
+```tsx
+<Tooltip content="Button is disabled">
+  <span style={{ display: 'inline-flex' }}>
+    <Button disabled>Submit</Button>
+  </span>
+</Tooltip>
+```
+
+#### Accessibility
+
+- Shows on `mouseenter` and `focus`
+- Hides on `mouseleave` and `blur`
+- Popup has `role="tooltip"`
+- Repositions on scroll and window resize while visible
+
+</details>
+
+---
+
+<details>
 <summary><strong>Tour</strong> - Step-by-step guided walkthrough with spotlight overlay</summary>
 
 ### Tour
@@ -16581,259 +16874,6 @@ type WatermarkStyles       = SemanticStyles<WatermarkSemanticSlot>
   <div style={{ height: 300 }} />
 </Watermark>
 ```
-
-</details>
-
----
-
-<details>
-<summary><strong>Tooltip</strong> - Lightweight hover tooltips with 12 placements and color presets</summary>
-
-### Tooltip
-
-A lightweight tooltip component for displaying additional information on hover or focus. Renders into a portal (`document.body`), supports 12 placements, auto-flip on viewport overflow, an optional arrow with `pointAtCenter` mode, and colorful presets.
-
-#### Import
-
-```tsx
-import { Tooltip } from '@juanitte/inoui'
-```
-
-#### Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `content` | `ReactNode` | — | **Required.** Tooltip content |
-| `children` | `ReactNode` | — | **Required.** Trigger element |
-| `placement` | `TooltipPlacement` | `'top'` | Preferred placement — 12 options |
-| `position` | `TooltipPlacement` | — | **Deprecated.** Use `placement` instead |
-| `arrow` | `boolean \| { pointAtCenter: boolean }` | `true` | Show arrow; pass `{ pointAtCenter: true }` to center it on corner placements |
-| `color` | `string` | — | Preset color name or any CSS color — colorizes the tooltip background |
-| `autoAdjustOverflow` | `boolean` | `true` | Flip to the opposite side when the tooltip overflows the viewport |
-| `delay` | `number` | `200` | Delay before showing (ms) |
-| `disabled` | `boolean` | `false` | Disable tooltip |
-| `className` | `string` | — | Root CSS class |
-| `style` | `CSSProperties` | — | Root inline style |
-| `classNames` | `TooltipClassNames` | — | Semantic class names per slot |
-| `styles` | `TooltipStyles` | — | Semantic inline styles per slot |
-
-#### Type Definitions
-
-```ts
-type TooltipPlacement =
-  | 'top' | 'topLeft' | 'topRight'
-  | 'bottom' | 'bottomLeft' | 'bottomRight'
-  | 'left' | 'leftTop' | 'leftBottom'
-  | 'right' | 'rightTop' | 'rightBottom'
-
-type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
-type TooltipClassNames   = SemanticClassNames<TooltipSemanticSlot>
-type TooltipStyles       = SemanticStyles<TooltipSemanticSlot>
-```
-
-#### Placements
-
-All 12 placements relative to the trigger element:
-
-```
-         topLeft   top   topRight
-  leftTop  ┌─────────────────┐  rightTop
-  left     │    trigger      │  right
-  leftBottom └─────────────────┘  rightBottom
-       bottomLeft  bottom  bottomRight
-```
-
-#### Preset Colors
-
-| Name | Hex |
-|------|-----|
-| `'blue'` | `#1677ff` |
-| `'geekblue'` | `#2f54eb` |
-| `'purple'` | `#722ed1` |
-| `'cyan'` | `#13c2c2` |
-| `'green'` | `#52c41a` |
-| `'lime'` | `#a0d911` |
-| `'yellow'` | `#fadb14` |
-| `'gold'` | `#faad14` |
-| `'orange'` | `#fa8c16` |
-| `'volcano'` | `#fa541c` |
-| `'red'` | `#f5222d` |
-| `'pink'` / `'magenta'` | `#eb2f96` |
-
-Any other string is used as-is (hex, rgb, hsl…).
-
-#### Semantic DOM
-
-| Slot | Element | Description |
-|------|---------|-------------|
-| `root` | `<div>` | Inline wrapper around the trigger element |
-| `popup` | `<div>` | Tooltip popup — portaled to `document.body` |
-| `arrow` | `<div>` | Arrow pointing at the trigger |
-
-#### Examples
-
-**1. Basic**
-
-```tsx
-<Tooltip content="This is a tooltip">
-  <Button>Hover me</Button>
-</Tooltip>
-```
-
----
-
-**2. All 12 placements**
-
-```tsx
-<Tooltip content="Top center"       placement="top">          <Button>top</Button>          </Tooltip>
-<Tooltip content="Top left"         placement="topLeft">      <Button>topLeft</Button>      </Tooltip>
-<Tooltip content="Top right"        placement="topRight">     <Button>topRight</Button>     </Tooltip>
-<Tooltip content="Bottom center"    placement="bottom">       <Button>bottom</Button>       </Tooltip>
-<Tooltip content="Bottom left"      placement="bottomLeft">   <Button>bottomLeft</Button>   </Tooltip>
-<Tooltip content="Bottom right"     placement="bottomRight">  <Button>bottomRight</Button>  </Tooltip>
-<Tooltip content="Left center"      placement="left">         <Button>left</Button>         </Tooltip>
-<Tooltip content="Left top"         placement="leftTop">      <Button>leftTop</Button>      </Tooltip>
-<Tooltip content="Left bottom"      placement="leftBottom">   <Button>leftBottom</Button>   </Tooltip>
-<Tooltip content="Right center"     placement="right">        <Button>right</Button>        </Tooltip>
-<Tooltip content="Right top"        placement="rightTop">     <Button>rightTop</Button>     </Tooltip>
-<Tooltip content="Right bottom"     placement="rightBottom">  <Button>rightBottom</Button>  </Tooltip>
-```
-
----
-
-**3. No arrow**
-
-```tsx
-<Tooltip content="No arrow" arrow={false}>
-  <Button>Hover</Button>
-</Tooltip>
-```
-
----
-
-**4. Arrow pointing at center (corner placements)**
-
-```tsx
-<Tooltip content="Centered arrow" placement="topLeft" arrow={{ pointAtCenter: true }}>
-  <Button>topLeft + pointAtCenter</Button>
-</Tooltip>
-```
-
----
-
-**5. Preset color**
-
-```tsx
-<Tooltip content="Success action" color="green">
-  <Button>Green</Button>
-</Tooltip>
-
-<Tooltip content="Danger zone" color="red">
-  <Button>Red</Button>
-</Tooltip>
-
-<Tooltip content="Information" color="blue">
-  <Button>Blue</Button>
-</Tooltip>
-```
-
----
-
-**6. Custom CSS color**
-
-```tsx
-<Tooltip content="Brand tooltip" color="#722ed1">
-  <Button>Custom purple</Button>
-</Tooltip>
-```
-
----
-
-**7. Disable auto-flip**
-
-```tsx
-<Tooltip content="Always on top" placement="top" autoAdjustOverflow={false}>
-  <Button>No flip</Button>
-</Tooltip>
-```
-
----
-
-**8. Custom delay**
-
-```tsx
-<Tooltip content="Instant" delay={0}>
-  <Button>No delay</Button>
-</Tooltip>
-
-<Tooltip content="Slow reveal" delay={800}>
-  <Button>800 ms delay</Button>
-</Tooltip>
-```
-
----
-
-**9. Disabled**
-
-```tsx
-<Tooltip content="Won't show" disabled>
-  <Button>Disabled tooltip</Button>
-</Tooltip>
-```
-
----
-
-**10. Rich content**
-
-```tsx
-<Tooltip
-  content={
-    <div>
-      <strong>Keyboard shortcut</strong>
-      <p style={{ margin: '0.25rem 0 0', opacity: 0.85 }}>⌘ + K to open command palette</p>
-    </div>
-  }
-  placement="bottom"
->
-  <Button>Hover for shortcut</Button>
-</Tooltip>
-```
-
----
-
-**11. Semantic style customization**
-
-```tsx
-<Tooltip
-  content="Styled tooltip"
-  styles={{
-    popup: { borderRadius: '0.75rem', fontSize: '0.75rem', padding: '0.375rem 0.625rem' },
-  }}
->
-  <Button>Custom style</Button>
-</Tooltip>
-```
-
----
-
-**12. Wrapping a disabled element**
-
-Disabled elements do not fire mouse events. Wrap them in a `<span>` so the Tooltip trigger receives events correctly.
-
-```tsx
-<Tooltip content="Button is disabled">
-  <span style={{ display: 'inline-flex' }}>
-    <Button disabled>Submit</Button>
-  </span>
-</Tooltip>
-```
-
-#### Accessibility
-
-- Shows on `mouseenter` and `focus`
-- Hides on `mouseleave` and `blur`
-- Popup has `role="tooltip"`
-- Repositions on scroll and window resize while visible
 
 </details>
 

@@ -157,7 +157,7 @@ describe('Tabs', () => {
     ]
     render(<Tabs items={items} />)
     const tab = screen.getAllByRole('tab')[1]
-    expect(tab.style.opacity).toBe('0.5')
+    expect(tab).toHaveClass('ino-tabs__tab--disabled')
   })
 
   // ---------- Tab type: card ----------
@@ -257,24 +257,24 @@ describe('Tabs', () => {
 
   // ---------- Tab position ----------
 
-  it('renders top position with column direction (default)', () => {
+  it('renders top position class (default)', () => {
     const { container } = render(<Tabs items={basicItems} />)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('column')
+    expect(container.firstChild).toHaveClass('ino-tabs--top')
   })
 
-  it('renders bottom position with column-reverse direction', () => {
+  it('renders bottom position class', () => {
     const { container } = render(<Tabs items={basicItems} tabPosition="bottom" />)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('column-reverse')
+    expect(container.firstChild).toHaveClass('ino-tabs--bottom')
   })
 
-  it('renders left position with row direction', () => {
+  it('renders left position class', () => {
     const { container } = render(<Tabs items={basicItems} tabPosition="left" />)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('row')
+    expect(container.firstChild).toHaveClass('ino-tabs--left')
   })
 
-  it('renders right position with row-reverse direction', () => {
+  it('renders right position class', () => {
     const { container } = render(<Tabs items={basicItems} tabPosition="right" />)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('row-reverse')
+    expect(container.firstChild).toHaveClass('ino-tabs--right')
   })
 
   // ---------- Size ----------

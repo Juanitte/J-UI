@@ -1,0 +1,65 @@
+/* ================================================================
+   Ino-UI – Master CSS entry
+   ================================================================ */
+
+@import './_animations.css';
+
+/* General */
+@import '../components/Button/Button.css';
+@import '../components/Tag/Tag.css';
+@import '../components/Switch/Switch.css';
+@import '../components/Badge/Badge.css';
+@import '../components/Checkbox/Checkbox.css';
+@import '../components/Divider/Divider.css';
+@import '../components/Empty/Empty.css';
+@import '../components/Avatar/Avatar.css';
+@import '../components/Space/Space.css';
+@import '../components/Radio/Radio.css';
+@import '../components/Flex/Flex.css';
+@import '../components/Tooltip/Tooltip.css';
+@import '../components/Card/Card.css';
+@import '../components/Toggle/Toggle.css';
+@import '../components/Text/Text.css';
+@import '../components/Popover/Popover.css';
+@import '../components/Rate/Rate.css';
+@import '../components/Dropdown/Dropdown.css';
+@import '../components/Slider/Slider.css';
+@import '../components/Layout/Layout.css';
+@import '../components/Grid/Grid.css';
+@import '../components/Modal/Modal.css';
+@import '../components/Collapse/Collapse.css';
+@import '../components/Drawer/Drawer.css';
+@import '../components/Splitter/Splitter.css';
+@import '../components/Waterfall/Waterfall.css';
+@import '../components/Alert/Alert.css';
+@import '../components/Input/Input.css';
+@import '../components/Anchor/Anchor.css';
+@import '../components/Affix/Affix.css';
+@import '../components/PopAlert/PopAlert.css';
+@import '../components/PopConfirm/PopConfirm.css';
+@import '../components/Progress/Progress.css';
+@import '../components/Menu/Menu.css';
+@import '../components/Result/Result.css';
+@import '../components/Tabs/Tabs.css';
+@import '../components/Bubble/Bubble.css';
+@import '../components/Spinner/Spinner.css';
+@import '../components/Placeholder/Placeholder.css';
+@import '../components/Watermark/Watermark.css';
+@import '../components/Form/Form.css';
+@import '../components/Tour/Tour.css';
+@import '../components/InputNumber/InputNumber.css';
+@import '../components/Timeline/Timeline.css';
+@import '../components/Select/Select.css';
+@import '../components/Carousel/Carousel.css';
+@import '../components/AutoComplete/AutoComplete.css';
+@import '../components/Mention/Mention.css';
+@import '../components/Statistic/Statistic.css';
+@import '../components/DatePicker/DatePicker.css';
+@import '../components/TimePicker/TimePicker.css';
+@import '../components/QRCode/QRCode.css';
+@import '../components/ColorPicker/ColorPicker.css';
+@import '../components/TreeSelect/TreeSelect.css';
+@import '../components/Image/Image.css';
+@import '../components/Transfer/Transfer.css';
+@import '../components/Upload/Upload.css';
+@import '../components/NestedSelect/NestedSelect.css';

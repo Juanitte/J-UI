@@ -10,7 +10,8 @@ import {
 import { createPortal } from 'react-dom'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Modal.css'
 
 // ============================================================================
 // Types
@@ -204,11 +205,10 @@ const CONFIRM_COLORS: Record<ModalConfirmType, string> = {
 
 function LoadingSkeleton() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.25rem 0' }}>
-      <style>{`@keyframes j-modal-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }`}</style>
-      <div style={{ height: '1rem', width: '60%', borderRadius: '0.25rem', backgroundColor: tokens.colorBgMuted, animation: 'j-modal-pulse 1.5s ease-in-out infinite' }} />
-      <div style={{ height: '1rem', width: '100%', borderRadius: '0.25rem', backgroundColor: tokens.colorBgMuted, animation: 'j-modal-pulse 1.5s ease-in-out infinite 0.1s' }} />
-      <div style={{ height: '1rem', width: '80%', borderRadius: '0.25rem', backgroundColor: tokens.colorBgMuted, animation: 'j-modal-pulse 1.5s ease-in-out infinite 0.2s' }} />
+    <div className="ino-modal__skeleton">
+      <div className="ino-modal__skeleton-bar" style={{ width: '60%' }} />
+      <div className="ino-modal__skeleton-bar" style={{ width: '100%', animationDelay: '0.1s' }} />
+      <div className="ino-modal__skeleton-bar" style={{ width: '80%', animationDelay: '0.2s' }} />
     </div>
   )
 }
@@ -319,128 +319,46 @@ export function Modal({
   if (!mounted && destroyOnClose) return null
 
   // ── Styles ──
-  const wrapperStyle: CSSProperties = {
-    position: 'fixed',
-    inset: 0,
-    zIndex,
-    overflow: 'auto',
-    display: mounted ? undefined : 'none',
-    pointerEvents: mounted ? 'auto' : 'none',
-  }
+  const wrapperClass = cx(
+    'ino-modal__wrapper',
+    { 'ino-modal__wrapper--hidden': !mounted },
+  )
 
+  const maskClass = cx(
+    'ino-modal__mask',
+    maskBlur ? 'ino-modal__mask--blur' : 'ino-modal__mask--default',
+    classNames?.mask,
+  )
   const maskStyle: CSSProperties = {
-    position: 'fixed',
-    inset: 0,
-    backgroundColor: maskBlur ? 'rgba(0, 0, 0, 0.25)' : 'rgba(0, 0, 0, 0.45)',
     opacity: animating ? 1 : 0,
-    transition: 'opacity 0.3s ease',
-    ...(maskBlur ? { backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' } : {}),
     ...styles?.mask,
   }
 
-  const scrollContainerStyle: CSSProperties = {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: centered ? 'center' : 'flex-start',
-    minHeight: '100%',
-    padding: centered ? '1rem' : '6rem 1rem 1.5rem',
-  }
+  const scrollClass = cx(
+    'ino-modal__scroll',
+    centered ? 'ino-modal__scroll--centered' : 'ino-modal__scroll--top',
+  )
 
-  const contentStyle: CSSProperties = {
-    position: 'relative',
+  const contentDynamicStyle: CSSProperties = {
     width,
-    maxWidth: 'calc(100vw - 2rem)',
-    backgroundColor: tokens.colorBg,
-    color: tokens.colorText,
-    borderRadius: '0.5rem',
-    boxShadow: tokens.shadowLg,
-    display: 'flex',
-    flexDirection: 'column',
     maxHeight: centered ? 'calc(100vh - 2rem)' : undefined,
     transform: animating ? 'scale(1)' : 'scale(0.85)',
     opacity: animating ? 1 : 0,
-    transition: 'transform 0.25s ease, opacity 0.25s ease',
     ...styles?.content,
     ...styles?.root,
     ...style,
   }
 
-  const headerStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '1rem 1.5rem',
-    borderBottom: `1px solid ${tokens.colorBorder}`,
-    flexShrink: 0,
-    ...styles?.header,
-  }
-
-  const bodyStyle: CSSProperties = {
-    flex: 1,
-    padding: '1.5rem',
-    overflowY: 'auto',
-    ...styles?.body,
-  }
-
-  const footerStyle: CSSProperties = {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.75rem 1rem',
-    borderTop: `1px solid ${tokens.colorBorder}`,
-    flexShrink: 0,
-    ...styles?.footer,
-  }
-
-  const closeBtnStyle: CSSProperties = {
-    position: 'absolute',
-    top: '0.75rem',
-    right: '0.75rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '0.25rem',
-    border: 'none',
-    background: 'none',
-    cursor: 'pointer',
-    color: tokens.colorTextSubtle,
-    borderRadius: '0.25rem',
-    transition: 'color 0.15s',
-    zIndex: 1,
-    ...styles?.closeBtn,
-  }
-
   // ── Footer buttons ──
-  const baseBtnStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.375rem',
-    padding: '0.375rem 1rem',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    borderRadius: '0.375rem',
-    cursor: 'pointer',
-    transition: 'filter 0.15s, border-color 0.15s, opacity 0.15s',
-    lineHeight: 1.5,
-  }
-
   const { style: cancelBtnExtraStyle, ...cancelBtnRest } = (cancelButtonProps ?? {}) as Record<string, unknown>
   const { style: okBtnExtraStyle, ...okBtnRest } = (okButtonProps ?? {}) as Record<string, unknown>
 
   const CancelBtn: React.FC = () => (
     <button
       type="button"
-      style={{
-        ...baseBtnStyle,
-        backgroundColor: tokens.colorBg,
-        color: tokens.colorText,
-        border: `1px solid ${tokens.colorBorder}`,
-        ...(cancelBtnExtraStyle as CSSProperties),
-      }}
+      className="ino-modal__btn ino-modal__btn--cancel"
+      style={cancelBtnExtraStyle as CSSProperties}
       onClick={(e) => onClose?.(e)}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = tokens.colorBorderHover }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = tokens.colorBorder }}
       {...cancelBtnRest}
     >
       {cancelText}
@@ -450,19 +368,10 @@ export function Modal({
   const OkBtn: React.FC = () => (
     <button
       type="button"
-      style={{
-        ...baseBtnStyle,
-        backgroundColor: tokens.colorPrimary,
-        color: tokens.colorPrimaryContrast,
-        border: `1px solid ${tokens.colorPrimary}`,
-        opacity: confirmLoading ? 0.7 : 1,
-        pointerEvents: confirmLoading ? 'none' : 'auto',
-        ...(okBtnExtraStyle as CSSProperties),
-      }}
+      className={cx('ino-modal__btn', 'ino-modal__btn--ok', { 'ino-modal__btn--ok--loading': confirmLoading })}
+      style={okBtnExtraStyle as CSSProperties}
       onClick={(e) => onOk?.(e)}
       disabled={confirmLoading}
-      onMouseEnter={(e) => { if (!confirmLoading) e.currentTarget.style.filter = 'brightness(1.15)' }}
-      onMouseLeave={(e) => { e.currentTarget.style.filter = '' }}
       {...okBtnRest}
     >
       {confirmLoading && <Spinner />}
@@ -494,19 +403,17 @@ export function Modal({
       ref={contentRef}
       role="dialog"
       aria-modal="true"
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={contentStyle}
+      className={cx('ino-modal__content', className, classNames?.root)}
+      style={contentDynamicStyle}
       onTransitionEnd={handleTransitionEnd}
     >
       {/* Close button */}
       {closable && (
         <button
           type="button"
-          className={classNames?.closeBtn}
-          style={closeBtnStyle}
+          className={cx('ino-modal__close-btn', classNames?.closeBtn)}
+          style={styles?.closeBtn}
           onClick={(e) => onClose?.(e)}
-          onMouseEnter={(e) => { e.currentTarget.style.color = tokens.colorText }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = tokens.colorTextSubtle }}
         >
           {closeIcon ?? <CloseIcon />}
         </button>
@@ -514,15 +421,8 @@ export function Modal({
 
       {/* Header */}
       {title != null && (
-        <div className={classNames?.header} style={headerStyle}>
-          <div style={{
-            flex: 1,
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: tokens.colorText,
-            minWidth: 0,
-            paddingRight: closable ? '2rem' : 0,
-          }}>
+        <div className={cx('ino-modal__header', classNames?.header)} style={styles?.header}>
+          <div className={cx('ino-modal__header-title', { 'ino-modal__header-title--closable': closable })}>
             {title}
           </div>
         </div>
@@ -530,14 +430,14 @@ export function Modal({
 
       {/* Body */}
       {shouldRenderContent && (
-        <div className={classNames?.body} style={bodyStyle}>
+        <div className={cx('ino-modal__body', classNames?.body)} style={styles?.body}>
           {loading ? <LoadingSkeleton /> : children}
         </div>
       )}
 
       {/* Footer */}
       {footerContent != null && (
-        <div className={classNames?.footer} style={footerStyle}>
+        <div className={cx('ino-modal__footer', classNames?.footer)} style={styles?.footer}>
           {footerContent}
         </div>
       )}
@@ -551,13 +451,11 @@ export function Modal({
 
   // ── Render ──
   const portal = createPortal(
-    <div style={wrapperStyle}>
-      <style>{`@keyframes j-modal-spin { to { transform: rotate(360deg); } }`}</style>
-
+    <div className={wrapperClass} style={{ zIndex }}>
       {/* Mask */}
       {showMask && (
         <div
-          className={classNames?.mask}
+          className={maskClass}
           style={maskStyle}
           onClick={handleMaskClick}
         />
@@ -565,7 +463,7 @@ export function Modal({
 
       {/* Scroll container */}
       <div
-        style={scrollContainerStyle}
+        className={scrollClass}
         onClick={(e) => {
           if (e.target === e.currentTarget && maskClosable) {
             onClose?.(e)
@@ -706,18 +604,18 @@ export function useModal(): [ModalHookApi, ReactNode] {
             className={config.className}
             style={config.style}
           >
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <span style={{ color: iconColor, flexShrink: 0, marginTop: '0.0625rem' }}>
+            <div className="ino-modal__confirm-row">
+              <span className="ino-modal__confirm-icon" style={{ color: iconColor }}>
                 {icon}
               </span>
               <div>
                 {config.title != null && (
-                  <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: config.content != null ? '0.5rem' : 0 }}>
+                  <div className="ino-modal__confirm-title" style={{ marginBottom: config.content != null ? '0.5rem' : 0 }}>
                     {config.title}
                   </div>
                 )}
                 {config.content != null && (
-                  <div style={{ color: tokens.colorTextMuted, fontSize: '0.875rem' }}>
+                  <div className="ino-modal__confirm-content">
                     {config.content}
                   </div>
                 )}

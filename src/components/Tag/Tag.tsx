@@ -1,7 +1,8 @@
-import { type ReactNode, type CSSProperties, useRef, useState, useCallback } from 'react'
+import { type ReactNode, type CSSProperties, useState, useCallback } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Tag.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -138,31 +139,6 @@ function resolveColorForVariant(
   }
 }
 
-// ─── Animations ─────────────────────────────────────────────────────────────────
-
-const TAG_KEYFRAMES = `
-@keyframes j-tag-enter {
-  from { opacity: 0; transform: scale(0.8); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes j-tag-exit {
-  from { opacity: 1; transform: scale(1); }
-  to   { opacity: 0; transform: scale(0.8); }
-}
-@keyframes j-tag-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}`
-
-let tagStylesInjected = false
-function injectTagStyles() {
-  if (tagStylesInjected || typeof document === 'undefined') return
-  const style = document.createElement('style')
-  style.textContent = TAG_KEYFRAMES
-  document.head.appendChild(style)
-  tagStylesInjected = true
-}
-
 // ─── Icons ──────────────────────────────────────────────────────────────────────
 
 function CloseIcon() {
@@ -200,52 +176,13 @@ function TagComponent({
   onClick,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: TagProps) {
-  injectTagStyles()
-
-  const tagRef = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(true)
   const [closing, setClosing] = useState(false)
 
   const resolved = resolveColorForVariant(color, variant)
-
-  const hasCustomColors = !!(styles?.root && (
-    'backgroundColor' in styles.root ||
-    'borderColor' in styles.root ||
-    'border' in styles.root
-  ))
-
-  // ── Hover (ref-based) ──
-
-  const handleMouseEnter = useCallback(() => {
-    if (disabled || !tagRef.current) return
-    if (hasCustomColors) {
-      tagRef.current.style.filter = 'brightness(1.15)'
-    } else if (variant === 'solid' || (color && variant === 'filled')) {
-      tagRef.current.style.filter = 'brightness(1.1)'
-    } else {
-      // outlined or default filled — add subtle bg
-      const hoverBg = color
-        ? (STATUS_PRESETS[color]
-          ? STATUS_PRESETS[color].bg
-          : `color-mix(in srgb, ${DECORATIVE_PRESETS[color] ?? color} 12%, transparent)`)
-        : tokens.colorBgMuted
-      tagRef.current.style.backgroundColor = hoverBg
-    }
-  }, [disabled, hasCustomColors, variant, color])
-
-  const handleMouseLeave = useCallback(() => {
-    if (disabled || !tagRef.current) return
-    if (hasCustomColors) {
-      tagRef.current.style.filter = ''
-    } else if (variant === 'solid' || (color && variant === 'filled')) {
-      tagRef.current.style.filter = ''
-    } else {
-      tagRef.current.style.backgroundColor = resolved.backgroundColor
-    }
-  }, [disabled, hasCustomColors, variant, color, resolved.backgroundColor])
 
   // ── Close ──
 
@@ -261,47 +198,24 @@ function TagComponent({
 
   if (!visible) return null
 
-  const baseStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.25rem',
-    padding: '0 0.4375rem',
-    height: '1.375rem',
-    fontSize: '0.75rem',
-    lineHeight: '1.25rem',
-    borderRadius: '0.25rem',
+  const rootClass = cx(
+    'ino-tag',
+    {
+      'ino-tag--hoverable': !disabled,
+      'ino-tag--disabled': disabled,
+      'ino-tag--closing': closing,
+      'ino-tag--entering': !closing,
+    },
+    className,
+    classNamesProp?.root,
+  )
+
+  const dynamicStyle: CSSProperties = {
     border: bordered ? `1px solid ${resolved.borderColor}` : '1px solid transparent',
     backgroundColor: resolved.backgroundColor,
     color: resolved.color,
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.65 : 1,
-    transition: 'all 0.2s ease',
-    animation: closing ? 'j-tag-exit 0.2s ease forwards' : 'j-tag-enter 0.2s ease',
-    textDecoration: 'none',
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    userSelect: 'none',
-  }
-
-  const iconStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    fontSize: '0.75rem',
-  }
-
-  const contentStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-  }
-
-  const closeIconStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    marginLeft: '0.125rem',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: 0.65,
-    transition: 'opacity 0.15s ease',
-    fontSize: '0.625rem',
+    ...styles?.root,
+    ...style,
   }
 
   const Wrapper = (href && !disabled ? 'a' : 'span') as React.ElementType
@@ -314,31 +228,26 @@ function TagComponent({
 
   return (
     <Wrapper
-      ref={tagRef}
       {...wrapperProps}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(baseStyle, styles?.root, style)}
+      className={rootClass}
+      style={dynamicStyle}
       onClick={disabled ? undefined : onClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {icon && (
-        <span className={classNames?.icon} style={mergeSemanticStyle(iconStyle, styles?.icon)}>
+        <span className={cx('ino-tag__icon', classNamesProp?.icon)} style={styles?.icon}>
           {icon}
         </span>
       )}
-      <span className={classNames?.content} style={mergeSemanticStyle(contentStyle, styles?.content)}>
+      <span className={cx('ino-tag__content', classNamesProp?.content)} style={styles?.content}>
         {children}
       </span>
       {closable && (
         <span
-          className={classNames?.closeIcon}
-          style={mergeSemanticStyle(closeIconStyle, styles?.closeIcon)}
+          className={cx('ino-tag__close', classNamesProp?.closeIcon)}
+          style={styles?.closeIcon}
           onClick={handleClose}
           role="img"
           aria-label="close"
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1' }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.65' }}
         >
           {closeIcon || <CloseIcon />}
         </span>
@@ -357,87 +266,44 @@ function CheckableTagComponent({
   disabled = false,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: CheckableTagProps) {
-  const tagRef = useRef<HTMLSpanElement>(null)
-
   // Resolve checked color
   const checkedColor = color || 'primary'
   const statusPreset = STATUS_PRESETS[checkedColor]
   const hex = statusPreset ? statusPreset.solid : (DECORATIVE_PRESETS[checkedColor] ?? checkedColor)
-
-  const hasCustomColors = !!(styles?.root && (
-    'backgroundColor' in styles.root ||
-    'borderColor' in styles.root ||
-    'border' in styles.root
-  ))
-
-  const checkedBg = hex
-  const checkedBorder = hex
-  const checkedText = '#fff'
-
-  const uncheckedBg = 'transparent'
-  const uncheckedBorder = tokens.colorBorder
-  const uncheckedText = tokens.colorText
-
-  const handleMouseEnter = useCallback(() => {
-    if (disabled || !tagRef.current) return
-    if (hasCustomColors) {
-      tagRef.current.style.filter = 'brightness(1.15)'
-    } else if (checked) {
-      tagRef.current.style.filter = 'brightness(1.1)'
-    } else {
-      tagRef.current.style.backgroundColor = tokens.colorBgMuted
-    }
-  }, [disabled, hasCustomColors, checked])
-
-  const handleMouseLeave = useCallback(() => {
-    if (disabled || !tagRef.current) return
-    if (hasCustomColors) {
-      tagRef.current.style.filter = ''
-    } else if (checked) {
-      tagRef.current.style.filter = ''
-    } else {
-      tagRef.current.style.backgroundColor = uncheckedBg
-    }
-  }, [disabled, hasCustomColors, checked, uncheckedBg])
 
   const handleClick = useCallback(() => {
     if (disabled) return
     onChange?.(!checked)
   }, [disabled, onChange, checked])
 
-  const baseStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.25rem',
-    padding: '0 0.4375rem',
-    height: '1.375rem',
-    fontSize: '0.75rem',
-    lineHeight: '1.25rem',
-    borderRadius: '0.25rem',
-    border: `1px solid ${checked ? checkedBorder : uncheckedBorder}`,
-    backgroundColor: checked ? checkedBg : uncheckedBg,
-    color: checked ? checkedText : uncheckedText,
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.65 : 1,
-    transition: 'all 0.2s ease',
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    userSelect: 'none',
+  const rootClass = cx(
+    'ino-tag-checkable',
+    {
+      'ino-tag-checkable--checked': checked,
+      'ino-tag-checkable--disabled': disabled,
+    },
+    className,
+    classNamesProp?.root,
+  )
+
+  const dynamicStyle: CSSProperties = {
+    ...(checked
+      ? { backgroundColor: hex, borderColor: hex, color: '#fff' }
+      : {}),
+    ...styles?.root,
+    ...style,
   }
 
   return (
     <span
-      ref={tagRef}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(baseStyle, styles?.root, style)}
+      className={rootClass}
+      style={dynamicStyle}
       onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
-      <span className={classNames?.content} style={mergeSemanticStyle({}, styles?.content)}>
+      <span className={cx('ino-tag-checkable__content', classNamesProp?.content)} style={styles?.content}>
         {children}
       </span>
     </span>

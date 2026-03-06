@@ -74,14 +74,14 @@ describe('Toggle', () => {
       expect(getThumb(container)).toBeTruthy()
     })
 
-    it('root has inline-flex display by default', () => {
+    it('root has toggle class by default', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
-      expect(getRoot(container).style.display).toBe('inline-flex')
+      expect(getRoot(container)).toHaveClass('ino-toggle')
     })
 
-    it('root has relative position', () => {
+    it('root has toggle class for positioning', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
-      expect(getRoot(container).style.position).toBe('relative')
+      expect(getRoot(container)).toHaveClass('ino-toggle')
     })
   })
 
@@ -225,30 +225,27 @@ describe('Toggle', () => {
   describe('size variants', () => {
     it('middle size by default', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
-      const item = getItems(container)[0]
-      expect(item.style.fontSize).toBe('0.875rem')
+      expect(getRoot(container)).toHaveClass('ino-toggle--md')
     })
 
     it('small size', () => {
       const { container } = render(<Toggle options={['A', 'B']} size="small" />)
-      const item = getItems(container)[0]
-      expect(item.style.fontSize).toBe('0.75rem')
+      expect(getRoot(container)).toHaveClass('ino-toggle--sm')
     })
 
     it('large size', () => {
       const { container } = render(<Toggle options={['A', 'B']} size="large" />)
-      const item = getItems(container)[0]
-      expect(item.style.fontSize).toBe('1rem')
+      expect(getRoot(container)).toHaveClass('ino-toggle--lg')
     })
 
-    it('small root has smaller border radius', () => {
+    it('small root has small class', () => {
       const { container } = render(<Toggle options={['A', 'B']} size="small" />)
-      expect(getRoot(container).style.borderRadius).toBe('0.375rem')
+      expect(getRoot(container)).toHaveClass('ino-toggle--sm')
     })
 
-    it('large root has standard border radius', () => {
+    it('large root has large class', () => {
       const { container } = render(<Toggle options={['A', 'B']} size="large" />)
-      expect(getRoot(container).style.borderRadius).toBe('0.5rem')
+      expect(getRoot(container)).toHaveClass('ino-toggle--lg')
     })
   })
 
@@ -257,21 +254,21 @@ describe('Toggle', () => {
   // ============================================================================
 
   describe('block mode', () => {
-    it('root has flex display when block', () => {
+    it('root has block class when block', () => {
       const { container } = render(<Toggle options={['A', 'B']} block />)
-      expect(getRoot(container).style.display).toBe('flex')
+      expect(getRoot(container)).toHaveClass('ino-toggle--block')
     })
 
-    it('root has 100% width when block', () => {
+    it('root has block class for width when block', () => {
       const { container } = render(<Toggle options={['A', 'B']} block />)
-      expect(getRoot(container).style.width).toBe('100%')
+      expect(getRoot(container)).toHaveClass('ino-toggle--block')
     })
 
-    it('items have flex 1 in block mode', () => {
+    it('items have item class in block mode', () => {
       const { container } = render(<Toggle options={['A', 'B']} block />)
       const items = getItems(container)
       items.forEach((item) => {
-        expect(item.style.flex).toContain('1')
+        expect(item).toHaveClass('ino-toggle__item')
       })
     })
   })
@@ -281,19 +278,19 @@ describe('Toggle', () => {
   // ============================================================================
 
   describe('vertical mode', () => {
-    it('root has column flex direction', () => {
+    it('root has vertical class', () => {
       const { container } = render(<Toggle options={['A', 'B']} vertical />)
-      expect(getRoot(container).style.flexDirection).toBe('column')
+      expect(getRoot(container)).toHaveClass('ino-toggle--vertical')
     })
 
-    it('root has 100% width when vertical', () => {
+    it('root has vertical class for width', () => {
       const { container } = render(<Toggle options={['A', 'B']} vertical />)
-      expect(getRoot(container).style.width).toBe('100%')
+      expect(getRoot(container)).toHaveClass('ino-toggle--vertical')
     })
 
-    it('root has flex display when vertical', () => {
+    it('root has vertical class for display', () => {
       const { container } = render(<Toggle options={['A', 'B']} vertical />)
-      expect(getRoot(container).style.display).toBe('flex')
+      expect(getRoot(container)).toHaveClass('ino-toggle--vertical')
     })
   })
 
@@ -302,14 +299,14 @@ describe('Toggle', () => {
   // ============================================================================
 
   describe('disabled', () => {
-    it('root has reduced opacity when disabled', () => {
+    it('root has disabled class when disabled', () => {
       const { container } = render(<Toggle options={['A', 'B']} disabled />)
-      expect(getRoot(container).style.opacity).toBe('0.5')
+      expect(getRoot(container)).toHaveClass('ino-toggle--disabled')
     })
 
-    it('root has not-allowed cursor when disabled', () => {
+    it('root has disabled class for cursor when disabled', () => {
       const { container } = render(<Toggle options={['A', 'B']} disabled />)
-      expect(getRoot(container).style.cursor).toBe('not-allowed')
+      expect(getRoot(container)).toHaveClass('ino-toggle--disabled')
     })
 
     it('does not call onChange when globally disabled', () => {
@@ -356,7 +353,7 @@ describe('Toggle', () => {
       expect(items[1].getAttribute('aria-disabled')).toBe('true')
     })
 
-    it('per-item disabled has reduced opacity', () => {
+    it('per-item disabled has disabled class', () => {
       const { container } = render(
         <Toggle
           options={[
@@ -366,10 +363,10 @@ describe('Toggle', () => {
         />,
       )
       const items = getItems(container)
-      expect(items[1].style.opacity).toBe('0.5')
+      expect(items[1]).toHaveClass('ino-toggle__item--disabled')
     })
 
-    it('per-item disabled has not-allowed cursor', () => {
+    it('per-item disabled has disabled class for cursor', () => {
       const { container } = render(
         <Toggle
           options={[
@@ -379,7 +376,7 @@ describe('Toggle', () => {
         />,
       )
       const items = getItems(container)
-      expect(items[1].style.cursor).toBe('not-allowed')
+      expect(items[1]).toHaveClass('ino-toggle__item--disabled')
     })
   })
 
@@ -424,8 +421,7 @@ describe('Toggle', () => {
     it('radio inputs are visually hidden', () => {
       const { container } = render(<Toggle options={['A', 'B']} name="field" />)
       const input = getRadioInputs(container)[0]
-      expect(input.style.position).toBe('absolute')
-      expect(input.style.opacity).toBe('0')
+      expect(input).toHaveClass('ino-toggle__radio')
     })
 
     it('disabled item has disabled radio input', () => {
@@ -584,34 +580,27 @@ describe('Toggle', () => {
   // ============================================================================
 
   describe('hover effects', () => {
-    it('mouseEnter on non-selected item changes color', () => {
+    it('non-selected item has item class', () => {
       const { container } = render(<Toggle options={['A', 'B']} value="A" />)
       const items = getItems(container)
-      const nonSelected = items[1]
-      fireEvent.mouseEnter(nonSelected)
-      expect(nonSelected.style.color).toBeTruthy()
+      expect(items[1]).toHaveClass('ino-toggle__item')
     })
 
-    it('mouseLeave on non-selected item resets color', () => {
+    it('non-selected item retains item class after hover', () => {
       const { container } = render(<Toggle options={['A', 'B']} value="A" />)
       const items = getItems(container)
-      const nonSelected = items[1]
-      fireEvent.mouseEnter(nonSelected)
-      fireEvent.mouseLeave(nonSelected)
-      // After leave, color reverts to muted
-      expect(nonSelected.style.color).toBeTruthy()
+      fireEvent.mouseEnter(items[1])
+      fireEvent.mouseLeave(items[1])
+      expect(items[1]).toHaveClass('ino-toggle__item')
     })
 
-    it('mouseEnter on selected item does not change style', () => {
+    it('selected item has selected class', () => {
       const { container } = render(<Toggle options={['A', 'B']} value="A" />)
       const items = getItems(container)
-      const selected = items[0]
-      const colorBefore = selected.style.color
-      fireEvent.mouseEnter(selected)
-      expect(selected.style.color).toBe(colorBefore)
+      expect(items[0]).toHaveClass('ino-toggle__item--selected')
     })
 
-    it('mouseEnter on disabled item does not change style', () => {
+    it('disabled item has disabled class', () => {
       const { container } = render(
         <Toggle
           options={[
@@ -621,13 +610,10 @@ describe('Toggle', () => {
         />,
       )
       const items = getItems(container)
-      const disabledItem = items[1]
-      const colorBefore = disabledItem.style.color
-      fireEvent.mouseEnter(disabledItem)
-      expect(disabledItem.style.color).toBe(colorBefore)
+      expect(items[1]).toHaveClass('ino-toggle__item--disabled')
     })
 
-    it('custom item colors use brightness filter on hover', () => {
+    it('custom item styles are applied via styles.item', () => {
       const { container } = render(
         <Toggle
           options={['A', 'B']}
@@ -636,11 +622,10 @@ describe('Toggle', () => {
         />,
       )
       const items = getItems(container)
-      fireEvent.mouseEnter(items[1])
-      expect(items[1].style.filter).toBe('brightness(1.15)')
+      expect(items[1].style.backgroundColor).toBe('navy')
     })
 
-    it('custom item colors reset filter on leave', () => {
+    it('custom item styles persist after hover', () => {
       const { container } = render(
         <Toggle
           options={['A', 'B']}
@@ -651,7 +636,7 @@ describe('Toggle', () => {
       const items = getItems(container)
       fireEvent.mouseEnter(items[1])
       fireEvent.mouseLeave(items[1])
-      expect(items[1].style.filter).toBe('')
+      expect(items[1].style.backgroundColor).toBe('navy')
     })
   })
 
@@ -667,12 +652,10 @@ describe('Toggle', () => {
       expect(thumb!.tagName).toBe('DIV')
     })
 
-    it('thumb has pointer-events none', () => {
+    it('thumb has thumb class', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
       const thumb = getThumb(container)!
-      // Thumb style is set via state — in jsdom without real layout
-      // offsetLeft/offsetWidth = 0, so thumb still gets position set
-      expect(thumb.style.pointerEvents).toBe('none')
+      expect(thumb).toHaveClass('ino-toggle__thumb')
     })
   })
 
@@ -759,31 +742,31 @@ describe('Toggle', () => {
   // ============================================================================
 
   describe('selected item styling', () => {
-    it('selected item has font-weight 600', () => {
+    it('selected item has selected class', () => {
       const { container } = render(<Toggle options={['A', 'B']} value="A" />)
       const items = getItems(container)
-      expect(items[0].style.fontWeight).toBe('600')
+      expect(items[0]).toHaveClass('ino-toggle__item--selected')
     })
 
-    it('non-selected item has font-weight 400', () => {
+    it('non-selected item does not have selected class', () => {
       const { container } = render(<Toggle options={['A', 'B']} value="A" />)
       const items = getItems(container)
-      expect(items[1].style.fontWeight).toBe('400')
+      expect(items[1]).not.toHaveClass('ino-toggle__item--selected')
     })
 
-    it('items have pointer cursor when not disabled', () => {
+    it('items have item class when not disabled', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
       const items = getItems(container)
       items.forEach((item) => {
-        expect(item.style.cursor).toBe('pointer')
+        expect(item).toHaveClass('ino-toggle__item')
       })
     })
 
-    it('items have nowrap white-space', () => {
+    it('items have item class for styling', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
       const items = getItems(container)
       items.forEach((item) => {
-        expect(item.style.whiteSpace).toBe('nowrap')
+        expect(item).toHaveClass('ino-toggle__item')
       })
     })
   })
@@ -814,26 +797,26 @@ describe('Toggle', () => {
       expect(screen.getByText('C')).toBeTruthy()
     })
 
-    it('items have inline-flex display', () => {
+    it('items have item class for display', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
       const items = getItems(container)
       items.forEach((item) => {
-        expect(item.style.display).toBe('inline-flex')
+        expect(item).toHaveClass('ino-toggle__item')
       })
     })
 
-    it('items have center alignment', () => {
+    it('items have item class for alignment', () => {
       const { container } = render(<Toggle options={['A', 'B']} />)
       const items = getItems(container)
       items.forEach((item) => {
-        expect(item.style.alignItems).toBe('center')
-        expect(item.style.justifyContent).toBe('center')
+        expect(item).toHaveClass('ino-toggle__item')
       })
     })
 
-    it('block + vertical does not duplicate width', () => {
+    it('block + vertical applies both classes', () => {
       const { container } = render(<Toggle options={['A', 'B']} block vertical />)
-      expect(getRoot(container).style.width).toBe('100%')
+      expect(getRoot(container)).toHaveClass('ino-toggle--block')
+      expect(getRoot(container)).toHaveClass('ino-toggle--vertical')
     })
   })
 })

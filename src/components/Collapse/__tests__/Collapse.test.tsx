@@ -35,12 +35,8 @@ function getContentBody(panel: HTMLElement) {
 }
 
 function getArrow(panel: HTMLElement) {
-  // Arrow is a span with inline-flex inside the header
   const header = getHeader(panel)
-  const found = Array.from(header.children).find(
-    (el) => el.tagName === 'SPAN' && (el as HTMLElement).style.display === 'inline-flex',
-  )
-  return (found as HTMLElement) ?? null
+  return header.querySelector('.ino-collapse__arrow') as HTMLElement | null
 }
 
 function clickHeader(panel: HTMLElement) {
@@ -83,34 +79,33 @@ describe('Collapse', () => {
       expect(getRoot(container).style.width).toBe('400px')
     })
 
-    it('root has border by default', () => {
+    it('root has bordered class by default', () => {
       const { container } = render(<Collapse items={defaultItems} />)
-      expect(getRoot(container).style.border).toContain('1px solid')
+      expect(getRoot(container)).toHaveClass('ino-collapse--bordered')
     })
 
-    it('root has border-radius', () => {
+    it('root has collapse class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
-      expect(getRoot(container).style.borderRadius).toBe('0.5rem')
+      expect(getRoot(container)).toHaveClass('ino-collapse')
     })
 
-    it('root has overflow hidden', () => {
+    it('root has collapse class for overflow', () => {
       const { container } = render(<Collapse items={defaultItems} />)
-      expect(getRoot(container).style.overflow).toBe('hidden')
+      expect(getRoot(container)).toHaveClass('ino-collapse')
     })
 
-    it('first panel has no top border', () => {
+    it('first panel header has no not-first class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
       const firstHeader = getHeader(panels[0])
-      // jsdom serializes border: 'none' as 'medium'; check it's not a visible border
-      expect(firstHeader.style.borderTop).not.toContain('1px solid')
+      expect(firstHeader).not.toHaveClass('ino-collapse__header--not-first')
     })
 
-    it('subsequent panels have top border separator', () => {
+    it('subsequent panels have not-first class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
       const secondHeader = getHeader(panels[1])
-      expect(secondHeader.style.borderTop).toContain('1px solid')
+      expect(secondHeader).toHaveClass('ino-collapse__header--not-first')
     })
   })
 
@@ -336,16 +331,16 @@ describe('Collapse', () => {
       expect(onChange).not.toHaveBeenCalled()
     })
 
-    it('collapsible=disabled: header has not-allowed cursor', () => {
+    it('collapsible=disabled: header has disabled class', () => {
       const { container } = render(<Collapse items={defaultItems} collapsible="disabled" />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.cursor).toBe('not-allowed')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header--disabled')
     })
 
-    it('collapsible=disabled: text color is muted', () => {
+    it('collapsible=disabled: header has disabled class for styling', () => {
       const { container } = render(<Collapse items={defaultItems} collapsible="disabled" />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.color).toContain('var(--j-')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header--disabled')
     })
 
     it('collapsible=icon: clicking header does not toggle', () => {
@@ -372,17 +367,17 @@ describe('Collapse', () => {
       expect(onChange).toHaveBeenCalledWith(['1'])
     })
 
-    it('collapsible=icon: header has default cursor', () => {
+    it('collapsible=icon: header has icon-only class', () => {
       const { container } = render(<Collapse items={defaultItems} collapsible="icon" />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.cursor).toBe('default')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header--icon-only')
     })
 
-    it('collapsible=icon: arrow has pointer cursor', () => {
+    it('collapsible=icon: arrow has icon-clickable class', () => {
       const { container } = render(<Collapse items={defaultItems} collapsible="icon" />)
       const panels = getPanels(container)
       const arrow = getArrow(panels[0])
-      expect(arrow!.style.cursor).toBe('pointer')
+      expect(arrow).toHaveClass('ino-collapse__arrow--icon-clickable')
     })
 
     it('per-panel collapsible overrides global', () => {
@@ -422,25 +417,25 @@ describe('Collapse', () => {
       expect(getArrow(panels[0])).toBeNull()
     })
 
-    it('arrow rotates 90deg when panel is active', () => {
+    it('arrow has active class when panel is active', () => {
       const { container } = render(<Collapse items={defaultItems} defaultActiveKey="1" />)
       const panels = getPanels(container)
       const arrow = getArrow(panels[0])
-      expect(arrow!.style.transform).toBe('rotate(90deg)')
+      expect(arrow).toHaveClass('ino-collapse__arrow--active')
     })
 
-    it('arrow is at 0deg when panel is collapsed', () => {
+    it('arrow does not have active class when collapsed', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
       const arrow = getArrow(panels[0])
-      expect(arrow!.style.transform).toBe('rotate(0deg)')
+      expect(arrow).not.toHaveClass('ino-collapse__arrow--active')
     })
 
-    it('arrow has transition', () => {
+    it('arrow has arrow class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
       const arrow = getArrow(panels[0])
-      expect(arrow!.style.transition).toContain('transform')
+      expect(arrow).toHaveClass('ino-collapse__arrow')
     })
 
     it('custom expandIcon is rendered', () => {
@@ -471,8 +466,7 @@ describe('Collapse', () => {
       const panels = getPanels(container)
       const header = getHeader(panels[0])
       const firstChild = header.firstElementChild as HTMLElement
-      // First child should be the arrow (inline-flex span)
-      expect(firstChild.style.display).toBe('inline-flex')
+      expect(firstChild).toHaveClass('ino-collapse__arrow')
     })
 
     it('arrow at end when expandIconPlacement=end', () => {
@@ -480,8 +474,7 @@ describe('Collapse', () => {
       const panels = getPanels(container)
       const header = getHeader(panels[0])
       const lastChild = header.lastElementChild as HTMLElement
-      // Last child should be the arrow (inline-flex span)
-      expect(lastChild.style.display).toBe('inline-flex')
+      expect(lastChild).toHaveClass('ino-collapse__arrow')
     })
   })
 
@@ -507,9 +500,9 @@ describe('Collapse', () => {
       const header = getHeader(panels[0])
       const extraSpan = header.querySelector('[data-testid="extra"]')
       expect(extraSpan).toBeTruthy()
-      // Extra wrapper has marginLeft: auto (pushed right)
+      // Extra wrapper has the extra class
       const extraWrapper = extraSpan!.parentElement as HTMLElement
-      expect(extraWrapper.style.marginLeft).toBe('auto')
+      expect(extraWrapper).toHaveClass('ino-collapse__extra')
     })
   })
 
@@ -518,26 +511,25 @@ describe('Collapse', () => {
   // ============================================================================
 
   describe('ghost mode', () => {
-    it('root has no border in ghost mode', () => {
+    it('root has ghost class in ghost mode', () => {
       const { container } = render(<Collapse items={defaultItems} ghost />)
-      // jsdom serializes border: 'none' as 'medium'
-      expect(getRoot(container).style.border).not.toContain('1px solid')
+      expect(getRoot(container)).toHaveClass('ino-collapse--ghost')
     })
 
-    it('root has no border-radius in ghost mode', () => {
+    it('root has ghost class for no border-radius', () => {
       const { container } = render(<Collapse items={defaultItems} ghost />)
-      expect(getRoot(container).style.borderRadius).toBe('0')
+      expect(getRoot(container)).toHaveClass('ino-collapse--ghost')
     })
 
-    it('root has transparent background', () => {
+    it('root has ghost class for transparent background', () => {
       const { container } = render(<Collapse items={defaultItems} ghost />)
-      expect(getRoot(container).style.backgroundColor).toBe('transparent')
+      expect(getRoot(container)).toHaveClass('ino-collapse--ghost')
     })
 
-    it('header has transparent background', () => {
+    it('header has ghost class', () => {
       const { container } = render(<Collapse items={defaultItems} ghost />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.backgroundColor).toBe('transparent')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header--ghost')
     })
   })
 
@@ -546,15 +538,14 @@ describe('Collapse', () => {
   // ============================================================================
 
   describe('bordered', () => {
-    it('has border when bordered=true (default)', () => {
+    it('has bordered class when bordered=true (default)', () => {
       const { container } = render(<Collapse items={defaultItems} />)
-      expect(getRoot(container).style.border).toContain('1px solid')
+      expect(getRoot(container)).toHaveClass('ino-collapse--bordered')
     })
 
-    it('has no border when bordered=false', () => {
+    it('has borderless class when bordered=false', () => {
       const { container } = render(<Collapse items={defaultItems} bordered={false} />)
-      // jsdom serializes border: 'none' as 'medium'
-      expect(getRoot(container).style.border).not.toContain('1px solid')
+      expect(getRoot(container)).toHaveClass('ino-collapse--borderless')
     })
   })
 
@@ -563,37 +554,34 @@ describe('Collapse', () => {
   // ============================================================================
 
   describe('size variants', () => {
-    it('small size has smaller padding', () => {
+    it('small size has sm header class', () => {
       const { container } = render(<Collapse items={defaultItems} size="small" />)
       const panels = getPanels(container)
       const header = getHeader(panels[0])
-      expect(header.style.padding).toBe('0.375rem 0.75rem')
-      expect(header.style.fontSize).toBe('0.8125rem')
+      expect(header).toHaveClass('ino-collapse__header--sm')
     })
 
-    it('middle size (default) has medium padding', () => {
+    it('middle size (default) has md header class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
       const header = getHeader(panels[0])
-      expect(header.style.padding).toBe('0.75rem 1rem')
-      expect(header.style.fontSize).toBe('0.875rem')
+      expect(header).toHaveClass('ino-collapse__header--md')
     })
 
-    it('large size has larger padding', () => {
+    it('large size has lg header class', () => {
       const { container } = render(<Collapse items={defaultItems} size="large" />)
       const panels = getPanels(container)
       const header = getHeader(panels[0])
-      expect(header.style.padding).toBe('1rem 1.25rem')
-      expect(header.style.fontSize).toBe('1rem')
+      expect(header).toHaveClass('ino-collapse__header--lg')
     })
 
-    it('size affects content padding', () => {
+    it('size affects content class', () => {
       const { container } = render(
         <Collapse items={defaultItems} size="small" defaultActiveKey="1" />,
       )
       const panels = getPanels(container)
       const body = getContentBody(panels[0])
-      expect(body!.style.padding).toBe('0.75rem')
+      expect(body).toHaveClass('ino-collapse__content--sm')
     })
   })
 
@@ -829,18 +817,18 @@ describe('Collapse', () => {
   // ============================================================================
 
   describe('content rendering', () => {
-    it('content body has top border', () => {
+    it('content body has content class', () => {
       const { container } = render(<Collapse items={defaultItems} defaultActiveKey="1" />)
       const panels = getPanels(container)
       const body = getContentBody(panels[0])
-      expect(body!.style.borderTop).toContain('1px solid')
+      expect(body).toHaveClass('ino-collapse__content')
     })
 
-    it('content wrapper has overflow hidden', () => {
+    it('content wrapper has content-wrapper class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
       const wrapper = getContentWrapper(panels[0])
-      expect(wrapper.style.overflow).toBe('hidden')
+      expect(wrapper).toHaveClass('ino-collapse__content-wrapper')
     })
 
     it('expanded panel content wrapper has opacity 1', () => {
@@ -890,22 +878,22 @@ describe('Collapse', () => {
       expect(panels.length).toBe(1)
     })
 
-    it('header has fontWeight 600', () => {
+    it('header has header class', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.fontWeight).toBe('600')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header')
     })
 
-    it('header has user-select none', () => {
+    it('header has default class for styling', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.userSelect).toBe('none')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header--default')
     })
 
-    it('header has pointer cursor by default', () => {
+    it('header has clickable class by default', () => {
       const { container } = render(<Collapse items={defaultItems} />)
       const panels = getPanels(container)
-      expect(getHeader(panels[0]).style.cursor).toBe('pointer')
+      expect(getHeader(panels[0])).toHaveClass('ino-collapse__header--clickable')
     })
 
     it('Collapse.Panel export exists', () => {

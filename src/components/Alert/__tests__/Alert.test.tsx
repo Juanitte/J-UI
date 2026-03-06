@@ -17,49 +17,33 @@ function getAlert(container: HTMLElement): HTMLElement | null {
   return container.querySelector('[role="alert"]')
 }
 
-/** The outer grid wrapper (first child of container) */
+/** The outer collapse wrapper */
 function getWrapper(container: HTMLElement): HTMLElement {
-  return container.firstElementChild as HTMLElement
+  return container.querySelector('.ino-alert__collapse') as HTMLElement
 }
 
 function getCloseButton(container: HTMLElement): HTMLButtonElement | null {
-  return container.querySelector('button')
+  return container.querySelector<HTMLButtonElement>('.ino-alert__close-btn')
 }
 
 function getIcon(container: HTMLElement): HTMLElement | null {
-  const alert = getAlert(container)
-  if (!alert) return null
-  // Icon is the first child span with inline-flex + flexShrink:0
-  const spans = Array.from(alert.children) as HTMLElement[]
-  return spans.find((s) => s.style.display === 'inline-flex' && s.style.flexShrink === '0' && s.querySelector('svg')) ?? null
+  return container.querySelector<HTMLElement>('.ino-alert__icon') ?? null
 }
 
 function getContentDiv(container: HTMLElement): HTMLElement | null {
-  const alert = getAlert(container)
-  if (!alert) return null
-  const divs = Array.from(alert.children) as HTMLElement[]
-  return divs.find((d) => d.style.flex && d.style.flex.startsWith('1')) ?? null
+  return container.querySelector<HTMLElement>('.ino-alert__content') ?? null
 }
 
 function getTitleDiv(container: HTMLElement): HTMLElement | null {
-  const content = getContentDiv(container)
-  if (!content) return null
-  return content.firstElementChild as HTMLElement | null
+  return container.querySelector<HTMLElement>('.ino-alert__message--with-description, .ino-alert__message--standalone') ?? null
 }
 
 function getDescriptionDiv(container: HTMLElement): HTMLElement | null {
-  const content = getContentDiv(container)
-  if (!content) return null
-  // Description is the child div with fontSize 0.8125rem
-  const children = Array.from(content.children) as HTMLElement[]
-  return children.find((c) => c.style.fontSize === '0.8125rem') ?? null
+  return container.querySelector<HTMLElement>('.ino-alert__description') ?? null
 }
 
 function getActionSpan(container: HTMLElement): HTMLElement | null {
-  const alert = getAlert(container)
-  if (!alert) return null
-  const spans = Array.from(alert.children) as HTMLElement[]
-  return spans.find((s) => s.style.marginLeft === '0.5rem' && s.style.display === 'inline-flex' && !s.querySelector('svg')) ?? null
+  return container.querySelector<HTMLElement>('.ino-alert__action') ?? null
 }
 
 // ─── Setup / Teardown ───────────────────────────────────────────────────────────
@@ -105,24 +89,24 @@ describe('Alert', () => {
     it('wrapper uses grid layout for close animation', () => {
       const { container } = render(<Alert title="T" />)
       const wrapper = getWrapper(container)
-      expect(wrapper.style.display).toBe('grid')
-      expect(wrapper.style.gridTemplateRows).toBe('1fr')
+      expect(wrapper).toHaveClass('ino-alert__collapse')
+      expect(wrapper).toHaveClass('ino-alert__collapse--open')
     })
 
     it('root has flex layout', () => {
       const { container } = render(<Alert title="T" />)
       const alert = getAlert(container)!
-      expect(alert.style.display).toBe('flex')
+      expect(alert).toHaveClass('ino-alert')
     })
 
     it('root has correct font size', () => {
       const { container } = render(<Alert title="T" />)
-      expect(getAlert(container)!.style.fontSize).toBe('0.875rem')
+      expect(getAlert(container)!).toHaveClass('ino-alert')
     })
 
     it('root has line-height 1.5', () => {
       const { container } = render(<Alert title="T" />)
-      expect(getAlert(container)!.style.lineHeight).toBe('1.5')
+      expect(getAlert(container)!).toHaveClass('ino-alert')
     })
   })
 
@@ -235,32 +219,32 @@ describe('Alert', () => {
   describe('description styling', () => {
     it('root aligns items center without description', () => {
       const { container } = render(<Alert title="T" />)
-      expect(getAlert(container)!.style.alignItems).toBe('center')
+      expect(getAlert(container)!).toHaveClass('ino-alert--compact')
     })
 
     it('root aligns items flex-start with description', () => {
       const { container } = render(<Alert title="T" description="D" />)
-      expect(getAlert(container)!.style.alignItems).toBe('flex-start')
+      expect(getAlert(container)!).toHaveClass('ino-alert--with-description')
     })
 
     it('title font-weight is 600 with description', () => {
       const { container } = render(<Alert title="T" description="D" />)
-      expect(getTitleDiv(container)!.style.fontWeight).toBe('600')
+      expect(getTitleDiv(container)!).toHaveClass('ino-alert__message--with-description')
     })
 
     it('title font-size is larger with description', () => {
       const { container } = render(<Alert title="T" description="D" />)
-      expect(getTitleDiv(container)!.style.fontSize).toBe('0.9375rem')
+      expect(getTitleDiv(container)!).toHaveClass('ino-alert__message--with-description')
     })
 
     it('title font-size is normal without description', () => {
       const { container } = render(<Alert title="T" />)
-      expect(getTitleDiv(container)!.style.fontSize).toBe('0.875rem')
+      expect(getTitleDiv(container)!).toHaveClass('ino-alert__message--standalone')
     })
 
     it('description has smaller font size', () => {
       const { container } = render(<Alert title="T" description="D" />)
-      expect(getDescriptionDiv(container)!.style.fontSize).toBe('0.8125rem')
+      expect(getDescriptionDiv(container)!).toHaveClass('ino-alert__description')
     })
 
     it('description has marginTop when title exists', () => {
@@ -275,12 +259,12 @@ describe('Alert', () => {
 
     it('padding is larger with description', () => {
       const { container } = render(<Alert title="T" description="D" />)
-      expect(getAlert(container)!.style.padding).toBe('0.9375rem 1rem')
+      expect(getAlert(container)!).toHaveClass('ino-alert--with-description')
     })
 
     it('padding is smaller without description', () => {
       const { container } = render(<Alert title="T" />)
-      expect(getAlert(container)!.style.padding).toBe('0.5rem 0.75rem')
+      expect(getAlert(container)!).toHaveClass('ino-alert--compact')
     })
   })
 
@@ -308,8 +292,8 @@ describe('Alert', () => {
       const { container } = render(<Alert title="T" closable />)
       fireEvent.click(getCloseButton(container)!)
       const wrapper = getWrapper(container)
-      expect(wrapper.style.gridTemplateRows).toBe('0fr')
-      expect(getAlert(container)!.style.opacity).toBe('0')
+      expect(wrapper).toHaveClass('ino-alert__collapse--closing')
+      expect(getAlert(container)!).toHaveClass('ino-alert--closing')
     })
 
     it('after transition ends, alert is removed', () => {
@@ -349,16 +333,13 @@ describe('Alert', () => {
     it('close button hover changes color', () => {
       const { container } = render(<Alert title="T" closable />)
       const btn = getCloseButton(container)!
-      const colorBefore = btn.style.color
-      fireEvent.mouseEnter(btn)
-      expect(btn.style.color).not.toBe(colorBefore)
-      fireEvent.mouseLeave(btn)
-      expect(btn.style.color).toBe(colorBefore)
+      // Hover styling is handled by CSS .ino-alert__close-btn:hover
+      expect(btn).toHaveClass('ino-alert__close-btn')
     })
 
     it('close button has cursor pointer', () => {
       const { container } = render(<Alert title="T" closable />)
-      expect(getCloseButton(container)!.style.cursor).toBe('pointer')
+      expect(getCloseButton(container)!).toHaveClass('ino-alert__close-btn')
     })
   })
 
@@ -379,7 +360,8 @@ describe('Alert', () => {
         <Alert title="T" action={<button>Act</button>} />,
       )
       const actionSpan = getActionSpan(container)!
-      expect(actionSpan.style.marginLeft).toBe('0.5rem')
+      // marginLeft is now in CSS via .ino-alert__action
+      expect(actionSpan).toHaveClass('ino-alert__action')
     })
 
     it('no action span when action is not provided', () => {
@@ -396,25 +378,27 @@ describe('Alert', () => {
     it('banner removes border-radius', () => {
       const { container } = render(<Alert title="T" banner />)
       const alert = getAlert(container)!
-      expect(alert.style.borderRadius).toBe('0')
+      expect(alert).toHaveClass('ino-alert--banner')
     })
 
     it('banner has bottom border only', () => {
       const { container } = render(<Alert title="T" banner />)
       const alert = getAlert(container)!
+      // borderBottom is still dynamic inline style
       expect(alert.style.borderBottom).toContain('1px solid')
     })
 
     it('non-banner has full border', () => {
       const { container } = render(<Alert title="T" />)
       const alert = getAlert(container)!
+      // border is still dynamic inline style
       expect(alert.style.border).toContain('1px solid')
     })
 
     it('non-banner has border-radius', () => {
       const { container } = render(<Alert title="T" />)
       const alert = getAlert(container)!
-      expect(alert.style.borderRadius).toBe('0.5rem')
+      expect(alert).toHaveClass('ino-alert--rounded')
     })
 
     it('banner defaults type to warning', () => {

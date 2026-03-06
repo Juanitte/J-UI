@@ -1,0 +1,99 @@
+/* ================================================================
+   Checkbox – BEM classes
+   Uses fixed primary/neutral tokens (no per-instance color prop).
+   ================================================================ */
+
+/* --- Block (label wrapper) --- */
+.ino-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+
+.ino-checkbox--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- Checkbox box --- */
+.ino-checkbox__box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 2px solid var(--j-border);
+  background-color: transparent;
+  color: #fff;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Active state (checked or indeterminate) */
+.ino-checkbox--active .ino-checkbox__box {
+  border-color: var(--j-primary);
+  background-color: var(--j-primary);
+}
+
+/* Focus ring (keyboard) */
+.ino-checkbox--focused .ino-checkbox__box {
+  border-color: var(--j-primary);
+}
+
+.ino-checkbox--focused:not(.ino-checkbox--disabled) .ino-checkbox__box {
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+/* Hover: unchecked */
+.ino-checkbox:not(.ino-checkbox--disabled):not(.ino-checkbox--active):hover .ino-checkbox__box {
+  border-color: var(--j-primary);
+}
+
+/* Hover: checked/indeterminate */
+.ino-checkbox--active:not(.ino-checkbox--disabled):hover .ino-checkbox__box {
+  background-color: var(--j-primary-hover);
+  border-color: var(--j-primary-hover);
+}
+
+/* --- Hidden input --- */
+.ino-checkbox__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* --- Indicator (check / minus icon) --- */
+.ino-checkbox__indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Label --- */
+.ino-checkbox__label {
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  color: var(--j-text);
+}
+
+.ino-checkbox--disabled .ino-checkbox__label {
+  color: var(--j-textSubtle);
+}
+
+/* --- Group --- */
+.ino-checkbox-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}

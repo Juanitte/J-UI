@@ -1,0 +1,123 @@
+/* ================================================================
+   Timeline – BEM classes
+   ================================================================ */
+
+.ino-timeline {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--j-text);
+}
+
+.ino-timeline--vertical { flex-direction: column; }
+.ino-timeline--horizontal { flex-direction: row; }
+
+/* --- Vertical item (grid) --- */
+.ino-timeline__item--vertical {
+  display: grid;
+}
+
+/* --- Dot column --- */
+.ino-timeline__dot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Dot --- */
+.ino-timeline__dot {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.ino-timeline__dot--custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ino-timeline__dot--circle {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.ino-timeline__dot--solid {
+  /* backgroundColor set inline via dotColor */
+}
+
+.ino-timeline__dot--outlined {
+  /* border set inline via dotColor, bg from token */
+  background-color: var(--j-bg);
+}
+
+/* --- Tail --- */
+.ino-timeline__tail {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  bottom: -0.3125rem;
+  width: 2px;
+  background-color: var(--j-border);
+  transition: background-color 0.3s;
+}
+
+.ino-timeline__tail-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.ino-timeline__tail--h {
+  position: static;
+  flex: 1;
+  height: 2px;
+  width: auto;
+  transform: none;
+  background-color: var(--j-border);
+  transition: background-color 0.3s;
+}
+
+/* --- Content --- */
+.ino-timeline__content {
+  line-height: 1.5;
+}
+
+/* --- Label --- */
+.ino-timeline__label {
+  line-height: 1.5;
+  color: var(--j-textMuted);
+  font-size: 0.875rem;
+}
+
+/* --- Horizontal item --- */
+.ino-timeline__item--horizontal {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+}
+
+.ino-timeline__dot-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.25rem 0;
+}
+
+.ino-timeline__h-area {
+  text-align: center;
+  padding: 0.5rem 0.25rem;
+  line-height: 1.5;
+  min-height: 1.5rem;
+}
+
+.ino-timeline__h-area--label {
+  color: var(--j-textMuted);
+  font-size: 0.875rem;
+}

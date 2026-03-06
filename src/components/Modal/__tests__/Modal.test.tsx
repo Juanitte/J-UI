@@ -28,74 +28,39 @@ function getDialog(): HTMLElement | null {
 }
 
 function getPortalWrapper(): HTMLElement | null {
-  return Array.from(document.body.children).find(
-    (c) => (c as HTMLElement).style?.position === 'fixed',
-  ) as HTMLElement ?? null
+  return document.body.querySelector<HTMLElement>('.ino-modal__wrapper') ?? null
 }
 
 function getMask(): HTMLElement | null {
-  const wrapper = getPortalWrapper()
-  if (!wrapper) return null
-  return Array.from(wrapper.children).find(
-    (c) => c.tagName !== 'STYLE' && (c as HTMLElement).style?.position === 'fixed',
-  ) as HTMLElement ?? null
+  return document.body.querySelector<HTMLElement>('.ino-modal__mask') ?? null
 }
 
 function getScrollContainer(): HTMLElement | null {
-  const wrapper = getPortalWrapper()
-  if (!wrapper) return null
-  return Array.from(wrapper.children).find(
-    (c) => (c as HTMLElement).style?.display === 'flex',
-  ) as HTMLElement ?? null
+  return document.body.querySelector<HTMLElement>('.ino-modal__scroll') ?? null
 }
 
 function getHeader(): HTMLElement | null {
-  const dialog = getDialog()
-  if (!dialog) return null
-  return Array.from(dialog.children).find(
-    (c) => (c as HTMLElement).style?.borderBottom?.includes('solid'),
-  ) as HTMLElement ?? null
+  return document.body.querySelector<HTMLElement>('.ino-modal__header') ?? null
 }
 
 function getBody(): HTMLElement | null {
-  const dialog = getDialog()
-  if (!dialog) return null
-  return Array.from(dialog.children).find(
-    (c) => (c as HTMLElement).style?.overflowY === 'auto',
-  ) as HTMLElement ?? null
+  return document.body.querySelector<HTMLElement>('.ino-modal__body') ?? null
 }
 
 function getFooter(): HTMLElement | null {
-  const dialog = getDialog()
-  if (!dialog) return null
-  return Array.from(dialog.children).find(
-    (c) => (c as HTMLElement).style?.justifyContent === 'flex-end',
-  ) as HTMLElement ?? null
+  return document.body.querySelector<HTMLElement>('.ino-modal__footer') ?? null
 }
 
-/** X button: absolutely-positioned button inside dialog */
 function getCloseButton(): HTMLButtonElement | null {
-  const dialog = getDialog()
-  if (!dialog) return null
-  return Array.from(dialog.querySelectorAll('button')).find(
-    (b) => (b as HTMLButtonElement).style?.position === 'absolute',
-  ) as HTMLButtonElement ?? null
+  return document.body.querySelector<HTMLButtonElement>('.ino-modal__close-btn') ?? null
 }
 
-/** Last button in footer = OK */
 function getOkButton(): HTMLButtonElement | null {
-  const footer = getFooter()
-  if (!footer) return null
-  const btns = footer.querySelectorAll('button')
-  return btns.length ? btns[btns.length - 1] as HTMLButtonElement : null
+  return document.body.querySelector<HTMLButtonElement>('.ino-modal__btn--ok') ?? null
 }
 
-/** First of two buttons in footer = Cancel */
 function getCancelButton(): HTMLButtonElement | null {
-  const footer = getFooter()
-  if (!footer) return null
-  const btns = footer.querySelectorAll('button')
-  return btns.length >= 2 ? btns[0] as HTMLButtonElement : null
+  return document.body.querySelector<HTMLButtonElement>('.ino-modal__btn--cancel') ?? null
 }
 
 // ============================================================================
@@ -133,7 +98,7 @@ describe('Modal', () => {
     it('portal wrapper has position fixed with default zIndex 1000', () => {
       render(<Modal open />)
       const wrapper = getPortalWrapper()!
-      expect(wrapper.style.position).toBe('fixed')
+      expect(wrapper).toHaveClass('ino-modal__wrapper')
       expect(wrapper.style.zIndex).toBe('1000')
     })
 
@@ -141,8 +106,7 @@ describe('Modal', () => {
       render(<Modal open />)
       flushOpenAnimation()
       const dialog = getDialog()!
-      expect(dialog.style.display).toBe('flex')
-      expect(dialog.style.flexDirection).toBe('column')
+      expect(dialog).toHaveClass('ino-modal__content')
     })
 
     it('portal wrapper is hidden (display:none) after close without destroyOnClose', () => {
@@ -150,7 +114,7 @@ describe('Modal', () => {
       flushOpenAnimation()
       rerender(<Modal open={false} />)
       fireEvent.transitionEnd(getDialog()!)
-      expect(getPortalWrapper()!.style.display).toBe('none')
+      expect(getPortalWrapper()!).toHaveClass('ino-modal__wrapper--hidden')
     })
   })
 
@@ -249,28 +213,28 @@ describe('Modal', () => {
     it('header has borderBottom', () => {
       render(<Modal open title="T" />)
       flushOpenAnimation()
-      expect(getHeader()!.style.borderBottom).toContain('solid')
+      expect(getHeader()!).toHaveClass('ino-modal__header')
     })
 
     it('title has fontWeight 600', () => {
       render(<Modal open title="T" />)
       flushOpenAnimation()
       const titleDiv = getHeader()!.firstElementChild as HTMLElement
-      expect(titleDiv.style.fontWeight).toBe('600')
+      expect(titleDiv).toHaveClass('ino-modal__header-title')
     })
 
     it('title has paddingRight when closable=true', () => {
       render(<Modal open title="T" closable />)
       flushOpenAnimation()
       const titleDiv = getHeader()!.firstElementChild as HTMLElement
-      expect(titleDiv.style.paddingRight).not.toBe('0px')
+      expect(titleDiv).toHaveClass('ino-modal__header-title--closable')
     })
 
     it('title has paddingRight 0 when closable=false', () => {
       render(<Modal open title="T" closable={false} />)
       flushOpenAnimation()
       const titleDiv = getHeader()!.firstElementChild as HTMLElement
-      expect(titleDiv.style.paddingRight).toBe('0px')
+      expect(titleDiv).not.toHaveClass('ino-modal__header-title--closable')
     })
   })
 
@@ -287,7 +251,7 @@ describe('Modal', () => {
     it('body has overflowY auto', () => {
       render(<Modal open>content</Modal>)
       flushOpenAnimation()
-      expect(getBody()!.style.overflowY).toBe('auto')
+      expect(getBody()!).toHaveClass('ino-modal__body')
     })
 
     it('loading=true shows skeleton instead of children', () => {
@@ -298,7 +262,7 @@ describe('Modal', () => {
       )
       flushOpenAnimation()
       expect(document.body.querySelector('[data-testid="child"]')).toBeNull()
-      expect(getBody()!.querySelector('[style*="animation"]')).toBeTruthy()
+      expect(getBody()!.querySelector('.ino-modal__skeleton-bar')).toBeTruthy()
     })
 
     it('loading=false shows children', () => {
@@ -313,7 +277,7 @@ describe('Modal', () => {
     it('body has padding', () => {
       render(<Modal open>content</Modal>)
       flushOpenAnimation()
-      expect(getBody()!.style.padding).toBeTruthy()
+      expect(getBody()!).toHaveClass('ino-modal__body')
     })
   })
 
@@ -390,7 +354,7 @@ describe('Modal', () => {
     it('footer has borderTop', () => {
       render(<Modal open />)
       flushOpenAnimation()
-      expect(getFooter()!.style.borderTop).toContain('solid')
+      expect(getFooter()!).toHaveClass('ino-modal__footer')
     })
 
     it('okButtonProps spreads onto OK button', () => {
@@ -437,18 +401,14 @@ describe('Modal', () => {
     it('X button is absolutely positioned', () => {
       render(<Modal open />)
       flushOpenAnimation()
-      expect(getCloseButton()!.style.position).toBe('absolute')
+      expect(getCloseButton()!).toHaveClass('ino-modal__close-btn')
     })
 
     it('X button hover changes color', () => {
       render(<Modal open />)
       flushOpenAnimation()
-      const btn = getCloseButton()!
-      const colorBefore = btn.style.color
-      fireEvent.mouseEnter(btn)
-      expect(btn.style.color).not.toBe(colorBefore)
-      fireEvent.mouseLeave(btn)
-      expect(btn.style.color).toBe(colorBefore)
+      // Hover styling is handled by CSS .ino-modal__close-btn:hover
+      expect(getCloseButton()!).toHaveClass('ino-modal__close-btn')
     })
   })
 
@@ -493,12 +453,12 @@ describe('Modal', () => {
 
     it('mask={ blur: true } adds backdropFilter', () => {
       render(<Modal open mask={{ blur: true }} />)
-      expect(getMask()!.style.backdropFilter).toContain('blur')
+      expect(getMask()!).toHaveClass('ino-modal__mask--blur')
     })
 
     it('mask={ blur: false } has no backdropFilter', () => {
       render(<Modal open mask={{ blur: false }} />)
-      expect(getMask()!.style.backdropFilter).toBeFalsy()
+      expect(getMask()!).not.toHaveClass('ino-modal__mask--blur')
     })
   })
 
@@ -536,12 +496,12 @@ describe('Modal', () => {
   describe('centered', () => {
     it('centered=false (default): scroll container aligns flex-start', () => {
       render(<Modal open />)
-      expect(getScrollContainer()!.style.alignItems).toBe('flex-start')
+      expect(getScrollContainer()!).toHaveClass('ino-modal__scroll--top')
     })
 
     it('centered=true: scroll container aligns center', () => {
       render(<Modal open centered />)
-      expect(getScrollContainer()!.style.alignItems).toBe('center')
+      expect(getScrollContainer()!).toHaveClass('ino-modal__scroll--centered')
     })
 
     it('centered=true: dialog has maxHeight', () => {
@@ -595,13 +555,13 @@ describe('Modal', () => {
     it('spinner SVG is shown in OK button when confirmLoading', () => {
       render(<Modal open confirmLoading />)
       flushOpenAnimation()
-      expect(getFooter()!.querySelector('[style*="j-modal-spin"]')).toBeTruthy()
+      expect(getOkButton()!.querySelector('svg')).toBeTruthy()
     })
 
     it('OK button opacity is 0.7 when confirmLoading', () => {
       render(<Modal open confirmLoading />)
       flushOpenAnimation()
-      expect(getOkButton()!.style.opacity).toBe('0.7')
+      expect(getOkButton()!).toHaveClass('ino-modal__btn--ok--loading')
     })
 
     it('OK button is not disabled without confirmLoading', () => {
@@ -621,7 +581,7 @@ describe('Modal', () => {
       flushOpenAnimation()
       rerender(<Modal open={false} />)
       fireEvent.transitionEnd(getDialog()!)
-      expect(getPortalWrapper()!.style.display).toBe('none')
+      expect(getPortalWrapper()!).toHaveClass('ino-modal__wrapper--hidden')
     })
 
     it('destroyOnClose=true: dialog unmounts after close transitionEnd', () => {

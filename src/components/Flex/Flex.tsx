@@ -1,4 +1,6 @@
 import type { ElementType, ReactNode, CSSProperties } from 'react'
+import { classNames as cx } from '../../utils/classNames'
+import './Flex.css'
 
 export type FlexJustify =
   | 'flex-start'
@@ -28,13 +30,13 @@ export type FlexGap = 'small' | 'middle' | 'large' | number | [number, number]
 export interface FlexProps {
   /** Contenido del flex container */
   children?: ReactNode
-  /** Dirección vertical (column) en lugar de horizontal (row) */
+  /** Direccion vertical (column) en lugar de horizontal (row) */
   vertical?: boolean
   /** Comportamiento de wrap */
   wrap?: FlexWrap | boolean
-  /** Alineación horizontal (justify-content) */
+  /** Alineacion horizontal (justify-content) */
   justify?: FlexJustify
-  /** Alineación vertical (align-items) */
+  /** Alineacion vertical (align-items) */
   align?: FlexAlign
   /** Espacio entre elementos ('small' | 'middle' | 'large' | number | [horizontal, vertical]) */
   gap?: FlexGap
@@ -48,10 +50,28 @@ export interface FlexProps {
   style?: CSSProperties
 }
 
-const gapMap: Record<'small' | 'middle' | 'large', string> = {
-  small: '0.5rem',
-  middle: '1rem',
-  large: '1.5rem',
+// Maps for justify/align values to BEM modifier suffixes
+const JUSTIFY_MAP: Record<string, string> = {
+  'flex-start': 'start',
+  'center': 'center',
+  'flex-end': 'end',
+  'space-between': 'between',
+  'space-around': 'around',
+  'space-evenly': 'evenly',
+  'start': 'start',
+  'end': 'end',
+  'normal': 'normal',
+}
+
+const ALIGN_MAP: Record<string, string> = {
+  'flex-start': 'start',
+  'center': 'center',
+  'flex-end': 'end',
+  'stretch': 'stretch',
+  'baseline': 'baseline',
+  'start': 'start',
+  'end': 'end',
+  'normal': 'normal',
 }
 
 export function Flex({
@@ -66,16 +86,7 @@ export function Flex({
   className,
   style,
 }: FlexProps) {
-  // Procesar gap
-  const getGapValue = (): CSSProperties['gap'] => {
-    if (gap === undefined) return undefined
-    if (typeof gap === 'number') return gap
-    if (typeof gap === 'string') return gapMap[gap]
-    // Array [horizontal, vertical] -> CSS gap usa "row column"
-    return `${gap[1]}px ${gap[0]}px`
-  }
-
-  // Procesar wrap (puede ser boolean o string)
+  // Procesar wrap
   const getWrapValue = (): FlexWrap => {
     if (typeof wrap === 'boolean') {
       return wrap ? 'wrap' : 'nowrap'
@@ -83,19 +94,34 @@ export function Flex({
     return wrap
   }
 
-  const flexStyles: CSSProperties = {
-    display: 'flex',
-    flexDirection: vertical ? 'column' : 'row',
-    flexWrap: getWrapValue(),
-    justifyContent: justify,
-    alignItems: align,
-    gap: getGapValue(),
+  const wrapValue = getWrapValue()
+
+  // Determine gap: preset string goes to CSS class, number/array to inline
+  const isPresetGap = typeof gap === 'string'
+  const getGapStyle = (): CSSProperties['gap'] => {
+    if (gap === undefined || isPresetGap) return undefined
+    if (typeof gap === 'number') return gap
+    return `${gap[1]}px ${gap[0]}px`
+  }
+
+  const rootClass = cx(
+    'ino-flex',
+    vertical ? 'ino-flex--column' : 'ino-flex--row',
+    `ino-flex--${wrapValue}`,
+    `ino-flex--justify-${JUSTIFY_MAP[justify] ?? justify}`,
+    `ino-flex--align-${ALIGN_MAP[align] ?? align}`,
+    isPresetGap ? `ino-flex--gap-${gap}` : undefined,
+    className,
+  )
+
+  const dynamicStyle: CSSProperties = {
+    gap: getGapStyle(),
     flex,
     ...style,
   }
 
   return (
-    <Component style={flexStyles} className={className}>
+    <Component className={rootClass} style={dynamicStyle}>
       {children}
     </Component>
   )

@@ -6,9 +6,8 @@ import {
   useRef,
   useEffect,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { Tooltip } from '../Tooltip'
 
 // ============================================================================
@@ -153,21 +152,15 @@ interface MenuContextValue {
 // ============================================================================
 
 function MenuDivider({ item, ctx }: { item: MenuDividerOption; ctx: MenuContextValue }) {
-  const style: CSSProperties = {
-    margin: '0.25rem 0',
-    padding: 0,
-    listStyle: 'none',
-    borderTop: item.dashed
-      ? `1px dashed ${tokens.colorBorder}`
-      : `1px solid ${tokens.colorBorder}`,
-    ...ctx.styles?.divider,
-  }
-
   return (
     <li
       role="separator"
-      style={style}
-      className={ctx.classNames?.divider}
+      className={cx(
+        'ino-menu__divider',
+        { 'ino-menu__divider--dashed': item.dashed },
+        ctx.classNames?.divider,
+      )}
+      style={ctx.styles?.divider}
     />
   )
 }
@@ -185,29 +178,24 @@ function MenuGroup({
   ctx: MenuContextValue
   level: number
 }) {
-  const titleStyle: CSSProperties = {
-    padding: '0.5rem 1rem',
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    color: tokens.colorTextSubtle,
-    lineHeight: '1.5',
+  // Dynamic: inline indent
+  const titleDynamicStyle: CSSProperties = {
+    ...(ctx.mode === 'inline' && !ctx.inlineCollapsed
+      ? { paddingLeft: 16 + ctx.inlineIndent * level }
+      : {}),
     ...ctx.styles?.groupTitle,
-  }
-
-  if (ctx.mode === 'inline' && !ctx.inlineCollapsed) {
-    titleStyle.paddingLeft = 16 + ctx.inlineIndent * level
   }
 
   return (
     <li
       role="presentation"
-      style={{ listStyle: 'none', ...ctx.styles?.group }}
-      className={ctx.classNames?.group}
+      className={cx('ino-menu__group', ctx.classNames?.group)}
+      style={ctx.styles?.group}
     >
-      <div style={titleStyle} className={ctx.classNames?.groupTitle}>
+      <div className={cx('ino-menu__group-title', ctx.classNames?.groupTitle)} style={titleDynamicStyle}>
         {item.label}
       </div>
-      <ul role="group" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+      <ul role="group" className="ino-menu__group-list">
         {item.children.map((child) => (
           <MenuItemRenderer
             key={getItemKey(child)}
@@ -245,78 +233,23 @@ function MenuItemLeaf({
 
   const fullKeyPath = [item.key, ...keyPath]
 
-  // Extract user-provided overrides so selected/hover states respect them
-  const userItemColor = ctx.styles?.item?.color as string | undefined
-  const userItemBg = ctx.styles?.item?.backgroundColor as string | undefined
+  const itemClass = cx(
+    'ino-menu__item',
+    {
+      'ino-menu__item--horizontal': isHorizontal,
+      'ino-menu__item--vertical': isVertical,
+      'ino-menu__item--disabled': item.disabled,
+      'ino-menu__item--danger': item.danger,
+      'ino-menu__item--selected': isSelected,
+      'ino-menu__item--collapsed': collapsed,
+    },
+    ctx.classNames?.item,
+  )
 
-  // Spread styles.item but exclude backgroundColor (only used for selected state)
-  const { backgroundColor: _excludeBg, ...itemStyleWithoutBg } = ctx.styles?.item ?? {}
-
-  const baseStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: isHorizontal ? '0 1.25rem' : '0.5rem 1rem',
-    lineHeight: isHorizontal ? '2.875rem' : '1.375rem',
-    cursor: item.disabled ? 'not-allowed' : 'pointer',
-    color: item.danger
-      ? tokens.colorError
-      : isSelected
-        ? (userItemColor ?? tokens.colorPrimary)
-        : (userItemColor ?? tokens.colorText),
-    backgroundColor: isSelected && !isHorizontal
-      ? (userItemBg ?? tokens.colorPrimaryLight)
-      : 'transparent',
-    opacity: item.disabled ? 0.5 : 1,
-    transition: 'color 0.2s, background-color 0.2s',
-    listStyle: 'none',
-    position: 'relative',
-    whiteSpace: 'nowrap',
-    ...itemStyleWithoutBg,
-  }
-
-  // Indent for inline mode
-  if (isInline && !collapsed) {
-    baseStyle.paddingLeft = 16 + ctx.inlineIndent * level
-  }
-
-  // Collapsed mode: center icon
-  if (collapsed) {
-    baseStyle.justifyContent = 'center'
-    baseStyle.padding = '0.5rem 0'
-  }
-
-  // Selected border for vertical
-  if (isSelected && isVertical) {
-    baseStyle.borderRight = `3px solid ${userItemColor ?? tokens.colorPrimary}`
-  }
-
-  // Selected border for horizontal
-  if (isSelected && isHorizontal) {
-    baseStyle.borderBottom = `2px solid ${userItemColor ?? tokens.colorPrimary}`
-  }
-
-  const handleMouseEnter = (e: ReactMouseEvent<HTMLLIElement>) => {
-    if (item.disabled) return
-    const el = e.currentTarget as HTMLElement
-    if (!isSelected || isHorizontal) {
-      el.style.backgroundColor = item.danger ? tokens.colorErrorBg : tokens.colorBgMuted
-    }
-    if (isHorizontal && !isSelected) {
-      el.style.color = item.danger ? tokens.colorError : (userItemColor ?? tokens.colorPrimary)
-    }
-  }
-
-  const handleMouseLeave = (e: ReactMouseEvent<HTMLLIElement>) => {
-    const el = e.currentTarget as HTMLElement
-    if (isSelected && !isHorizontal) {
-      el.style.backgroundColor = userItemBg ?? tokens.colorPrimaryLight
-    } else {
-      el.style.backgroundColor = 'transparent'
-    }
-    if (isHorizontal && !isSelected) {
-      el.style.color = item.danger ? tokens.colorError : (userItemColor ?? tokens.colorText)
-    }
+  // Dynamic: inline indent stays inline
+  const itemDynamicStyle: CSSProperties = {
+    ...(isInline && !collapsed ? { paddingLeft: 16 + ctx.inlineIndent * level } : {}),
+    ...ctx.styles?.item,
   }
 
   const handleClick = (e: ReactMouseEvent) => {
@@ -327,10 +260,10 @@ function MenuItemLeaf({
   const innerContent = (
     <>
       {item.icon && (
-        <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: '0.875rem' }}>{item.icon}</span>
+        <span className="ino-menu__item-icon">{item.icon}</span>
       )}
       {(!collapsed || !item.icon) && (
-        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+        <span className="ino-menu__item-label">{item.label}</span>
       )}
     </>
   )
@@ -338,12 +271,10 @@ function MenuItemLeaf({
   return (
     <li
       role="menuitem"
-      style={baseStyle}
-      className={ctx.classNames?.item}
+      className={itemClass}
+      style={itemDynamicStyle}
       title={!collapsed ? item.title : undefined}
       onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {collapsed && item.title ? (
         <Tooltip content={item.title} position="right" delay={100}>
@@ -382,50 +313,21 @@ function SubMenu({
   // Does any child (recursively) match selectedKeys?
   const hasSelectedChild = hasSelectedDescendant(item.children, ctx.selectedKeys)
 
-  // Trigger style
-  const triggerStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: isHorizontal ? '0 1.25rem' : '0.5rem 1rem',
-    lineHeight: isHorizontal ? '2.875rem' : '1.375rem',
-    cursor: item.disabled ? 'not-allowed' : 'pointer',
-    color: hasSelectedChild ? tokens.colorPrimary : tokens.colorText,
-    opacity: item.disabled ? 0.5 : 1,
-    transition: 'color 0.2s, background-color 0.2s',
-    listStyle: 'none',
-    position: 'relative',
-    whiteSpace: 'nowrap',
+  const triggerClass = cx(
+    'ino-menu__submenu-trigger',
+    {
+      'ino-menu__submenu-trigger--horizontal': isHorizontal,
+      'ino-menu__submenu-trigger--disabled': item.disabled,
+      'ino-menu__submenu-trigger--active': hasSelectedChild,
+      'ino-menu__submenu-trigger--collapsed': collapsed,
+    },
+    ctx.classNames?.item,
+  )
+
+  // Dynamic: inline indent
+  const triggerDynamicStyle: CSSProperties = {
+    ...(isInline && !collapsed ? { paddingLeft: 16 + ctx.inlineIndent * level } : {}),
     ...ctx.styles?.item,
-  }
-
-  if (isInline && !collapsed) {
-    triggerStyle.paddingLeft = 16 + ctx.inlineIndent * level
-  }
-
-  if (collapsed) {
-    triggerStyle.justifyContent = 'center'
-    triggerStyle.padding = '0.5rem 0'
-  }
-
-  // Selected indicator on horizontal for submenu with selected child
-  if (hasSelectedChild && isHorizontal) {
-    triggerStyle.borderBottom = `2px solid ${tokens.colorPrimary}`
-  }
-
-  const handleTriggerMouseEnter = (e: ReactMouseEvent<HTMLElement>) => {
-    if (item.disabled) return
-    ;(e.currentTarget as HTMLElement).style.backgroundColor = tokens.colorBgMuted
-    if (isHorizontal) {
-      ;(e.currentTarget as HTMLElement).style.color = tokens.colorPrimary
-    }
-  }
-
-  const handleTriggerMouseLeave = (e: ReactMouseEvent<HTMLElement>) => {
-    ;(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
-    if (isHorizontal && !hasSelectedChild) {
-      ;(e.currentTarget as HTMLElement).style.color = tokens.colorText
-    }
   }
 
   const handleTriggerClick = (e: ReactMouseEvent) => {
@@ -458,67 +360,45 @@ function SubMenu({
       : <ChevronDownIcon />
   )
 
-  const expandIconStyle: CSSProperties = {
-    display: 'inline-flex',
-    marginLeft: 'auto',
-    transition: 'transform 0.2s',
-    transform: isOpen && !usePopup ? 'rotate(180deg)' : 'rotate(0deg)',
-  }
+  const expandIconClass = cx(
+    'ino-menu__expand-icon',
+    { 'ino-menu__expand-icon--open': isOpen && !usePopup },
+  )
 
-  // Popup submenu styles
-  const popupStyle: CSSProperties = {
-    position: 'absolute',
-    zIndex: 1050,
-    listStyle: 'none',
-    margin: 0,
-    padding: '0.25rem 0',
-    minWidth: '10rem',
-    backgroundColor: tokens.colorBg,
-    border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: '0.5rem',
-    boxShadow: tokens.shadowMd,
-    ...(isHorizontal
-      ? { top: '100%', left: 0, marginTop: '0.25rem' }
-      : { left: '100%', top: 0, marginLeft: '0.25rem' }),
-    ...ctx.styles?.submenu,
-  }
+  const popupClass = cx(
+    'ino-menu__submenu-popup',
+    isHorizontal ? 'ino-menu__submenu-popup--horizontal' : 'ino-menu__submenu-popup--vertical',
+    ctx.classNames?.submenu,
+  )
 
-  // Inline submenu: expand/collapse with transition
-  const inlineSubmenuStyle: CSSProperties = {
-    listStyle: 'none',
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden',
-    transition: 'max-height 0.2s ease, opacity 0.2s ease',
-    maxHeight: isOpen ? 1000 : 0,
-    opacity: isOpen ? 1 : 0,
-    ...ctx.styles?.submenu,
-  }
+  const inlineClass = cx(
+    'ino-menu__submenu-inline',
+    isOpen ? 'ino-menu__submenu-inline--open' : 'ino-menu__submenu-inline--closed',
+    ctx.classNames?.submenu,
+  )
 
   return (
     <li
       role="none"
-      style={{ listStyle: 'none', position: usePopup ? 'relative' : undefined }}
+      className={cx('ino-menu__submenu-wrapper', { 'ino-menu__submenu-wrapper--popup': usePopup })}
       onMouseEnter={handleWrapperMouseEnter}
       onMouseLeave={handleWrapperMouseLeave}
     >
       <div
         role="menuitem"
         aria-expanded={isOpen}
-        style={triggerStyle}
-        className={ctx.classNames?.item}
+        className={triggerClass}
+        style={triggerDynamicStyle}
         onClick={handleTriggerClick}
-        onMouseEnter={handleTriggerMouseEnter}
-        onMouseLeave={handleTriggerMouseLeave}
       >
         {item.icon && (
-          <span style={{ display: 'inline-flex', flexShrink: 0, fontSize: '0.875rem' }}>{item.icon}</span>
+          <span className="ino-menu__item-icon">{item.icon}</span>
         )}
         {(!collapsed || !item.icon) && (
-          <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.label}</span>
+          <span className="ino-menu__item-label">{item.label}</span>
         )}
         {(!collapsed || !item.icon) && (
-          <span style={expandIconStyle}>{expandIconContent}</span>
+          <span className={expandIconClass}>{expandIconContent}</span>
         )}
       </div>
 
@@ -527,8 +407,8 @@ function SubMenu({
         <ul
           ref={popupRef}
           role="menu"
-          style={popupStyle}
-          className={ctx.classNames?.submenu}
+          className={popupClass}
+          style={ctx.styles?.submenu}
         >
           {item.children.map((child) => (
             <MenuItemRenderer
@@ -546,8 +426,8 @@ function SubMenu({
       {!usePopup && (
         <ul
           role="menu"
-          style={inlineSubmenuStyle}
-          className={ctx.classNames?.submenu}
+          className={inlineClass}
+          style={ctx.styles?.submenu}
         >
           {item.children.map((child) => (
             <MenuItemRenderer
@@ -766,35 +646,24 @@ export function Menu({
   const isHorizontal = mode === 'horizontal'
   const isInline = mode === 'inline'
 
-  const rootBaseStyle: CSSProperties = {
-    listStyle: 'none',
-    margin: 0,
-    padding: isHorizontal ? 0 : '0.25rem 0',
-    backgroundColor: tokens.colorBg,
-    color: tokens.colorText,
-    fontSize: '0.875rem',
-    overflow: 'hidden',
-    ...(isHorizontal
-      ? {
-          display: 'flex',
-          alignItems: 'center',
-          borderBottom: `1px solid ${tokens.colorBorder}`,
-        }
-      : {
-          borderRight: `1px solid ${tokens.colorBorder}`,
-        }),
-    ...(isInline && inlineCollapsed
-      ? { width: '3rem', overflow: 'hidden' }
-      : {}),
-  }
+  const rootClass = cx(
+    'ino-menu',
+    `ino-menu--${mode}`,
+    { 'ino-menu--collapsed': isInline && inlineCollapsed },
+    className,
+    classNames?.root,
+  )
 
-  const rootStyle = mergeSemanticStyle(rootBaseStyle, styles?.root, style)
+  const rootDynamicStyle: CSSProperties = {
+    ...styles?.root,
+    ...style,
+  }
 
   return (
     <ul
       role={isHorizontal ? 'menubar' : 'menu'}
-      style={rootStyle}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      className={rootClass}
+      style={rootDynamicStyle}
     >
       {items.map((item) => (
         <MenuItemRenderer

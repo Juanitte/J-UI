@@ -6,8 +6,9 @@ import {
 } from 'react'
 import { Popover } from '../Popover'
 import type { PopoverPlacement, PopoverTrigger } from '../Popover'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './PopConfirm.css'
 
 // ============================================================================
 // Types
@@ -145,66 +146,35 @@ export function PopConfirm({
     setOpen(false)
   }, [onCancel, setOpen])
 
-  // ── Button styles ──
-  const baseBtnStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.375rem',
-    padding: '0.25rem 0.75rem',
-    fontSize: '0.8125rem',
-    fontWeight: 500,
-    borderRadius: '0.25rem',
-    cursor: 'pointer',
-    transition: 'filter 0.15s, border-color 0.15s, opacity 0.15s',
-    lineHeight: 1.5,
-  }
-
+  // ── Button props ──
   const { style: cancelBtnExtraStyle, ...cancelBtnRest } = (cancelButtonProps ?? {}) as Record<string, unknown>
   const { style: okBtnExtraStyle, ...okBtnRest } = (okButtonProps ?? {}) as Record<string, unknown>
 
   // ── Confirm content ──
   const confirmContent = (
-    <div style={{ padding: '0.75rem', ...styles?.root }} className={classNames?.root} onClick={(e) => e.stopPropagation()}>
-      <style>{`@keyframes j-popconfirm-spin { to { transform: rotate(360deg); } }`}</style>
+    <div className={cx('ino-pop-confirm', classNames?.root)} style={styles?.root} onClick={(e) => e.stopPropagation()}>
 
       {/* Message row: icon + title/description */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+      <div className="ino-pop-confirm__message">
         {icon !== null && (
           <span
-            className={classNames?.icon}
-            style={{
-              color: tokens.colorWarning,
-              flexShrink: 0,
-              marginTop: '0.125rem',
-              display: 'inline-flex',
-              ...styles?.icon,
-            }}
+            className={cx('ino-pop-confirm__icon', classNames?.icon)}
+            style={styles?.icon}
           >
             {icon === undefined ? <WarningCircleIcon /> : icon}
           </span>
         )}
         <div>
           <div
-            className={classNames?.title}
-            style={{
-              fontWeight: 600,
-              fontSize: '0.875rem',
-              color: tokens.colorText,
-              ...styles?.title,
-            }}
+            className={cx('ino-pop-confirm__title', classNames?.title)}
+            style={styles?.title}
           >
             {title}
           </div>
           {description != null && (
             <div
-              className={classNames?.description}
-              style={{
-                fontSize: '0.8125rem',
-                color: tokens.colorTextMuted,
-                marginTop: '0.25rem',
-                ...styles?.description,
-              }}
+              className={cx('ino-pop-confirm__description', classNames?.description)}
+              style={styles?.description}
             >
               {description}
             </div>
@@ -214,27 +184,15 @@ export function PopConfirm({
 
       {/* Button row */}
       <div
-        className={classNames?.buttons}
-        style={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '0.5rem',
-          ...styles?.buttons,
-        }}
+        className={cx('ino-pop-confirm__buttons', classNames?.buttons)}
+        style={styles?.buttons}
       >
         {showCancel && (
           <button
             type="button"
-            style={{
-              ...baseBtnStyle,
-              backgroundColor: tokens.colorBg,
-              color: tokens.colorText,
-              border: `1px solid ${tokens.colorBorder}`,
-              ...(cancelBtnExtraStyle as CSSProperties),
-            }}
+            className="ino-pop-confirm__btn ino-pop-confirm__btn--cancel"
+            style={cancelBtnExtraStyle as CSSProperties}
             onClick={handleCancel}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = tokens.colorBorderHover }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = tokens.colorBorder }}
             {...cancelBtnRest}
           >
             {cancelText}
@@ -242,19 +200,10 @@ export function PopConfirm({
         )}
         <button
           type="button"
-          style={{
-            ...baseBtnStyle,
-            backgroundColor: tokens.colorPrimary,
-            color: tokens.colorPrimaryContrast,
-            border: `1px solid ${tokens.colorPrimary}`,
-            opacity: confirmLoading ? 0.7 : 1,
-            pointerEvents: confirmLoading ? 'none' : 'auto',
-            ...(okBtnExtraStyle as CSSProperties),
-          }}
+          className={cx('ino-pop-confirm__btn', 'ino-pop-confirm__btn--ok', { 'ino-pop-confirm__btn--loading': confirmLoading })}
+          style={okBtnExtraStyle as CSSProperties}
           onClick={handleConfirm}
           disabled={confirmLoading}
-          onMouseEnter={(e) => { if (!confirmLoading) e.currentTarget.style.filter = 'brightness(1.15)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.filter = '' }}
           {...okBtnRest}
         >
           {confirmLoading && <Spinner />}

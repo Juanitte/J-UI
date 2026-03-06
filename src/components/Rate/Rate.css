@@ -1,0 +1,113 @@
+/* ================================================================
+   Rate – BEM classes
+   Uses fixed neutral/warning tokens (no per-instance color prop).
+   ================================================================ */
+
+/* --- Block --- */
+.ino-rate {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  line-height: 1;
+  border-radius: 0.25rem;
+  padding: 0.125rem;
+}
+
+.ino-rate--disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Focus ring (keyboard) */
+.ino-rate:focus-visible {
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+/* --- Sizes --- */
+.ino-rate--sm {
+  font-size: 0.875rem;
+  gap: 0.25rem;
+}
+
+.ino-rate--md {
+  font-size: 1.25rem;
+  gap: 0.5rem;
+}
+
+.ino-rate--lg {
+  font-size: 2rem;
+  gap: 0.625rem;
+}
+
+/* --- Star wrapper --- */
+.ino-rate__star {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.ino-rate--disabled .ino-rate__star {
+  cursor: default;
+}
+
+.ino-rate__star--hovered:not(.ino-rate--disabled .ino-rate__star) {
+  transform: scale(1.15);
+}
+
+/* --- Character layers --- */
+.ino-rate__char-bg {
+  display: inline-flex;
+  color: var(--j-border);
+  transition: color 0.2s ease;
+}
+
+.ino-rate__char-fg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--j-warning);
+  transition: color 0.2s ease, clip-path 0.15s ease;
+  pointer-events: none;
+}
+
+/* Clip-path states */
+.ino-rate__char-fg--full {
+  clip-path: inset(0 0% 0 0);
+}
+
+.ino-rate__char-fg--half {
+  clip-path: inset(0 50% 0 0);
+}
+
+.ino-rate__char-fg--empty {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* --- Hit areas --- */
+.ino-rate__hit {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+  cursor: inherit;
+}
+
+.ino-rate__hit--left {
+  left: 0;
+  width: 50%;
+}
+
+.ino-rate__hit--right {
+  right: 0;
+  width: 50%;
+}
+
+.ino-rate__hit--full {
+  left: 0;
+  width: 100%;
+}

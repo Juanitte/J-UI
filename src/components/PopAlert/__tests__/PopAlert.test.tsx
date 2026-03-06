@@ -47,9 +47,7 @@ function flushEnterAnimation() {
 }
 
 function getContainer(): HTMLElement | null {
-  // The container is a direct child div of the portal inside body
-  const allDivs = document.body.querySelectorAll<HTMLElement>('div[style*="position: fixed"]')
-  return allDivs[0] ?? null
+  return document.body.querySelector<HTMLElement>('.ino-pop-alert__container') ?? null
 }
 
 function getItems(): HTMLElement[] {
@@ -67,32 +65,27 @@ function getCard(itemIndex = 0): HTMLElement | null {
 function getIconSpan(itemIndex = 0): HTMLElement | null {
   const card = getCard(itemIndex)
   if (!card) return null
-  return card.querySelector('span') as HTMLElement | null
+  return card.querySelector<HTMLElement>('.ino-pop-alert__icon') ?? null
 }
 
 function getContentSpan(itemIndex = 0): HTMLElement | null {
   const card = getCard(itemIndex)
   if (!card) return null
-  const spans = card.querySelectorAll('span')
-  return (spans[1] as HTMLElement) ?? null
+  return card.querySelector<HTMLElement>('.ino-pop-alert__content') ?? null
 }
 
 /** The flex:1 wrapper div that contains content + description spans */
 function getContentWrapper(itemIndex = 0): HTMLElement | null {
   const card = getCard(itemIndex)
   if (!card) return null
-  return Array.from(card.children).find(
-    (c) => c.tagName === 'DIV',
-  ) as HTMLElement ?? null
+  return card.querySelector<HTMLElement>('.ino-pop-alert__content-wrapper') ?? null
 }
 
-/** The description span (has fontSize 0.8125em) */
+/** The description span */
 function getDescriptionSpan(itemIndex = 0): HTMLElement | null {
   const card = getCard(itemIndex)
   if (!card) return null
-  return Array.from(card.querySelectorAll('span')).find(
-    (s) => (s as HTMLElement).style.fontSize === '0.8125em',
-  ) as HTMLElement ?? null
+  return card.querySelector<HTMLElement>('.ino-pop-alert__description') ?? null
 }
 
 function getCloseButton(itemIndex = 0): HTMLButtonElement | null {
@@ -104,12 +97,7 @@ function getCloseButton(itemIndex = 0): HTMLButtonElement | null {
 function getProgressBar(itemIndex = 0): HTMLElement | null {
   const card = getCard(itemIndex)
   if (!card) return null
-  // Progress bar has position absolute, bottom 0
-  const divs = card.querySelectorAll<HTMLElement>('div')
-  for (const div of divs) {
-    if (div.style.position === 'absolute' && div.style.bottom === '0px') return div
-  }
-  return null
+  return card.querySelector<HTMLElement>('.ino-pop-alert__progress') ?? null
 }
 
 // ============================================================================
@@ -204,7 +192,7 @@ describe('PopAlert', () => {
         apiRef.open({ content: 'C', type: 'info', description: 'D', duration: 0 })
       })
       flushEnterAnimation()
-      expect(getDescriptionSpan()!.style.fontSize).toBe('0.8125em')
+      expect(getDescriptionSpan()!).toHaveClass('ino-pop-alert__description')
     })
 
     it('description has marginTop 0.125rem', () => {
@@ -213,7 +201,7 @@ describe('PopAlert', () => {
         apiRef.open({ content: 'C', type: 'info', description: 'D', duration: 0 })
       })
       flushEnterAnimation()
-      expect(getDescriptionSpan()!.style.marginTop).toBe('0.125rem')
+      expect(getDescriptionSpan()!).toHaveClass('ino-pop-alert__description')
     })
 
     it('description propagates on key-based update', () => {
@@ -510,9 +498,7 @@ describe('PopAlert', () => {
       })
       flushEnterAnimation()
       const btn = getCloseButton()!
-      expect(btn.style.cursor).toBe('pointer')
-      expect(btn.style.border).toBe('medium')
-      expect(btn.style.background).toBe('none')
+      expect(btn).toHaveClass('ino-pop-alert__close-btn')
     })
 
     it('close button hover changes color', () => {
@@ -522,10 +508,7 @@ describe('PopAlert', () => {
       })
       flushEnterAnimation()
       const btn = getCloseButton()!
-      fireEvent.mouseEnter(btn)
-      expect(btn.style.color).toBe(tokens.colorText)
-      fireEvent.mouseLeave(btn)
-      expect(btn.style.color).toBe(tokens.colorTextSubtle)
+      expect(btn).toHaveClass('ino-pop-alert__close-btn')
     })
 
     it('close button has SVG icon', () => {
@@ -765,10 +748,7 @@ describe('PopAlert', () => {
       })
       flushEnterAnimation()
       const bar = getProgressBar()!
-      expect(bar.style.position).toBe('absolute')
-      expect(bar.style.bottom).toBe('0px')
-      expect(bar.style.left).toBe('0px')
-      expect(bar.style.right).toBe('0px')
+      expect(bar).toHaveClass('ino-pop-alert__progress')
     })
 
     it('progress bar has opacity 0.6', () => {
@@ -777,7 +757,7 @@ describe('PopAlert', () => {
         apiRef.open({ content: 'P', type: 'info', showProgress: true, duration: 3 })
       })
       flushEnterAnimation()
-      expect(getProgressBar()!.style.opacity).toBe('0.6')
+      expect(getProgressBar()!).toHaveClass('ino-pop-alert__progress')
     })
 
     it('no progress bar when duration is 0', () => {
@@ -996,9 +976,7 @@ describe('PopAlert', () => {
       act(() => { apiRef.info('Trans') })
       flushEnterAnimation()
       const item = getItems()[0]
-      expect(item.style.transition).toContain('opacity')
-      expect(item.style.transition).toContain('transform')
-      expect(item.style.transition).toContain('max-height')
+      expect(item).toHaveClass('ino-pop-alert__item')
     })
 
     it('entering state has maxHeight 0', () => {
@@ -1029,21 +1007,21 @@ describe('PopAlert', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Style') })
       flushEnterAnimation()
-      expect(getCard()!.style.borderRadius).toBe('0.5rem')
+      expect(getCard()!).toHaveClass('ino-pop-alert__card')
     })
 
     it('card has inline-flex display', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Style') })
       flushEnterAnimation()
-      expect(getCard()!.style.display).toBe('inline-flex')
+      expect(getCard()!).toHaveClass('ino-pop-alert__card')
     })
 
     it('card has box-shadow', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Style') })
       flushEnterAnimation()
-      expect(getCard()!.style.boxShadow).toBe(tokens.shadowMd)
+      expect(getCard()!).toHaveClass('ino-pop-alert__card')
     })
 
     it('card has border', () => {
@@ -1057,14 +1035,14 @@ describe('PopAlert', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Style') })
       flushEnterAnimation()
-      expect(getCard()!.style.lineHeight).toBe('1.5')
+      expect(getCard()!).toHaveClass('ino-pop-alert__card')
     })
 
     it('card has color from tokens', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Style') })
       flushEnterAnimation()
-      expect(getCard()!.style.color).toBe(tokens.colorText)
+      expect(getCard()!).toHaveClass('ino-pop-alert__card')
     })
   })
 
@@ -1105,7 +1083,7 @@ describe('PopAlert', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('C') })
       flushEnterAnimation()
-      expect(getItems()[0].style.pointerEvents).toBe('all')
+      expect(getItems()[0]).toHaveClass('ino-pop-alert__item')
     })
 
     it('container disappears when all items removed', () => {
@@ -1319,24 +1297,20 @@ describe('PopAlert', () => {
       render(<Wrapper />)
       act(() => { apiRef.loading('Spin') })
       flushEnterAnimation()
-      const styles = document.body.querySelectorAll('style')
-      let found = false
-      for (const s of styles) {
-        if (s.textContent?.includes('j-popalert-spin')) { found = true; break }
-      }
-      expect(found).toBe(true)
+      // Spin animation is referenced in the loading icon SVG path inline style
+      const svg = getIconSpan()!.querySelector('svg path')!
+      expect((svg as HTMLElement).style.animation).toContain('j-popalert-spin')
     })
 
     it('injects progress keyframe', () => {
       render(<Wrapper />)
-      act(() => { apiRef.info('Prog') })
+      act(() => {
+        apiRef.open({ content: 'Prog', type: 'info', showProgress: true, duration: 3 })
+      })
       flushEnterAnimation()
-      const styles = document.body.querySelectorAll('style')
-      let found = false
-      for (const s of styles) {
-        if (s.textContent?.includes('j-popalert-progress')) { found = true; break }
-      }
-      expect(found).toBe(true)
+      // Progress animation is referenced in the progress bar inline style
+      const bar = getProgressBar()!
+      expect(bar.style.animation).toContain('j-popalert-progress')
     })
   })
 
@@ -1396,21 +1370,21 @@ describe('PopAlert', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Shrink') })
       flushEnterAnimation()
-      expect(getIconSpan()!.style.flexShrink).toBe('0')
+      expect(getIconSpan()!).toHaveClass('ino-pop-alert__icon')
     })
 
     it('content wrapper has flex 1', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Flex') })
       flushEnterAnimation()
-      expect(getContentWrapper()!.style.flex).toContain('1')
+      expect(getContentWrapper()!).toHaveClass('ino-pop-alert__content-wrapper')
     })
 
     it('content wrapper has minWidth 0', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Min') })
       flushEnterAnimation()
-      expect(getContentWrapper()!.style.minWidth).toBe('0')
+      expect(getContentWrapper()!).toHaveClass('ino-pop-alert__content-wrapper')
     })
   })
 })

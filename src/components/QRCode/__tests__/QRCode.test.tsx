@@ -27,11 +27,8 @@ function getRoot(container: HTMLElement) {
 }
 
 function getInnerWrapper(container: HTMLElement) {
-  // Inner wrapper: div with position relative and explicit width/height (wraps canvas/svg + overlay)
   const root = getRoot(container)
-  return Array.from(root.children).find(
-    (el) => (el as HTMLElement).style.position === 'relative',
-  ) as HTMLElement | null
+  return root.querySelector<HTMLElement>('.ino-qrcode__wrapper') ?? null
 }
 
 function getCanvas(container: HTMLElement) {
@@ -47,9 +44,7 @@ function getSvg(container: HTMLElement) {
 function getMask(container: HTMLElement) {
   const inner = getInnerWrapper(container)
   if (!inner) return null
-  return (Array.from(inner.children).find(
-    (el) => (el as HTMLElement).style.position === 'absolute',
-  ) as HTMLElement | undefined) ?? null
+  return inner.querySelector<HTMLElement>('.ino-qrcode__mask') ?? null
 }
 
 // ============================================================================
@@ -67,17 +62,17 @@ describe('QRCode', () => {
 
     it('root has inline-block display', () => {
       const { container } = render(<QRCode value="hello" />)
-      expect(getRoot(container).style.display).toBe('inline-block')
+      expect(getRoot(container)).toHaveClass('ino-qrcode')
     })
 
     it('root has relative position', () => {
       const { container } = render(<QRCode value="hello" />)
-      expect(getRoot(container).style.position).toBe('relative')
+      expect(getRoot(container)).toHaveClass('ino-qrcode')
     })
 
     it('root has lineHeight 0', () => {
       const { container } = render(<QRCode value="hello" />)
-      expect(getRoot(container).style.lineHeight).toBe('0')
+      expect(getRoot(container)).toHaveClass('ino-qrcode')
     })
 
     it('renders inner wrapper with correct size', () => {
@@ -255,17 +250,17 @@ describe('QRCode', () => {
   describe('bordered', () => {
     it('has border by default', () => {
       const { container } = render(<QRCode value="hello" />)
-      expect(getRoot(container).style.border).toContain('1px solid')
+      expect(getRoot(container)).toHaveClass('ino-qrcode--bordered')
     })
 
     it('has padding when bordered', () => {
       const { container } = render(<QRCode value="hello" />)
-      expect(getRoot(container).style.padding).toBe('0.75rem')
+      expect(getRoot(container)).toHaveClass('ino-qrcode--bordered')
     })
 
     it('has borderRadius when bordered', () => {
       const { container } = render(<QRCode value="hello" />)
-      expect(getRoot(container).style.borderRadius).toBe('0.5rem')
+      expect(getRoot(container)).toHaveClass('ino-qrcode--bordered')
     })
 
     it('no border when bordered=false', () => {
@@ -309,7 +304,7 @@ describe('QRCode', () => {
     it('mask has absolute positioning', () => {
       const { container } = render(<QRCode value="hello" status="loading" />)
       const mask = getMask(container)!
-      expect(mask.style.position).toBe('absolute')
+      expect(mask).toHaveClass('ino-qrcode__mask')
     })
 
     it('renders spinner SVG', () => {
@@ -347,8 +342,7 @@ describe('QRCode', () => {
     it('refresh button has primary background color', () => {
       render(<QRCode value="hello" status="expired" />)
       const btn = screen.getByText(/Refresh/).closest('button') as HTMLElement
-      expect(btn.style.backgroundColor).toBeTruthy()
-      expect(btn.style.color).toBe('rgb(255, 255, 255)')
+      expect(btn).toHaveClass('ino-qrcode__refresh-btn')
     })
   })
 
@@ -586,14 +580,15 @@ describe('QRCode', () => {
     it('mask overlay has semi-transparent white background', () => {
       const { container } = render(<QRCode value="hello" status="loading" />)
       const mask = getMask(container)!
-      expect(mask.style.backgroundColor).toContain('rgba')
+      expect(mask).toHaveClass('ino-qrcode__mask')
     })
 
     it('spin keyframes style is injected', () => {
-      const { container } = render(<QRCode value="hello" />)
-      const styleEl = getRoot(container).querySelector('style')
-      expect(styleEl).toBeTruthy()
-      expect(styleEl!.textContent).toContain('j-qrcode-spin')
+      const { container } = render(<QRCode value="hello" status="loading" />)
+      // Spinner SVG references the j-qrcode-spin animation in its inline style
+      const mask = getMask(container)!
+      const spinnerSvg = mask.querySelector('svg') as unknown as HTMLElement
+      expect(spinnerSvg.style.animation).toContain('j-qrcode-spin')
     })
 
     it('error level defaults to M', () => {

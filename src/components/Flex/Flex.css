@@ -1,0 +1,44 @@
+/* ================================================================
+   Flex – BEM classes
+   Most values are dynamic (justify, align, gap, flex, direction)
+   since they come from props. CSS provides the base display.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-flex {
+  display: flex;
+}
+
+.ino-flex--row {
+  flex-direction: row;
+}
+
+.ino-flex--column {
+  flex-direction: column;
+}
+
+.ino-flex--nowrap { flex-wrap: nowrap; }
+.ino-flex--wrap { flex-wrap: wrap; }
+.ino-flex--wrap-reverse { flex-wrap: wrap-reverse; }
+
+/* --- Justify --- */
+.ino-flex--justify-start { justify-content: flex-start; }
+.ino-flex--justify-center { justify-content: center; }
+.ino-flex--justify-end { justify-content: flex-end; }
+.ino-flex--justify-between { justify-content: space-between; }
+.ino-flex--justify-around { justify-content: space-around; }
+.ino-flex--justify-evenly { justify-content: space-evenly; }
+.ino-flex--justify-normal { justify-content: normal; }
+
+/* --- Align --- */
+.ino-flex--align-start { align-items: flex-start; }
+.ino-flex--align-center { align-items: center; }
+.ino-flex--align-end { align-items: flex-end; }
+.ino-flex--align-stretch { align-items: stretch; }
+.ino-flex--align-baseline { align-items: baseline; }
+.ino-flex--align-normal { align-items: normal; }
+
+/* --- Gap presets --- */
+.ino-flex--gap-small { gap: 0.5rem; }
+.ino-flex--gap-middle { gap: 1rem; }
+.ino-flex--gap-large { gap: 1.5rem; }

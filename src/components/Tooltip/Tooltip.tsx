@@ -10,7 +10,8 @@ import {
 import { createPortal } from 'react-dom'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Tooltip.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -354,24 +355,19 @@ export function Tooltip({
 
   // ─── Styles ───────────────────────────────────────────────
 
-  const tooltipStyle: CSSProperties = {
-    position: 'fixed',
-    zIndex: 9999,
+  const popupClass = cx(
+    'ino-tooltip__popup',
+    isColorful ? 'ino-tooltip__popup--colorful' : 'ino-tooltip__popup--default',
+    { 'ino-tooltip__popup--no-transition': noTransitionRef.current },
+    classNames?.popup,
+  )
+
+  const tooltipDynamicStyle: CSSProperties = {
     top: coords.top,
     left: coords.left,
-    padding: '0.5rem 0.75rem',
-    borderRadius: '0.375rem',
-    backgroundColor: tooltipBg,
-    color: tooltipText,
-    fontSize: '0.8125rem',
-    fontWeight: 500,
-    whiteSpace: 'nowrap',
-    boxShadow: tokens.shadowMd,
-    border: isColorful ? 'none' : `1px solid ${tooltipBorder}`,
+    ...(isColorful ? { backgroundColor: tooltipBg, color: tooltipText } : {}),
     opacity: isAnimating ? 1 : 0,
     transform: getTransform(resolvedPlacement, isAnimating),
-    transition: noTransitionRef.current ? 'none' : 'opacity 0.15s ease-out, transform 0.15s ease-out',
-    pointerEvents: 'none',
     ...styles?.popup,
   }
 
@@ -380,19 +376,19 @@ export function Tooltip({
     ...styles?.arrow,
   }
 
-  const rootStyle = mergeSemanticStyle(
-    { display: 'inline-flex' },
-    styles?.root,
-    style,
-  )
+  const rootClass = cx('ino-tooltip', className, classNames?.root)
+  const rootStyle: CSSProperties = {
+    ...styles?.root,
+    ...style,
+  }
 
   // ─── Render ───────────────────────────────────────────────
 
   const popup = visible && typeof document !== 'undefined'
     ? createPortal(
-        <div ref={popupRef} style={tooltipStyle} className={classNames?.popup} role="tooltip">
+        <div ref={popupRef} style={tooltipDynamicStyle} className={popupClass} role="tooltip">
           {content}
-          {showArrow && <div style={arrowComputedStyle} className={classNames?.arrow} />}
+          {showArrow && <div style={arrowComputedStyle} className={cx('ino-tooltip__arrow', classNames?.arrow)} />}
         </div>,
         document.body,
       )
@@ -402,7 +398,7 @@ export function Tooltip({
     <div
       ref={triggerRef}
       style={rootStyle}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      className={rootClass}
       onMouseEnter={showTooltip}
       onMouseLeave={hideTooltip}
       onFocus={showTooltip}

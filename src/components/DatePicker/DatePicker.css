@@ -1,0 +1,315 @@
+/* ================================================================
+   DatePicker – BEM classes
+   ================================================================ */
+
+/* --- Block --- */
+.ino-date-picker {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* --- Selector (trigger) --- */
+.ino-date-picker__selector {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+  gap: 0.375rem;
+}
+
+/* Sizes */
+.ino-date-picker--sm .ino-date-picker__selector { height: 1.75rem; font-size: 0.75rem; padding: 0 0.5rem; }
+.ino-date-picker--md .ino-date-picker__selector { height: 2.25rem; font-size: 0.875rem; padding: 0 0.75rem; }
+.ino-date-picker--lg .ino-date-picker__selector { height: 2.75rem; font-size: 1rem; padding: 0 0.875rem; }
+
+/* Variants */
+.ino-date-picker--outlined .ino-date-picker__selector { border: 1px solid var(--j-border); background-color: var(--j-bg); }
+.ino-date-picker--filled .ino-date-picker__selector { border: 1px solid transparent; background-color: var(--j-bg-muted); }
+.ino-date-picker--borderless .ino-date-picker__selector { border: 1px solid transparent; background-color: transparent; }
+
+/* Border radius */
+.ino-date-picker--sm .ino-date-picker__selector { border-radius: 0.25rem; }
+.ino-date-picker--md .ino-date-picker__selector { border-radius: 0.375rem; }
+.ino-date-picker--lg .ino-date-picker__selector { border-radius: 0.5rem; }
+
+/* Hover */
+.ino-date-picker--outlined .ino-date-picker__selector:hover:not(:focus-within) { border-color: var(--j-border-hover); }
+.ino-date-picker--filled .ino-date-picker__selector:hover:not(:focus-within) { border-color: var(--j-border-hover); }
+
+/* Focus-within */
+.ino-date-picker--outlined .ino-date-picker__selector:focus-within { border-color: var(--j-primary); box-shadow: 0 0 0 2px var(--j-primary-light); }
+.ino-date-picker--filled .ino-date-picker__selector:focus-within { border-color: var(--j-primary); box-shadow: 0 0 0 2px var(--j-primary-light); }
+
+/* Status */
+.ino-date-picker--error .ino-date-picker__selector { border-color: var(--j-error); }
+.ino-date-picker--error .ino-date-picker__selector:focus-within { border-color: var(--j-error); box-shadow: 0 0 0 2px var(--j-error-bg); }
+.ino-date-picker--warning .ino-date-picker__selector { border-color: var(--j-warning); }
+.ino-date-picker--warning .ino-date-picker__selector:focus-within { border-color: var(--j-warning); box-shadow: 0 0 0 2px var(--j-warning-bg); }
+
+/* Disabled */
+.ino-date-picker--disabled .ino-date-picker__selector { opacity: 0.6; cursor: not-allowed; }
+
+/* --- Suffix icons --- */
+.ino-date-picker__suffix {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--j-text-muted);
+}
+
+/* --- Clear button --- */
+.ino-date-picker__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--j-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.ino-date-picker__clear:hover {
+  color: var(--j-text);
+}
+
+/* --- Popup (dropdown panel) --- */
+.ino-date-picker__popup {
+  position: absolute;
+  z-index: 1050;
+  background-color: var(--j-bg);
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadow-lg);
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+/* --- Panel header --- */
+.ino-date-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--j-border);
+}
+
+.ino-date-picker__header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: none;
+  color: var(--j-text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  padding: 0;
+}
+
+.ino-date-picker__header-btn:hover {
+  background-color: var(--j-bg-muted);
+  color: var(--j-text);
+}
+
+.ino-date-picker__header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--j-text);
+}
+
+.ino-date-picker__header-title-btn {
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--j-text);
+  cursor: pointer;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease;
+}
+
+.ino-date-picker__header-title-btn:hover {
+  background-color: var(--j-bg-muted);
+}
+
+/* --- Calendar body --- */
+.ino-date-picker__body {
+  padding: 0.5rem;
+}
+
+/* --- Day cell --- */
+.ino-date-picker__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.25rem;
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.1s ease, color 0.1s ease;
+  padding: 0;
+  color: var(--j-text);
+}
+
+.ino-date-picker__cell:hover:not(:disabled):not(.ino-date-picker__cell--selected) {
+  background-color: var(--j-bg-muted);
+}
+
+.ino-date-picker__cell--today {
+  border: 1px solid var(--j-primary);
+}
+
+.ino-date-picker__cell--selected {
+  background-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+  font-weight: 600;
+}
+
+.ino-date-picker__cell--outside {
+  color: var(--j-text-subtle);
+  opacity: 0.4;
+}
+
+.ino-date-picker__cell--disabled {
+  color: var(--j-text-subtle);
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.ino-date-picker__cell--in-range {
+  background-color: var(--j-primary-light);
+  border-radius: 0;
+}
+
+.ino-date-picker__cell--range-start {
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.ino-date-picker__cell--range-end {
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+/* --- Weekday header --- */
+.ino-date-picker__weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--j-text-subtle);
+  user-select: none;
+}
+
+/* --- Footer --- */
+.ino-date-picker__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--j-border);
+  gap: 0.5rem;
+}
+
+.ino-date-picker__footer-btn {
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: var(--j-primary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease;
+}
+
+.ino-date-picker__footer-btn:hover {
+  background-color: var(--j-primary-light);
+}
+
+.ino-date-picker__footer-btn--primary {
+  background-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+}
+
+.ino-date-picker__footer-btn--primary:hover {
+  background-color: var(--j-primary-hover);
+}
+
+/* --- Tags (multiple mode) --- */
+.ino-date-picker__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.375rem;
+  border-radius: 0.25rem;
+  background-color: var(--j-bg-muted);
+  max-width: 100%;
+  box-sizing: border-box;
+  color: var(--j-text);
+}
+
+.ino-date-picker__tag-close {
+  display: inline-flex;
+  cursor: pointer;
+  color: var(--j-text-muted);
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.ino-date-picker__tag-close:hover {
+  color: var(--j-text);
+}
+
+/* --- Presets --- */
+.ino-date-picker__presets {
+  border-right: 1px solid var(--j-border);
+  padding: 0.5rem;
+  min-width: 7rem;
+}
+
+.ino-date-picker__preset {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.375rem 0.5rem;
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: var(--j-text);
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease;
+}
+
+.ino-date-picker__preset:hover {
+  background-color: var(--j-bg-muted);
+}
+
+/* --- Range separator --- */
+.ino-date-picker__separator {
+  display: flex;
+  align-items: center;
+  color: var(--j-text-muted);
+  flex-shrink: 0;
+}

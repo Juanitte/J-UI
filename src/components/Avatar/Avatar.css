@@ -1,0 +1,68 @@
+/* ================================================================
+   Avatar – BEM classes
+   Size is dynamic (set via inline style) since it can be
+   a number, string preset, or responsive object.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--j-bg-muted);
+  color: var(--j-text-muted);
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+  position: relative;
+}
+
+.ino-avatar--circle {
+  border-radius: 50%;
+}
+
+.ino-avatar--square {
+  border-radius: 0.5rem;
+}
+
+/* --- Elements --- */
+.ino-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ino-avatar__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ino-avatar__text {
+  display: inline-block;
+  transform-origin: center;
+  line-height: 1;
+  user-select: none;
+}
+
+/* --- Avatar.Group --- */
+.ino-avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ino-avatar-group__item {
+  position: relative;
+  display: inline-flex;
+  padding: 0.125rem;
+  background-color: var(--j-bg);
+}
+
+.ino-avatar-group__item--circle {
+  border-radius: 50%;
+}
+
+.ino-avatar-group__item--square {
+  border-radius: 0.625rem;
+}

@@ -9,9 +9,8 @@ import {
   type CSSProperties,
   type ReactElement,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -131,64 +130,32 @@ function SplitBar({
   collapseButtonClassName,
   collapseButtonStyle,
 }: SplitBarProps) {
-  const [hovered, setHovered] = useState(false)
+  const orient = isVertical ? 'vertical' : 'horizontal'
 
-  const barStyles: CSSProperties = {
-    position: 'relative',
-    flexShrink: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    [isVertical ? 'height' : 'width']: '0.75rem',
-    [isVertical ? 'width' : 'height']: '100%',
-    cursor: isVertical ? 'row-resize' : 'col-resize',
-    userSelect: 'none',
-    zIndex: 1,
-  }
+  const barClass = cx(
+    'ino-splitter__bar',
+    `ino-splitter__bar--${orient}`,
+    barClassName,
+  )
 
-  const lineStyles: CSSProperties = {
-    [isVertical ? 'width' : 'height']: '100%',
-    [isVertical ? 'height' : 'width']: hovered ? 3 : 2,
-    backgroundColor: hovered ? tokens.colorPrimary : tokens.colorBorder,
-    borderRadius: 1,
-    transition: 'background-color 0.15s ease, height 0.15s ease, width 0.15s ease',
-  }
+  const lineClass = cx(
+    'ino-splitter__bar-line',
+    `ino-splitter__bar-line--${orient}`,
+  )
 
-  const arrowBtnStyles = (side: 'start' | 'end'): CSSProperties => {
+  // Collapse button positioning: dynamic transform stays inline
+  const getCollapseButtonStyle = (side: 'start' | 'end'): CSSProperties => {
     const isStart = side === 'start'
     const offset = isStart ? '-0.875rem' : '0.875rem'
 
-    const base: CSSProperties = {
-      position: 'absolute',
-      width: '1.25rem',
-      height: '1.25rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: '50%',
-      border: `1px solid ${tokens.colorBorder}`,
-      backgroundColor: tokens.colorBg,
-      cursor: 'pointer',
-      fontSize: '0.625rem',
-      color: tokens.colorTextMuted,
-      opacity: hovered ? 1 : 0,
-      transition: 'opacity 0.15s ease',
-      zIndex: 2,
-    }
-
     if (isVertical) {
-      // Bar is horizontal — arrows sit side by side, centered horizontally
       return {
-        ...base,
         top: '50%',
         left: '50%',
         transform: `translate(calc(-50% + ${offset}), -50%)`,
       }
     }
-
-    // Bar is vertical — arrows stack vertically, centered vertically
     return {
-      ...base,
       top: '50%',
       left: '50%',
       transform: `translate(-50%, calc(-50% + ${offset}))`,
@@ -201,29 +168,25 @@ function SplitBar({
     const isCollapsed = isStart ? isStartCollapsed : isEndCollapsed
 
     if (isVertical) {
-      // Vertical: start = panel arriba, end = panel abajo
-      if (isCollapsed) return isStart ? '▼' : '▲'
-      return isStart ? '▲' : '▼'
+      if (isCollapsed) return isStart ? '\u25BC' : '\u25B2'
+      return isStart ? '\u25B2' : '\u25BC'
     } else {
-      // Horizontal: start = panel izquierdo, end = panel derecho
-      if (isCollapsed) return isStart ? '▶' : '◀'
-      return isStart ? '◀' : '▶'
+      if (isCollapsed) return isStart ? '\u25B6' : '\u25C0'
+      return isStart ? '\u25C0' : '\u25B6'
     }
   }
 
   return (
     <div
-      style={{ ...barStyles, ...barStyle }}
-      className={barClassName}
+      className={barClass}
+      style={barStyle}
       onMouseDown={onMouseDown}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <div style={lineStyles} />
+      <div className={lineClass} />
       {collapsibleStart && (
         <button
-          style={{ ...arrowBtnStyles('start'), ...collapseButtonStyle }}
-          className={collapseButtonClassName}
+          className={cx('ino-splitter__collapse-btn', collapseButtonClassName)}
+          style={{ ...getCollapseButtonStyle('start'), ...collapseButtonStyle }}
           onClick={(e) => { e.stopPropagation(); onCollapseStart() }}
           onMouseDown={(e) => e.stopPropagation()}
         >
@@ -232,8 +195,8 @@ function SplitBar({
       )}
       {collapsibleEnd && (
         <button
-          style={{ ...arrowBtnStyles('end'), ...collapseButtonStyle }}
-          className={collapseButtonClassName}
+          className={cx('ino-splitter__collapse-btn', collapseButtonClassName)}
+          style={{ ...getCollapseButtonStyle('end'), ...collapseButtonStyle }}
           onClick={(e) => { e.stopPropagation(); onCollapseEnd() }}
           onMouseDown={(e) => e.stopPropagation()}
         >
@@ -552,56 +515,42 @@ function SplitterRoot({
 
   // Render
   const displaySizes = sizes
+  const orient = isVertical ? 'vertical' : 'horizontal'
 
-  const containerStyle = mergeSemanticStyle(
-    {
-      display: 'flex',
-      flexDirection: isVertical ? 'column' : 'row',
-      width: '100%',
-      height: '100%',
-      overflow: 'hidden',
-      position: 'relative',
-    },
-    styles?.root,
-    style,
+  const rootClass = cx(
+    'ino-splitter',
+    `ino-splitter--${orient}`,
+    className,
+    classNames?.root,
   )
 
-  // Cursor overlay durante drag
-  const overlayStyles: CSSProperties = {
-    position: 'fixed',
-    inset: 0,
-    zIndex: 9999,
-    cursor: isVertical ? 'row-resize' : 'col-resize',
+  const rootDynamicStyle: CSSProperties = {
+    ...styles?.root,
+    ...style,
   }
 
   return (
-    <div ref={containerRef} style={containerStyle} className={mergeSemanticClassName(className, classNames?.root)}>
-      {dragging && <div style={overlayStyles} />}
+    <div ref={containerRef} className={rootClass} style={rootDynamicStyle}>
+      {dragging && (
+        <div className={cx('ino-splitter__overlay', `ino-splitter__overlay--${orient}`)} />
+      )}
       {lazy && (
         <div
           ref={lazyIndicatorRef}
-          style={{
-            display: 'none',
-            position: 'absolute',
-            ...(isVertical
-              ? { left: 0, right: 0, height: 2 }
-              : { top: 0, bottom: 0, width: 2 }),
-            backgroundColor: tokens.colorBorder,
-            zIndex: 10,
-            pointerEvents: 'none',
-            transform: isVertical ? 'translateY(-50%)' : 'translateX(-50%)',
-          }}
+          className={cx('ino-splitter__lazy-indicator', `ino-splitter__lazy-indicator--${orient}`)}
         />
       )}
       {panels.map((panel, index) => {
-        const panelStyles: CSSProperties = {
-          flexGrow: 0,
-          flexShrink: 1,
+        const panelClass = cx(
+          'ino-splitter__panel',
+          { 'ino-splitter__panel--animated': !dragging },
+          panel.className,
+          classNames?.panel,
+        )
+
+        // Dynamic: flex-basis from calculated sizes
+        const panelDynamicStyle: CSSProperties = {
           flexBasis: `${displaySizes[index]}%`,
-          minWidth: 0,
-          minHeight: 0,
-          overflow: 'auto',
-          transition: dragging ? 'none' : 'flex-basis 0.15s ease',
           ...styles?.panel,
           ...panel.style,
         }
@@ -620,7 +569,7 @@ function SplitterRoot({
 
         return (
           <div key={index} style={{ display: 'contents' }}>
-            <div style={panelStyles} className={mergeSemanticClassName(panel.className, classNames?.panel)}>
+            <div className={panelClass} style={panelDynamicStyle}>
               {panel.children}
             </div>
             {index < panelCount - 1 && (

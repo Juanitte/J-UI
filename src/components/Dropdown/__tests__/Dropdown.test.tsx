@@ -46,7 +46,7 @@ describe('Dropdown', () => {
         <button>Open</button>
       </Dropdown>
     )
-    expect((container.firstChild as HTMLElement).style.display).toBe('inline-flex')
+    expect(container.firstChild).toHaveClass('ino-dropdown')
   })
 
   // ---------- Hover trigger (default) ----------
@@ -184,8 +184,8 @@ describe('Dropdown', () => {
     )
     await openByHover(container.firstChild as HTMLElement, 'Disabled')
 
-    const item = screen.getByText('Disabled').closest('div[style]') as HTMLElement
-    expect(item.style.cursor).toBe('not-allowed')
+    const item = screen.getByText('Disabled').closest('.ino-dropdown__item') as HTMLElement
+    expect(item).toHaveClass('ino-dropdown__item--disabled')
   })
 
   it('renders danger items with error color', async () => {
@@ -199,9 +199,9 @@ describe('Dropdown', () => {
     )
     await openByHover(container.firstChild as HTMLElement, 'Delete')
 
-    const item = screen.getByText('Delete').closest('div[style]') as HTMLElement
-    // Danger items use tokens.colorError
-    expect(item.style.color).not.toBe('')
+    const item = screen.getByText('Delete').closest('.ino-dropdown__item') as HTMLElement
+    // Danger items use tokens.colorError via BEM class
+    expect(item).toHaveClass('ino-dropdown__item--danger')
   })
 
   // ---------- Divider ----------
@@ -298,7 +298,7 @@ describe('Dropdown', () => {
     expect(screen.queryByText('Sub Child')).not.toBeInTheDocument()
 
     // Hover over parent item
-    const parentItem = screen.getByText('Parent').closest('div[style]') as HTMLElement
+    const parentItem = screen.getByText('Parent').closest('.ino-dropdown__item') as HTMLElement
     fireEvent.mouseEnter(parentItem)
 
     expect(screen.getByText('Sub Child')).toBeInTheDocument()
@@ -314,8 +314,8 @@ describe('Dropdown', () => {
     )
     await openByHover(container.firstChild as HTMLElement)
 
-    // Arrow is an 8x8 div with position absolute
-    const arrowEl = container.querySelector('div[style*="width: 8px"]')
+    // Arrow is now a BEM element
+    const arrowEl = container.querySelector('.ino-dropdown__arrow')
     expect(arrowEl).toBeInTheDocument()
   })
 

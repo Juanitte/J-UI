@@ -43,25 +43,10 @@ describe('Empty', () => {
       expect(root.tagName).toBe('DIV')
     })
 
-    it('root has flex column layout', () => {
+    it('root has BEM base class', () => {
       const { container } = render(<Empty />)
       const root = getRoot(container)
-      expect(root.style.display).toBe('flex')
-      expect(root.style.flexDirection).toBe('column')
-    })
-
-    it('root has center alignment', () => {
-      const { container } = render(<Empty />)
-      const root = getRoot(container)
-      expect(root.style.alignItems).toBe('center')
-      expect(root.style.justifyContent).toBe('center')
-    })
-
-    it('root has vertical padding', () => {
-      const { container } = render(<Empty />)
-      const root = getRoot(container)
-      expect(root.style.paddingTop).toBe('2rem')
-      expect(root.style.paddingBottom).toBe('2rem')
+      expect(root).toHaveClass('ino-empty')
     })
 
     it('renders default SimpleImage SVG', () => {
@@ -122,16 +107,16 @@ describe('Empty', () => {
       expect(imgContainer.style.marginBottom).toBe('2rem')
     })
 
-    it('image container has lineHeight 1', () => {
+    it('image container has BEM class', () => {
       const { container } = render(<Empty />)
       const imgContainer = getImageContainer(container)
-      expect(imgContainer.style.lineHeight).toBe('1')
+      expect(imgContainer).toHaveClass('ino-empty__image')
     })
 
-    it('image container has marginBottom when description shown', () => {
+    it('image container has with-desc modifier when description shown', () => {
       const { container } = render(<Empty />)
       const imgContainer = getImageContainer(container)
-      expect(imgContainer.style.marginBottom).toBe('0.5rem')
+      expect(imgContainer).toHaveClass('ino-empty__image--with-desc')
     })
 
     it('image container has no marginBottom when description=false', () => {
@@ -169,11 +154,11 @@ describe('Empty', () => {
       expect(screen.queryByText('No data')).toBeNull()
     })
 
-    it('description has correct styling', () => {
+    it('description has correct BEM class', () => {
       const { container } = render(<Empty />)
       const desc = getDescriptionEl(container)
       expect(desc).toBeTruthy()
-      expect(desc!.style.fontSize).toBe('0.875rem')
+      expect(desc).toHaveClass('ino-empty__description')
     })
   })
 
@@ -187,11 +172,11 @@ describe('Empty', () => {
       expect(screen.getByText('Create Now')).toBeTruthy()
     })
 
-    it('footer has marginTop', () => {
+    it('footer has BEM class', () => {
       const { container } = render(<Empty><button>Action</button></Empty>)
       const footer = getFooterEl(container)
       expect(footer).toBeTruthy()
-      expect(footer!.style.marginTop).toBe('1rem')
+      expect(footer).toHaveClass('ino-empty__footer')
     })
 
     it('does not render footer when no children', () => {
@@ -237,14 +222,7 @@ describe('Empty', () => {
     it('renders tumbleweed animation container', () => {
       const { container } = render(<Empty tumbleweed />)
       const imgContainer = getImageContainer(container)
-      // Tumbleweed container has position relative and overflow hidden
-      expect(imgContainer.style.position).toBe('relative')
-    })
-
-    it('tumbleweed image container has width 100%', () => {
-      const { container } = render(<Empty tumbleweed />)
-      const imgContainer = getImageContainer(container)
-      expect(imgContainer.style.width).toBe('100%')
+      expect(imgContainer).toHaveClass('ino-empty__image--tumbleweed')
     })
 
     it('does not render default SimpleImage SVG when tumbleweed=true', () => {

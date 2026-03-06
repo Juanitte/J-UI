@@ -18,25 +18,25 @@ describe('Space', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders as inline-flex', () => {
+  it('renders with BEM base class', () => {
     const { container } = render(
       <Space><span>A</span></Space>
     )
-    expect((container.firstChild as HTMLElement).style.display).toBe('inline-flex')
+    expect(container.firstChild).toHaveClass('ino-space')
   })
 
   it('renders horizontal by default', () => {
     const { container } = render(
       <Space><span>A</span><span>B</span></Space>
     )
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('row')
+    expect(container.firstChild).toHaveClass('ino-space--horizontal')
   })
 
   it('renders vertical direction', () => {
     const { container } = render(
       <Space direction="vertical"><span>A</span><span>B</span></Space>
     )
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('column')
+    expect(container.firstChild).toHaveClass('ino-space--vertical')
   })
 
   it('applies size as named value', () => {
@@ -60,11 +60,11 @@ describe('Space', () => {
     expect((container.firstChild as HTMLElement).style.gap).toBe('1.5rem 0.5rem')
   })
 
-  it('applies wrap', () => {
+  it('applies wrap class', () => {
     const { container } = render(
       <Space wrap><span>A</span><span>B</span></Space>
     )
-    expect((container.firstChild as HTMLElement).style.flexWrap).toBe('wrap')
+    expect(container.firstChild).toHaveClass('ino-space--wrap')
   })
 
   it('renders with split separator', () => {
@@ -104,31 +104,31 @@ describe('Space.Compact', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('renders as inline-flex by default', () => {
+  it('renders with BEM base class', () => {
     const { container } = render(
       <Space.Compact><button>A</button></Space.Compact>
     )
-    expect((container.firstChild as HTMLElement).style.display).toBe('inline-flex')
+    expect(container.firstChild).toHaveClass('ino-space-compact')
   })
 
   it('renders as flex when block=true', () => {
     const { container } = render(
       <Space.Compact block><button>A</button></Space.Compact>
     )
-    expect((container.firstChild as HTMLElement).style.display).toBe('flex')
+    expect(container.firstChild).toHaveClass('ino-space-compact--block')
   })
 
   it('renders horizontal direction by default', () => {
     const { container } = render(
       <Space.Compact><button>A</button></Space.Compact>
     )
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('row')
+    expect(container.firstChild).toHaveClass('ino-space-compact--horizontal')
   })
 
   it('renders vertical direction', () => {
     const { container } = render(
       <Space.Compact direction="vertical"><button>A</button></Space.Compact>
     )
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('column')
+    expect(container.firstChild).toHaveClass('ino-space-compact--vertical')
   })
 })

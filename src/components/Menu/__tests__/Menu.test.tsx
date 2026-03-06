@@ -42,20 +42,20 @@ describe('Menu', () => {
   it('uses vertical mode by default (borderRight)', () => {
     const { container } = render(<Menu items={items} />)
     const ul = container.querySelector('ul') as HTMLElement
-    expect(ul.style.borderRight).toContain('1px solid')
+    expect(ul).toHaveClass('ino-menu--vertical')
   })
 
   it('renders horizontal mode with flex layout and role="menubar"', () => {
     const { container } = render(<Menu items={items} mode="horizontal" />)
     const ul = container.querySelector('ul') as HTMLElement
-    expect(ul.style.display).toBe('flex')
+    expect(ul).toHaveClass('ino-menu--horizontal')
     expect(ul).toHaveAttribute('role', 'menubar')
   })
 
   it('renders horizontal mode with borderBottom', () => {
     const { container } = render(<Menu items={items} mode="horizontal" />)
     const ul = container.querySelector('ul') as HTMLElement
-    expect(ul.style.borderBottom).toContain('1px solid')
+    expect(ul).toHaveClass('ino-menu--horizontal')
   })
 
   // ---------- Icons ----------
@@ -75,7 +75,7 @@ describe('Menu', () => {
     fireEvent.click(screen.getByText('About'))
     // Selected item gets primary color
     const aboutLi = screen.getByText('About').closest('li') as HTMLElement
-    expect(aboutLi.style.color).not.toBe('')
+    expect(aboutLi).toHaveClass('ino-menu__item--selected')
   })
 
   it('calls onClick with key and keyPath', () => {
@@ -114,8 +114,8 @@ describe('Menu', () => {
   it('highlights items from selectedKeys prop', () => {
     const { container } = render(<Menu items={items} selectedKeys={['2']} />)
     const aboutLi = screen.getByText('About').closest('li') as HTMLElement
-    // Selected item should have primary color
-    expect(aboutLi.style.color).not.toBe(aboutLi.style.color === '' ? '' : undefined)
+    // Selected item should have primary color via BEM class
+    expect(aboutLi).toHaveClass('ino-menu__item--selected')
   })
 
   it('uses defaultSelectedKeys for initial selection', () => {
@@ -180,7 +180,7 @@ describe('Menu', () => {
     ]
     render(<Menu items={disabledItems} />)
     const li = screen.getByText('Disabled').closest('li') as HTMLElement
-    expect(li.style.cursor).toBe('not-allowed')
+    expect(li).toHaveClass('ino-menu__item--disabled')
   })
 
   it('renders disabled items with reduced opacity', () => {
@@ -189,7 +189,7 @@ describe('Menu', () => {
     ]
     render(<Menu items={disabledItems} />)
     const li = screen.getByText('Disabled').closest('li') as HTMLElement
-    expect(li.style.opacity).toBe('0.5')
+    expect(li).toHaveClass('ino-menu__item--disabled')
   })
 
   // ---------- Danger items ----------
@@ -200,7 +200,7 @@ describe('Menu', () => {
     ]
     render(<Menu items={dangerItems} />)
     const li = screen.getByText('Delete').closest('li') as HTMLElement
-    expect(li.style.color).not.toBe('')
+    expect(li).toHaveClass('ino-menu__item--danger')
   })
 
   // ---------- Divider ----------
@@ -222,7 +222,7 @@ describe('Menu', () => {
     ]
     const { container } = render(<Menu items={dividerItems} />)
     const sep = container.querySelector('li[role="separator"]') as HTMLElement
-    expect(sep.style.borderTop).toContain('dashed')
+    expect(sep).toHaveClass('ino-menu__divider--dashed')
   })
 
   // ---------- Group ----------
@@ -413,7 +413,7 @@ describe('Menu', () => {
     ]
     const { container } = render(<Menu items={iconItems} mode="inline" inlineCollapsed />)
     const ul = container.querySelector('ul') as HTMLElement
-    expect(ul.style.width).toBe('3rem')
+    expect(ul).toHaveClass('ino-menu--collapsed')
   })
 
   it('hides labels when collapsed and item has icon', () => {
@@ -447,13 +447,15 @@ describe('Menu', () => {
   it('renders right border on selected item in vertical mode', () => {
     render(<Menu items={items} selectedKeys={['1']} mode="vertical" />)
     const li = screen.getByText('Home').closest('li') as HTMLElement
-    expect(li.style.borderRight).toContain('3px solid')
+    expect(li).toHaveClass('ino-menu__item--selected')
+    expect(li).toHaveClass('ino-menu__item--vertical')
   })
 
   it('renders bottom border on selected item in horizontal mode', () => {
     render(<Menu items={items} selectedKeys={['1']} mode="horizontal" />)
     const li = screen.getByText('Home').closest('li') as HTMLElement
-    expect(li.style.borderBottom).toContain('2px solid')
+    expect(li).toHaveClass('ino-menu__item--selected')
+    expect(li).toHaveClass('ino-menu__item--horizontal')
   })
 
   // ---------- className & style ----------

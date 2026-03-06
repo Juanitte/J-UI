@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, useCallback, createContext, useContext, Children, cloneElement, isValidElement } from 'react'
 import type { ReactNode, CSSProperties, ChangeEvent } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -69,13 +68,13 @@ export interface RadioGroupProps {
 export type RadioButtonProps = RadioProps
 
 // ============================================================================
-// Size config (for Radio.Button)
+// Size mapping for Radio.Button
 // ============================================================================
 
-const sizeConfig: Record<string, { height: string; fontSize: string; paddingH: string; radius: string }> = {
-  small:  { height: '1.5rem',  fontSize: '0.75rem',  paddingH: '0.5rem',  radius: '0.25rem' },
-  middle: { height: '2rem',    fontSize: '0.875rem', paddingH: '0.75rem', radius: '0.375rem' },
-  large:  { height: '2.5rem',  fontSize: '1rem',     paddingH: '1rem',    radius: '0.5rem' },
+const SIZE_MAP: Record<string, string> = {
+  small: 'sm',
+  middle: 'md',
+  large: 'lg',
 }
 
 // ============================================================================
@@ -111,11 +110,10 @@ function RadioComponent({
   tabIndex,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: RadioProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const radioRef = useRef<HTMLSpanElement>(null)
   const mouseDownRef = useRef(false)
   const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
   const groupContext = useContext(RadioGroupContext)
@@ -167,101 +165,27 @@ function RadioComponent({
     }
   }
 
-  // Hover handlers — ref-based DOM manipulation (Ino-UI pattern)
-  const hasCustomColors = !!(styles?.radio && (
-    'backgroundColor' in styles.radio ||
-    'borderColor' in styles.radio ||
-    'border' in styles.radio
-  ))
-
-  const handleMouseEnter = () => {
-    if (mergedDisabled || !radioRef.current) return
-    if (hasCustomColors) {
-      radioRef.current.style.filter = 'brightness(1.15)'
-    } else if (mergedChecked) {
-      radioRef.current.style.backgroundColor = tokens.colorPrimaryHover
-      radioRef.current.style.borderColor = tokens.colorPrimaryHover
-    } else {
-      radioRef.current.style.borderColor = tokens.colorPrimary
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (mergedDisabled || !radioRef.current) return
-    if (hasCustomColors) {
-      radioRef.current.style.filter = ''
-    } else if (mergedChecked) {
-      radioRef.current.style.backgroundColor = tokens.colorPrimary
-      radioRef.current.style.borderColor = tokens.colorPrimary
-    } else {
-      radioRef.current.style.borderColor = tokens.colorBorder
-    }
-  }
-
-  // ---- Styles ----
-  const rootStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    minHeight: '2.75rem',
-    cursor: mergedDisabled ? 'not-allowed' : 'pointer',
-    userSelect: 'none',
-    lineHeight: 1,
-    ...(mergedDisabled ? { opacity: 0.5 } : {}),
-  }
-
-  const radioBoxStyle: CSSProperties = {
-    position: 'relative',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '1rem',
-    height: '1rem',
-    borderRadius: '50%',
-    border: `2px solid ${(mergedChecked || isFocused) ? tokens.colorPrimary : tokens.colorBorder}`,
-    backgroundColor: mergedChecked ? tokens.colorPrimary : 'transparent',
-    transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
-    flexShrink: 0,
-    boxShadow: isFocused && !mergedDisabled && focusSourceRef.current === 'keyboard'
-      ? `0 0 0 2px ${tokens.colorPrimaryLight}`
-      : 'none',
-  }
-
-  const hiddenInputStyle: CSSProperties = {
-    position: 'absolute',
-    opacity: 0,
-    width: 0,
-    height: 0,
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden',
-  }
-
-  const indicatorStyle: CSSProperties = {
-    width: '0.375rem',
-    height: '0.375rem',
-    borderRadius: '50%',
-    backgroundColor: '#fff',
-  }
-
-  const labelStyle: CSSProperties = {
-    fontSize: '0.875rem',
-    lineHeight: '1.375rem',
-    color: mergedDisabled ? tokens.colorTextSubtle : tokens.colorText,
-  }
+  // ---- BEM classes ----
+  const rootClass = cx(
+    'ino-radio',
+    {
+      'ino-radio--checked': mergedChecked,
+      'ino-radio--disabled': mergedDisabled,
+      'ino-radio--focused': isFocused && focusSourceRef.current === 'keyboard',
+    },
+    className,
+    classNamesProp?.root,
+  )
 
   return (
     <label
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
       onMouseDown={() => { mouseDownRef.current = true }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <span
-        ref={radioRef}
-        className={classNames?.radio}
-        style={mergeSemanticStyle(radioBoxStyle, styles?.radio)}
+        className={cx('ino-radio__circle', classNamesProp?.radio)}
+        style={styles?.radio}
       >
         <input
           ref={inputRef}
@@ -278,26 +202,20 @@ function RadioComponent({
             setIsFocused(true)
           }}
           onBlur={() => setIsFocused(false)}
-          style={hiddenInputStyle}
+          className="ino-radio__input"
           value={value !== undefined ? String(value) : undefined}
         />
         {mergedChecked && (
           <span
-            className={classNames?.indicator}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              ...indicatorStyle,
-              ...styles?.indicator,
-            }}
+            className={cx('ino-radio__indicator', classNamesProp?.indicator)}
+            style={styles?.indicator}
           />
         )}
       </span>
       {children !== undefined && children !== null && (
         <span
-          className={classNames?.label}
-          style={mergeSemanticStyle(labelStyle, styles?.label)}
+          className={cx('ino-radio__label', classNamesProp?.label)}
+          style={styles?.label}
         >
           {children}
         </span>
@@ -323,12 +241,11 @@ function RadioButtonComponent({
   tabIndex,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
   _position,
 }: RadioButtonProps & { _position?: 'first' | 'middle' | 'last' | 'only' }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const rootRef = useRef<HTMLLabelElement>(null)
   const mouseDownRef = useRef(false)
   const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
   const groupContext = useContext(RadioGroupContext)
@@ -343,6 +260,7 @@ function RadioButtonComponent({
 
   const btnStyle = isInGroup ? groupContext.buttonStyle : 'outline'
   const size = isInGroup ? groupContext.size : 'middle'
+  const sizeKey = SIZE_MAP[size] || 'md'
 
   if (isInGroup) {
     mergedChecked = value !== undefined && groupContext.value === value
@@ -382,132 +300,30 @@ function RadioButtonComponent({
     }
   }
 
-  // Hover — ref-based
-  const hasCustomColors = !!(styles?.root && (
-    'backgroundColor' in styles.root ||
-    'borderColor' in styles.root ||
-    'border' in styles.root
-  ))
+  // Collapse borders for non-first items
+  const shouldCollapse = _position && _position !== 'first' && _position !== 'only'
 
-  const handleMouseEnter = () => {
-    if (mergedDisabled || !rootRef.current) return
-    if (hasCustomColors) {
-      rootRef.current.style.filter = 'brightness(1.15)'
-    } else if (mergedChecked) {
-      // Already active — subtle hover
-      if (btnStyle === 'solid') {
-        rootRef.current.style.backgroundColor = tokens.colorPrimaryHover
-      } else {
-        rootRef.current.style.color = tokens.colorPrimaryHover
-        rootRef.current.style.borderColor = tokens.colorPrimaryHover
-      }
-    } else {
-      rootRef.current.style.color = tokens.colorPrimary
-      rootRef.current.style.borderColor = tokens.colorPrimary
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (mergedDisabled || !rootRef.current) return
-    if (hasCustomColors) {
-      rootRef.current.style.filter = ''
-    } else if (mergedChecked) {
-      if (btnStyle === 'solid') {
-        rootRef.current.style.backgroundColor = tokens.colorPrimary
-      } else {
-        rootRef.current.style.color = tokens.colorPrimary
-        rootRef.current.style.borderColor = tokens.colorPrimary
-      }
-    } else {
-      rootRef.current.style.color = tokens.colorText
-      rootRef.current.style.borderColor = tokens.colorBorder
-    }
-  }
-
-  // ---- Styles ----
-  const sc = sizeConfig[size]
-
-  // Border-radius based on position within group
-  let borderRadius: string
-  if (_position === 'first') {
-    borderRadius = `${sc.radius} 0 0 ${sc.radius}`
-  } else if (_position === 'last') {
-    borderRadius = `0 ${sc.radius} ${sc.radius} 0`
-  } else if (_position === 'middle') {
-    borderRadius = '0'
-  } else {
-    borderRadius = sc.radius // 'only' or standalone
-  }
-
-  const rootBaseStyle: CSSProperties = {
-    position: 'relative',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: sc.height,
-    padding: `0 ${sc.paddingH}`,
-    fontSize: sc.fontSize,
-    fontFamily: 'inherit',
-    lineHeight: 1,
-    border: `1px solid ${tokens.colorBorder}`,
-    borderRadius,
-    cursor: mergedDisabled ? 'not-allowed' : 'pointer',
-    userSelect: 'none',
-    transition: 'color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
-    boxSizing: 'border-box',
-    ...(mergedDisabled ? { opacity: 0.5 } : {}),
-  }
-
-  // Negative margin to collapse double borders (except first/only)
-  if (_position && _position !== 'first' && _position !== 'only') {
-    rootBaseStyle.marginLeft = '-1px'
-  }
-
-  // Apply checked/unchecked visual
-  if (mergedChecked) {
-    if (btnStyle === 'solid') {
-      rootBaseStyle.backgroundColor = tokens.colorPrimary
-      rootBaseStyle.borderColor = tokens.colorPrimary
-      rootBaseStyle.color = tokens.colorPrimaryContrast
-    } else {
-      rootBaseStyle.backgroundColor = tokens.colorBg
-      rootBaseStyle.borderColor = tokens.colorPrimary
-      rootBaseStyle.color = tokens.colorPrimary
-    }
-  } else {
-    rootBaseStyle.backgroundColor = tokens.colorBg
-    rootBaseStyle.borderColor = isFocused ? tokens.colorPrimary : tokens.colorBorder
-    rootBaseStyle.color = isFocused ? tokens.colorPrimary : tokens.colorText
-  }
-
-  // Focus ring (keyboard only)
-  rootBaseStyle.boxShadow = isFocused && !mergedDisabled && focusSourceRef.current === 'keyboard'
-    ? `0 0 0 2px ${tokens.colorPrimaryLight}`
-    : 'none'
-
-  // Z-index so checked/focused button's border shows on top of collapsed neighbors
-  if (mergedChecked || isFocused) {
-    rootBaseStyle.zIndex = 1
-  }
-
-  const hiddenInputStyle: CSSProperties = {
-    position: 'absolute',
-    opacity: 0,
-    width: 0,
-    height: 0,
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden',
-  }
+  // ---- BEM classes ----
+  const rootClass = cx(
+    'ino-radio-btn',
+    `ino-radio-btn--${sizeKey}`,
+    `ino-radio-btn--${btnStyle}`,
+    {
+      'ino-radio-btn--checked': mergedChecked,
+      'ino-radio-btn--disabled': mergedDisabled,
+      'ino-radio-btn--focused': isFocused && focusSourceRef.current === 'keyboard',
+      'ino-radio-btn--collapse': shouldCollapse,
+      [`ino-radio-btn--${_position}`]: !!_position,
+    },
+    className,
+    classNamesProp?.root,
+  )
 
   return (
     <label
-      ref={rootRef}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootBaseStyle, styles?.root, style)}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
       onMouseDown={() => { mouseDownRef.current = true }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <input
         ref={inputRef}
@@ -524,12 +340,12 @@ function RadioButtonComponent({
           setIsFocused(true)
         }}
         onBlur={() => setIsFocused(false)}
-        style={hiddenInputStyle}
+        className="ino-radio__input"
         value={value !== undefined ? String(value) : undefined}
       />
       <span
-        className={classNames?.label}
-        style={mergeSemanticStyle({ whiteSpace: 'nowrap' }, styles?.label)}
+        className={cx('ino-radio-btn__label', classNamesProp?.label)}
+        style={styles?.label}
       >
         {children}
       </span>
@@ -554,7 +370,7 @@ function RadioGroupComponent({
   children,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: RadioGroupProps) {
   const isControlled = controlledValue !== undefined
@@ -621,16 +437,22 @@ function RadioGroupComponent({
     renderedChildren = children
   }
 
+  const groupClass = cx(
+    'ino-radio-group',
+    {
+      'ino-radio-group--default': optionType !== 'button',
+      'ino-radio-group--button': optionType === 'button',
+    },
+    className,
+    classNamesProp?.root,
+  )
+
   return (
     <RadioGroupContext.Provider value={contextValue}>
       <div
         role="radiogroup"
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={mergeSemanticStyle(
-          { display: 'inline-flex', flexWrap: 'wrap', gap: optionType === 'button' ? 0 : '0.5rem', alignItems: 'center' },
-          styles?.root,
-          style,
-        )}
+        className={groupClass}
+        style={{ ...styles?.root, ...style }}
       >
         {renderedChildren}
       </div>

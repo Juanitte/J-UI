@@ -60,7 +60,6 @@ describe('Divider', () => {
   it('applies plain text style', () => {
     render(<Divider plain>Plain Text</Divider>)
     const textEl = screen.getByText('Plain Text')
-    expect(textEl.style.fontSize).toBe('0.875rem')
-    expect(textEl.style.fontWeight).toBe('400')
+    expect(textEl).toHaveClass('ino-divider__text--plain')
   })
 })

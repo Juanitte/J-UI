@@ -7,9 +7,8 @@ import {
   type ReactNode,
   type CSSProperties,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -56,19 +55,21 @@ export interface ToggleProps {
   styles?: ToggleStyles
 }
 
-// ─── Size Config ────────────────────────────────────────────────────────────────
+// ─── Size Config (for thumb radius/padding) ──────────────────────────────────
 
 const sizeConfig: Record<ToggleSize, {
-  height: string
-  fontSize: string
-  paddingH: string
-  radius: string
   thumbRadius: string
   thumbPadding: string
 }> = {
-  small:  { height: '1.5rem',  fontSize: '0.75rem',  paddingH: '0.4375rem', radius: '0.375rem', thumbRadius: '0.25rem', thumbPadding: '0.125rem' },
-  middle: { height: '2rem',    fontSize: '0.875rem', paddingH: '0.6875rem', radius: '0.5rem',   thumbRadius: '0.375rem', thumbPadding: '0.125rem' },
-  large:  { height: '2.5rem',  fontSize: '1rem',     paddingH: '0.75rem',   radius: '0.5rem',   thumbRadius: '0.375rem', thumbPadding: '0.125rem' },
+  small:  { thumbRadius: '0.25rem', thumbPadding: '0.125rem' },
+  middle: { thumbRadius: '0.375rem', thumbPadding: '0.125rem' },
+  large:  { thumbRadius: '0.375rem', thumbPadding: '0.125rem' },
+}
+
+const SIZE_KEY: Record<ToggleSize, string> = {
+  small: 'sm',
+  middle: 'md',
+  large: 'lg',
 }
 
 // ─── Toggle Component ───────────────────────────────────────────────────────────
@@ -85,7 +86,7 @@ export function Toggle({
   name,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: ToggleProps) {
   const sc = sizeConfig[size]
@@ -147,24 +148,18 @@ export function Toggle({
       : 'left 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)'
 
     setThumbStyle({
-      position: 'absolute',
       top: vertical ? top : sc.thumbPadding,
       left: vertical ? sc.thumbPadding : left,
       width: vertical ? `calc(100% - 2 * ${sc.thumbPadding})` : width,
       height: vertical ? height : `calc(100% - 2 * ${sc.thumbPadding})`,
-      borderRadius: sc.thumbRadius,
-      backgroundColor: tokens.colorBg,
-      boxShadow: '0 1px 2px 0 rgba(0,0,0,0.03), 0 1px 6px -1px rgba(0,0,0,0.02), 0 2px 4px 0 rgba(0,0,0,0.02)',
       transition: isFirstRender.current ? 'none' : transitionProps,
-      zIndex: 0,
-      pointerEvents: 'none',
       opacity: 1,
     })
 
     if (isFirstRender.current) {
       requestAnimationFrame(() => { isFirstRender.current = false })
     }
-  }, [currentValue, sc.thumbPadding, sc.thumbRadius, vertical])
+  }, [currentValue, sc.thumbPadding, vertical])
 
   useLayoutEffect(() => {
     updateThumb()
@@ -212,79 +207,19 @@ export function Toggle({
     }
   }, [normalizedOptions, currentValue, handleSelect, vertical])
 
-  // ─── Hover ──────────────────────────────────────────────
+  // ─── BEM classes ────────────────────────────────────────
 
-  const hasCustomItemColors = !!(styles?.item && (
-    'backgroundColor' in styles.item ||
-    'borderColor' in styles.item ||
-    'border' in styles.item ||
-    'color' in styles.item
-  ))
-
-  const handleItemMouseEnter = (
-    e: React.MouseEvent,
-    isSelected: boolean,
-    isItemDisabled: boolean,
-  ) => {
-    if (isItemDisabled || isSelected) return
-    const el = e.currentTarget as HTMLElement
-    if (hasCustomItemColors) {
-      el.style.filter = 'brightness(1.15)'
-    } else {
-      el.style.color = tokens.colorText
-    }
-  }
-
-  const handleItemMouseLeave = (
-    e: React.MouseEvent,
-    isSelected: boolean,
-    isItemDisabled: boolean,
-  ) => {
-    if (isItemDisabled || isSelected) return
-    const el = e.currentTarget as HTMLElement
-    if (hasCustomItemColors) {
-      el.style.filter = ''
-    } else {
-      el.style.color = tokens.colorTextMuted
-    }
-  }
-
-  // ─── Styles ─────────────────────────────────────────────
-
-  const trackStyle: CSSProperties = {
-    position: 'relative',
-    display: block || vertical ? 'flex' : 'inline-flex',
-    flexDirection: vertical ? 'column' : 'row',
-    width: block || vertical ? '100%' : undefined,
-    alignItems: vertical ? 'stretch' : 'center',
-    backgroundColor: tokens.colorBgMuted,
-    borderRadius: sc.radius,
-    padding: sc.thumbPadding,
-    boxSizing: 'border-box',
-    ...(disabled ? { opacity: 0.5, cursor: 'not-allowed' } : {}),
-  }
-
-  const getItemStyle = (isSelected: boolean, isItemDisabled: boolean): CSSProperties => ({
-    position: 'relative',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.375rem',
-    height: vertical ? undefined : `calc(${sc.height} - 2 * ${sc.thumbPadding})`,
-    padding: vertical ? `${sc.paddingH} ${sc.paddingH}` : `0 ${sc.paddingH}`,
-    fontSize: sc.fontSize,
-    fontFamily: 'inherit',
-    color: isSelected ? tokens.colorText : tokens.colorTextMuted,
-    fontWeight: isSelected ? 600 : 400,
-    cursor: isItemDisabled ? 'not-allowed' : 'pointer',
-    userSelect: 'none',
-    whiteSpace: 'nowrap',
-    borderRadius: sc.thumbRadius,
-    transition: 'color 0.2s ease, font-weight 0.2s ease',
-    zIndex: 1,
-    flex: block && !vertical ? 1 : undefined,
-    ...(isItemDisabled && !disabled ? { opacity: 0.5 } : {}),
-  })
+  const rootClass = cx(
+    'ino-toggle',
+    `ino-toggle--${SIZE_KEY[size]}`,
+    {
+      'ino-toggle--block': block,
+      'ino-toggle--vertical': vertical,
+      'ino-toggle--disabled': disabled,
+    },
+    className,
+    classNamesProp?.root,
+  )
 
   // ─── Render ─────────────────────────────────────────────
 
@@ -292,17 +227,27 @@ export function Toggle({
     <div
       ref={trackRef}
       role="radiogroup"
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(trackStyle, styles?.root, style)}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
     >
       <div
-        className={classNames?.thumb}
-        style={mergeSemanticStyle(thumbStyle, styles?.thumb)}
+        className={cx('ino-toggle__thumb', classNamesProp?.thumb)}
+        style={{ ...thumbStyle, ...styles?.thumb }}
       />
 
       {normalizedOptions.map(item => {
         const isSelected = item.value === currentValue
         const isItemDisabled = !!(item.disabled || disabled)
+
+        const itemClass = cx(
+          'ino-toggle__item',
+          {
+            'ino-toggle__item--selected': isSelected,
+            'ino-toggle__item--disabled': isItemDisabled && !disabled,
+          },
+          item.className,
+          classNamesProp?.item,
+        )
 
         return (
           <div
@@ -312,13 +257,11 @@ export function Toggle({
             aria-checked={isSelected}
             aria-disabled={isItemDisabled || undefined}
             tabIndex={isSelected ? 0 : -1}
-            className={mergeSemanticClassName(item.className, classNames?.item)}
-            style={mergeSemanticStyle(getItemStyle(isSelected, isItemDisabled), styles?.item)}
+            className={itemClass}
+            style={styles?.item}
             onClick={() => {
               if (!isItemDisabled && item.value !== currentValue) handleSelect(item.value)
             }}
-            onMouseEnter={e => handleItemMouseEnter(e, isSelected, isItemDisabled)}
-            onMouseLeave={e => handleItemMouseLeave(e, isSelected, isItemDisabled)}
             onKeyDown={e => handleKeyDown(e, item.value)}
           >
             {name && (
@@ -329,10 +272,10 @@ export function Toggle({
                 checked={isSelected}
                 disabled={isItemDisabled}
                 onChange={() => handleSelect(item.value)}
-                style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none' }}
+                className="ino-toggle__radio"
               />
             )}
-            {item.icon && <span style={{ display: 'inline-flex', lineHeight: 0 }}>{item.icon}</span>}
+            {item.icon && <span className="ino-toggle__icon">{item.icon}</span>}
             {item.label && <span>{item.label}</span>}
           </div>
         )

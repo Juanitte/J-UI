@@ -6,9 +6,8 @@ import {
   type ReactNode,
   type CSSProperties,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { Tooltip } from '../Tooltip'
 
 // ============================================================================
@@ -263,47 +262,32 @@ function AnchorRoot({
     }, 500)
   }, [getContainer, onClick, onChange, replace, resolvedTargetOffset])
 
+  const orient = isVertical ? 'vertical' : 'horizontal'
+
   // Render links recursivo
   const renderItems = (linkItems: AnchorLinkItemProps[], depth: number = 0) => {
     return linkItems.map((item) => {
       const isActive = activeLink === item.href
 
-      const linkStyle: CSSProperties = isVertical
-        ? {
-            display: 'flex',
-            alignItems: 'center',
-            minHeight: '2.75rem',
-            padding: `0.25rem 0 0.25rem ${depth + 1}rem`,
-            color: isActive ? tokens.colorPrimary : tokens.colorTextMuted,
-            textDecoration: 'none',
-            fontSize: '0.875rem',
-            lineHeight: '1.375rem',
-            transition: 'color 0.15s ease',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }
-        : {
-            display: 'inline-flex',
-            alignItems: 'center',
-            minHeight: '2.75rem',
-            padding: '0.25rem 1rem',
-            color: isActive ? tokens.colorPrimary : tokens.colorTextMuted,
-            textDecoration: 'none',
-            fontSize: '0.875rem',
-            lineHeight: '1.375rem',
-            transition: 'color 0.15s ease',
-            cursor: 'pointer',
-            whiteSpace: 'nowrap',
-          }
+      const linkClass = cx(
+        'ino-anchor__link',
+        `ino-anchor__link--${orient}`,
+        { 'ino-anchor__link--active': isActive },
+        classNames?.link,
+      )
+
+      // Dynamic: vertical indent depth stays inline
+      const linkDynamicStyle: CSSProperties = {
+        ...(isVertical && depth > 0 ? { paddingLeft: `${depth + 1}rem` } : {}),
+        ...styles?.link,
+      }
 
       const anchorLink = (
         <a
           ref={(el) => registerLink(item.href, el)}
           href={item.href}
-          style={{ ...linkStyle, ...styles?.link }}
-          className={classNames?.link}
+          className={linkClass}
+          style={linkDynamicStyle}
           onClick={(e) => handleClick(e, item.href, item.title)}
         >
           {item.title}
@@ -311,7 +295,7 @@ function AnchorRoot({
       )
 
       return (
-        <div key={item.key} style={isVertical ? {} : { display: 'inline-block' }}>
+        <div key={item.key} className={isVertical ? undefined : 'ino-anchor__link-wrapper--horizontal'}>
           {typeof item.title === 'string' ? (
             <Tooltip content={item.title} delay={600}>
               {anchorLink}
@@ -325,67 +309,22 @@ function AnchorRoot({
     })
   }
 
-  // Estilos del contenedor
-  const wrapperStyle: CSSProperties = isVertical
-    ? mergeSemanticStyle(
-        { position: 'relative', paddingLeft: 2, overflow: 'hidden' },
-        styles?.root,
-        style,
-      )
-    : mergeSemanticStyle(
-        { position: 'relative', display: 'flex', flexWrap: 'wrap', paddingBottom: 2, overflow: 'hidden' },
-        styles?.root,
-        style,
-      )
+  const rootClass = cx(
+    'ino-anchor',
+    `ino-anchor--${orient}`,
+    className,
+    classNames?.root,
+  )
 
-  // Track (línea de fondo)
-  const trackStyle: CSSProperties = isVertical
-    ? {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        bottom: 0,
-        width: 2,
-        backgroundColor: tokens.colorBorder,
-        borderRadius: 1,
-      }
-    : {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 2,
-        backgroundColor: tokens.colorBorder,
-        borderRadius: 1,
-      }
-
-  // Indicador activo
-  const indicatorStyle: CSSProperties = isVertical
-    ? {
-        position: 'absolute',
-        left: 0,
-        width: 2,
-        backgroundColor: tokens.colorPrimary,
-        borderRadius: 1,
-        transition: 'top 0.15s ease, height 0.15s ease, opacity 0.15s ease',
-        opacity: 0,
-        zIndex: 1,
-      }
-    : {
-        position: 'absolute',
-        bottom: 0,
-        height: 2,
-        backgroundColor: tokens.colorPrimary,
-        borderRadius: 1,
-        transition: 'left 0.15s ease, width 0.15s ease, opacity 0.15s ease',
-        opacity: 0,
-        zIndex: 1,
-      }
+  const rootDynamicStyle: CSSProperties = {
+    ...styles?.root,
+    ...style,
+  }
 
   return (
-    <div ref={wrapperRef} style={wrapperStyle} className={mergeSemanticClassName(className, classNames?.root)}>
-      <div style={{ ...trackStyle, ...styles?.track }} className={classNames?.track} />
-      <div ref={indicatorRef} style={{ ...indicatorStyle, ...styles?.indicator }} className={classNames?.indicator} />
+    <div ref={wrapperRef} className={rootClass} style={rootDynamicStyle}>
+      <div className={cx('ino-anchor__track', `ino-anchor__track--${orient}`, classNames?.track)} style={styles?.track} />
+      <div ref={indicatorRef} className={cx('ino-anchor__indicator', `ino-anchor__indicator--${orient}`, classNames?.indicator)} style={styles?.indicator} />
       {renderItems(items)}
     </div>
   )

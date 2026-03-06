@@ -10,73 +10,40 @@ function getRoot(container: HTMLElement): HTMLElement {
   return container.firstElementChild as HTMLElement
 }
 
-/** Trail div: position:relative + overflow:hidden (line type only) */
+/** Trail div */
 function getTrail(container: HTMLElement): HTMLElement | null {
-  return (
-    (Array.from(container.querySelectorAll('div')).find(
-      (el) =>
-        (el as HTMLElement).style.position === 'relative' &&
-        (el as HTMLElement).style.overflow === 'hidden',
-    ) as HTMLElement | undefined) ?? null
-  )
+  return container.querySelector<HTMLElement>('.ino-progress__trail') ?? null
 }
 
-/** First position:absolute div inside trail — the main stroke bar */
+/** Main stroke bar */
 function getStroke(container: HTMLElement): HTMLElement | null {
-  const trail = getTrail(container)
-  if (!trail) return null
-  const absChildren = Array.from(trail.children).filter(
-    (el) => el.tagName === 'DIV' && (el as HTMLElement).style.position === 'absolute',
-  ) as HTMLElement[]
-  return absChildren[0] ?? null
+  return container.querySelector<HTMLElement>('.ino-progress__stroke') ?? null
 }
 
-/** Second position:absolute div inside trail — the success segment */
+/** Success segment */
 function getSuccessSegment(container: HTMLElement): HTMLElement | null {
-  const trail = getTrail(container)
-  if (!trail) return null
-  const absChildren = Array.from(trail.children).filter(
-    (el) => el.tagName === 'DIV' && (el as HTMLElement).style.position === 'absolute',
-  ) as HTMLElement[]
-  return absChildren[1] ?? null
+  return container.querySelector<HTMLElement>('.ino-progress__success-segment') ?? null
 }
 
-/** First DIV child of stroke — the active shimmer overlay */
+/** Active shimmer overlay */
 function getShimmer(container: HTMLElement): HTMLElement | null {
-  const stroke = getStroke(container)
-  if (!stroke) return null
-  return (
-    (Array.from(stroke.children).find((el) => el.tagName === 'DIV') as HTMLElement | undefined) ??
-    null
-  )
+  return container.querySelector<HTMLElement>('.ino-progress__active-shimmer') ?? null
 }
 
-/** Direct SPAN child of root — outer info text (line / steps) */
+/** Outer info text (line / steps) */
 function getOuterText(container: HTMLElement): HTMLElement | null {
   const root = getRoot(container)
-  return (
-    (Array.from(root.children).find((el) => el.tagName === 'SPAN') as HTMLElement | undefined) ??
-    null
-  )
+  return root.querySelector<HTMLElement>('.ino-progress__text') ?? null
 }
 
-/** SPAN inside stroke div — inner info text (percentPosition.type='inner') */
+/** Inner info text (percentPosition.type='inner') */
 function getInnerText(container: HTMLElement): HTMLElement | null {
-  const stroke = getStroke(container)
-  if (!stroke) return null
-  return stroke.querySelector('span') as HTMLElement | null
+  return container.querySelector<HTMLElement>('.ino-progress__inner-text') ?? null
 }
 
-/** Steps trail container: the div with gap:0.125rem (unique to steps container) */
+/** Steps trail container */
 function getStepsContainer(container: HTMLElement): HTMLElement | null {
-  const root = getRoot(container)
-  return (
-    (Array.from(root.children).find(
-      (el) =>
-        el.tagName === 'DIV' &&
-        (el as HTMLElement).style.gap === '0.125rem',
-    ) as HTMLElement | undefined) ?? null
-  )
+  return container.querySelector<HTMLElement>('.ino-progress__steps') ?? null
 }
 
 /** All direct children of steps trail container */
@@ -108,14 +75,9 @@ function getStrokeCircle(container: HTMLElement): SVGCircleElement | null {
   return getCircles(container)[1] ?? null
 }
 
-/** SPAN with position:absolute inside circle root — centered info text */
+/** Centered info text for circle */
 function getCircleText(container: HTMLElement): HTMLElement | null {
-  const root = getRoot(container)
-  return (
-    (Array.from(root.children).find(
-      (el) => el.tagName === 'SPAN' && (el as HTMLElement).style.position === 'absolute',
-    ) as HTMLElement | undefined) ?? null
-  )
+  return container.querySelector<HTMLElement>('.ino-progress__circle-text') ?? null
 }
 
 // ============================================================================
@@ -133,18 +95,18 @@ describe('Progress', () => {
 
     it('root has display flex', () => {
       const { container } = render(<Progress />)
-      expect(getRoot(container).style.display).toBe('flex')
+      expect(getRoot(container)).toHaveClass('ino-progress')
     })
 
     it('root has 100% width by default', () => {
       const { container } = render(<Progress />)
-      expect(getRoot(container).style.width).toBe('100%')
+      expect(getRoot(container)).toHaveClass('ino-progress--full-width')
     })
 
     it('trail renders with overflow hidden', () => {
       const { container } = render(<Progress percent={50} />)
       expect(getTrail(container)).not.toBeNull()
-      expect(getTrail(container)!.style.overflow).toBe('hidden')
+      expect(getTrail(container)!).toHaveClass('ino-progress__trail')
     })
 
     it('stroke width matches percent', () => {
@@ -174,7 +136,7 @@ describe('Progress', () => {
 
     it('stroke has width transition', () => {
       const { container } = render(<Progress percent={50} />)
-      expect(getStroke(container)!.style.transition).toContain('width')
+      expect(getStroke(container)!).toHaveClass('ino-progress__stroke')
     })
   })
 
@@ -262,7 +224,7 @@ describe('Progress', () => {
 
     it('active shimmer has animation style', () => {
       const { container } = render(<Progress percent={50} status="active" />)
-      expect(getShimmer(container)!.style.animation).toContain('j-progress-active')
+      expect(getShimmer(container)!).toHaveClass('ino-progress__active-shimmer')
     })
 
     it('normal status has no shimmer', () => {
@@ -503,7 +465,7 @@ describe('Progress', () => {
 
     it('root has inline-flex display', () => {
       const { container } = render(<Progress type="circle" percent={50} />)
-      expect(getRoot(container).style.display).toBe('inline-flex')
+      expect(getRoot(container)).toHaveClass('ino-progress--circle')
     })
 
     it('shows percent text inside circle', () => {

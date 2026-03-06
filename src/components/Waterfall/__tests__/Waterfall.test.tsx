@@ -20,8 +20,7 @@ describe('Waterfall', () => {
   it('renders as a flex row container', () => {
     const { container } = render(<Waterfall items={items} />)
     const root = container.firstChild as HTMLElement
-    expect(root.style.display).toBe('flex')
-    expect(root.style.flexDirection).toBe('row')
+    expect(root).toHaveClass('ino-waterfall')
   })
 
   it('renders 3 columns by default', () => {

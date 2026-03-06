@@ -51,13 +51,13 @@ describe('Bubble', () => {
   it('applies circle shape by default', () => {
     const { container } = render(<Bubble />)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.borderRadius).toBe('50%')
+    expect(button).toHaveClass('ino-bubble--circle')
   })
 
   it('applies square shape', () => {
     const { container } = render(<Bubble shape="square" />)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.borderRadius).toBe('0.5rem')
+    expect(button).toHaveClass('ino-bubble--square')
   })
 
   it('applies different sizes', () => {
@@ -65,8 +65,8 @@ describe('Bubble', () => {
     const { container: lg } = render(<Bubble size="lg" />)
     const smBtn = sm.querySelector('button') as HTMLElement
     const lgBtn = lg.querySelector('button') as HTMLElement
-    expect(smBtn.style.width).toBe('40px')
-    expect(lgBtn.style.width).toBe('56px')
+    expect(smBtn).toHaveClass('ino-bubble--sm')
+    expect(lgBtn).toHaveClass('ino-bubble--lg')
   })
 
   it('returns null when visibleOnScroll is set and not scrolled', () => {

@@ -1,0 +1,237 @@
+/* ================================================================
+   NestedSelect – BEM classes
+   ================================================================ */
+
+.ino-nested-select {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* --- Selector --- */
+.ino-nested-select__selector {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+/* Sizes */
+.ino-nested-select--large .ino-nested-select__selector { min-height: 2.5rem; font-size: 1rem; padding: 0.375rem 0.75rem; }
+.ino-nested-select--middle .ino-nested-select__selector { min-height: 2.25rem; font-size: 0.875rem; padding: 0.25rem 0.75rem; }
+.ino-nested-select--small .ino-nested-select__selector { min-height: 1.75rem; font-size: 0.875rem; padding: 0.125rem 0.5rem; }
+
+/* Variants */
+.ino-nested-select--outlined .ino-nested-select__selector { border: 1px solid var(--j-border); background-color: var(--j-bg); border-radius: 0.375rem; }
+.ino-nested-select--filled .ino-nested-select__selector { border: 1px solid transparent; background-color: var(--j-bg-muted); border-radius: 0.375rem; }
+.ino-nested-select--borderless .ino-nested-select__selector { border: 1px solid transparent; background-color: transparent; border-radius: 0.375rem; }
+
+/* Hover */
+.ino-nested-select--outlined .ino-nested-select__selector:hover { border-color: var(--j-border-hover); }
+.ino-nested-select--filled .ino-nested-select__selector:hover { border-color: var(--j-border-hover); }
+
+/* Focus-within */
+.ino-nested-select--outlined .ino-nested-select__selector:focus-within { border-color: var(--j-primary); box-shadow: 0 0 0 2px var(--j-primary-light); }
+.ino-nested-select--filled .ino-nested-select__selector:focus-within { border-color: var(--j-primary); box-shadow: 0 0 0 2px var(--j-primary-light); }
+
+/* Status */
+.ino-nested-select--error .ino-nested-select__selector { border-color: var(--j-error); }
+.ino-nested-select--error .ino-nested-select__selector:focus-within { border-color: var(--j-error); box-shadow: 0 0 0 2px var(--j-error-bg); }
+.ino-nested-select--warning .ino-nested-select__selector { border-color: var(--j-warning); }
+.ino-nested-select--warning .ino-nested-select__selector:focus-within { border-color: var(--j-warning); box-shadow: 0 0 0 2px var(--j-warning-bg); }
+
+/* Disabled */
+.ino-nested-select--disabled .ino-nested-select__selector { opacity: 0.6; cursor: not-allowed; }
+
+/* --- Search input --- */
+.ino-nested-select__search {
+  flex: 1;
+  min-width: 2rem;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: var(--j-text);
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* --- Dropdown --- */
+.ino-nested-select__dropdown {
+  position: absolute;
+  z-index: 1050;
+  background-color: var(--j-bg);
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadow-md);
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  overflow: hidden;
+}
+
+/* --- Menu columns container --- */
+.ino-nested-select__menus {
+  display: flex;
+}
+
+/* --- Single menu column --- */
+.ino-nested-select__menu {
+  min-width: 7rem;
+  max-height: min(16rem, 40vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.25rem 0;
+}
+
+.ino-nested-select__menu:not(:last-child) {
+  border-right: 1px solid var(--j-border);
+}
+
+/* --- Option --- */
+.ino-nested-select__option {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  color: var(--j-text);
+  white-space: nowrap;
+}
+
+.ino-nested-select__option:hover:not(.ino-nested-select__option--disabled) {
+  background-color: var(--j-bg-muted);
+}
+
+.ino-nested-select__option--active {
+  background-color: var(--j-bg-muted);
+}
+
+.ino-nested-select__option--selected {
+  color: var(--j-primary);
+  font-weight: 600;
+}
+
+.ino-nested-select__option--disabled {
+  color: var(--j-text-subtle);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ino-nested-select__option-expand {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  color: var(--j-text-muted);
+  flex-shrink: 0;
+}
+
+/* --- Checkbox --- */
+.ino-nested-select__checkbox {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 0.1875rem;
+  border: 2px solid var(--j-border);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  color: #fff;
+}
+
+.ino-nested-select__checkbox--checked,
+.ino-nested-select__checkbox--indeterminate {
+  border-color: var(--j-primary);
+  background-color: var(--j-primary);
+}
+
+.ino-nested-select__checkbox--disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* --- Tag --- */
+.ino-nested-select__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background-color: var(--j-bg-muted);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: var(--j-text);
+}
+
+.ino-nested-select__tag-close {
+  display: inline-flex;
+  cursor: pointer;
+  color: var(--j-text-muted);
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.ino-nested-select__tag-close:hover { color: var(--j-text); }
+
+/* --- Suffix --- */
+.ino-nested-select__suffix {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding-left: 0.25rem;
+  color: var(--j-text-muted);
+}
+
+/* --- Clear --- */
+.ino-nested-select__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.25rem;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  color: var(--j-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.ino-nested-select__clear:hover { color: var(--j-text); }
+
+/* --- Placeholder --- */
+.ino-nested-select__placeholder {
+  color: var(--j-text-muted);
+  user-select: none;
+}
+
+/* --- Empty / not found --- */
+.ino-nested-select__empty {
+  padding: 1rem;
+  font-size: 0.8125rem;
+  color: var(--j-text-subtle);
+  text-align: center;
+}
+
+/* --- Search results --- */
+.ino-nested-select__search-results {
+  min-width: 14rem;
+  max-height: min(16rem, 40vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.25rem 0;
+}
+
+/* --- Loading spinner --- */
+@keyframes j-nested-spin { to { transform: rotate(360deg); } }

@@ -1,0 +1,108 @@
+/* ================================================================
+   Drawer – BEM classes
+   Transform (slide in/out) stays inline (JS-driven animation).
+   ================================================================ */
+
+/* --- Wrapper (fixed overlay) --- */
+.ino-drawer__wrapper {
+  position: fixed;
+  inset: 0;
+}
+
+.ino-drawer__wrapper--hidden {
+  display: none;
+  pointer-events: none;
+}
+
+/* --- Mask --- */
+.ino-drawer__mask {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  transition: opacity 0.3s ease;
+}
+
+/* --- Panel --- */
+.ino-drawer__panel {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--j-bg);
+  color: var(--j-text);
+  box-shadow: var(--j-shadowLg);
+  transition: transform 0.3s ease;
+}
+
+/* --- Header --- */
+.ino-drawer__header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--j-border);
+  flex-shrink: 0;
+}
+
+/* --- Header title --- */
+.ino-drawer__title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--j-text);
+  min-width: 0;
+}
+
+/* --- Header extra --- */
+.ino-drawer__extra {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --- Body --- */
+.ino-drawer__body {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* --- Footer --- */
+.ino-drawer__footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--j-border);
+  flex-shrink: 0;
+}
+
+/* --- Close button --- */
+.ino-drawer__close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--j-text-subtle);
+  border-radius: 0.25rem;
+  transition: color 0.15s;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.ino-drawer__close-btn:hover {
+  color: var(--j-text);
+}
+
+/* --- Loading skeleton --- */
+.ino-drawer__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+.ino-drawer__skeleton-bar {
+  height: 1rem;
+  border-radius: 0.25rem;
+  background-color: var(--j-bg-muted);
+  animation: j-skeleton-pulse 1.5s ease-in-out infinite;
+}

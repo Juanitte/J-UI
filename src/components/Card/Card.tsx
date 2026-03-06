@@ -1,12 +1,12 @@
 import {
   type ReactNode, type CSSProperties,
-  useRef, Children, isValidElement,
+  Children, isValidElement,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { Tabs } from '../Tabs/Tabs'
 import type { TabsProps } from '../Tabs/Tabs'
+import './Card.css'
 
 // ============================================================================
 // Types
@@ -66,34 +66,22 @@ export interface CardGridProps {
 // Loading skeleton
 // ============================================================================
 
-const LOADING_KEYFRAMES = `
-@keyframes j-card-loading {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}`
-
 const SKELETON_WIDTHS = ['100%', '75%', '90%', '60%']
 
 function CardLoadingSkeleton() {
   return (
-    <>
-      <style>{LOADING_KEYFRAMES}</style>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {SKELETON_WIDTHS.map((width, i) => (
-          <div
-            key={i}
-            style={{
-              height: '1rem',
-              width,
-              backgroundColor: tokens.colorBgMuted,
-              borderRadius: '0.25rem',
-              animation: 'j-card-loading 1.5s ease-in-out infinite',
-              animationDelay: `${i * 0.15}s`,
-            }}
-          />
-        ))}
-      </div>
-    </>
+    <div className="ino-card__skeleton">
+      {SKELETON_WIDTHS.map((width, i) => (
+        <div
+          key={i}
+          className="ino-card__skeleton-line"
+          style={{
+            width,
+            animationDelay: `${i * 0.15}s`,
+          }}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -110,39 +98,26 @@ function CardMeta({
 }: CardMetaProps) {
   return (
     <div
-      className={className}
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '1rem',
-        ...style,
-      }}
+      className={cx('ino-card-meta', className)}
+      style={style}
     >
       {avatar && (
-        <div style={{ flexShrink: 0 }}>
+        <div className="ino-card-meta__avatar">
           {avatar}
         </div>
       )}
       {(title || description) && (
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="ino-card-meta__detail">
           {title && (
-            <div style={{
-              fontSize: '1rem',
-              fontWeight: 600,
-              color: tokens.colorText,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap' as const,
-            }}>
+            <div className="ino-card-meta__title">
               {title}
             </div>
           )}
           {description && (
-            <div style={{
-              fontSize: '0.875rem',
-              color: tokens.colorTextMuted,
-              marginTop: title ? '0.25rem' : 0,
-            }}>
+            <div
+              className="ino-card-meta__description"
+              style={{ marginTop: title ? '0.25rem' : 0 }}
+            >
               {description}
             </div>
           )}
@@ -165,35 +140,14 @@ function CardGrid({
   className,
   style,
 }: CardGridProps) {
-  const ref = useRef<HTMLDivElement>(null)
-
   return (
     <div
-      ref={ref}
-      className={className}
-      style={{
-        width: '33.33%',
-        padding: '1.5rem',
-        borderRight: `1px solid ${tokens.colorBorder}`,
-        borderBottom: `1px solid ${tokens.colorBorder}`,
-        transition: 'box-shadow 0.2s ease',
-        cursor: hoverable ? 'pointer' : undefined,
-        ...style,
-      }}
-      onMouseEnter={() => {
-        if (hoverable && ref.current) {
-          ref.current.style.boxShadow = tokens.shadowMd
-          ref.current.style.position = 'relative'
-          ref.current.style.zIndex = '1'
-        }
-      }}
-      onMouseLeave={() => {
-        if (hoverable && ref.current) {
-          ref.current.style.boxShadow = ''
-          ref.current.style.position = ''
-          ref.current.style.zIndex = ''
-        }
-      }}
+      className={cx(
+        'ino-card-grid',
+        { 'ino-card-grid--hoverable': hoverable },
+        className,
+      )}
+      style={style}
     >
       {children}
     </div>
@@ -225,7 +179,6 @@ function CardComponent({
   classNames,
   styles,
 }: CardProps) {
-  const rootRef = useRef<HTMLDivElement>(null)
   const isSmall = size === 'small'
   const isInner = type === 'inner'
   const bodyPad = isSmall ? '0.75rem' : '1.5rem'
@@ -238,53 +191,24 @@ function CardComponent({
 
   const showHeader = title || extra || tabList
 
-  // ── Root style ──────────────────────────────────────────────
-  const rootStyle = mergeSemanticStyle(
-    {
-      backgroundColor: tokens.colorBg,
-      borderRadius: '0.5rem',
-      overflow: 'hidden',
-      fontFamily: 'inherit',
-      transition: 'box-shadow 0.2s ease, transform 0.2s ease',
-      ...(variant === 'outlined'
-        ? { border: `1px solid ${tokens.colorBorder}` }
-        : { border: 'none' }),
-    },
-    styles?.root,
-    style,
+  const rootClass = cx(
+    'ino-card',
+    `ino-card--${variant}`,
+    { 'ino-card--hoverable': hoverable },
+    className,
+    classNames?.root,
   )
-
-  // ── Hover handlers ──────────────────────────────────────────
-  const handleMouseEnter = () => {
-    if (hoverable && rootRef.current) {
-      rootRef.current.style.boxShadow = tokens.shadowLg
-      rootRef.current.style.transform = 'translateY(-1px)'
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (hoverable && rootRef.current) {
-      rootRef.current.style.boxShadow = ''
-      rootRef.current.style.transform = ''
-    }
-  }
 
   return (
     <div
-      ref={rootRef}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={rootStyle}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
     >
       {/* ── Cover ──────────────────────────────────────────────── */}
       {cover && (
         <div
-          className={classNames?.cover}
-          style={mergeSemanticStyle(
-            { overflow: 'hidden' },
-            styles?.cover,
-          )}
+          className={cx('ino-card__cover', classNames?.cover)}
+          style={styles?.cover}
         >
           {cover}
         </div>
@@ -293,56 +217,38 @@ function CardComponent({
       {/* ── Header ─────────────────────────────────────────────── */}
       {showHeader && (
         <div
-          className={classNames?.header}
-          style={mergeSemanticStyle(
-            {
-              padding: `${headerPad} ${headerPad} ${tabList ? '0' : headerPad}`,
-              borderBottom: `1px solid ${tokens.colorBorder}`,
-              ...(isInner ? { backgroundColor: tokens.colorBgSubtle } : {}),
-            },
-            styles?.header,
+          className={cx(
+            'ino-card__header',
+            { 'ino-card__header--inner': isInner },
+            classNames?.header,
           )}
+          style={{
+            padding: `${headerPad} ${headerPad} ${tabList ? '0' : headerPad}`,
+            ...styles?.header,
+          }}
         >
           {/* Title row */}
           {(title || extra) && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1rem',
-              marginBottom: tabList ? '0.75rem' : 0,
-            }}>
+            <div
+              className="ino-card__title-row"
+              style={{ marginBottom: tabList ? '0.75rem' : 0 }}
+            >
               {title && (
                 <div
-                  className={classNames?.title}
-                  style={mergeSemanticStyle(
-                    {
-                      flex: 1,
-                      minWidth: 0,
-                      fontSize: isSmall ? '0.875rem' : '1rem',
-                      fontWeight: 600,
-                      color: tokens.colorText,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap' as const,
-                    },
-                    styles?.title,
+                  className={cx(
+                    'ino-card__title',
+                    isSmall ? 'ino-card__title--sm' : 'ino-card__title--default',
+                    classNames?.title,
                   )}
+                  style={styles?.title}
                 >
                   {title}
                 </div>
               )}
               {extra && (
                 <div
-                  className={classNames?.extra}
-                  style={mergeSemanticStyle(
-                    {
-                      flexShrink: 0,
-                      fontSize: '0.875rem',
-                      color: tokens.colorPrimary,
-                    },
-                    styles?.extra,
-                  )}
+                  className={cx('ino-card__extra', classNames?.extra)}
+                  style={styles?.extra}
                 >
                   {extra}
                 </div>
@@ -371,14 +277,14 @@ function CardComponent({
 
       {/* ── Body ───────────────────────────────────────────────── */}
       <div
-        className={classNames?.body}
-        style={mergeSemanticStyle(
-          {
-            padding: hasGrid ? 0 : bodyPad,
-            ...(hasGrid ? { display: 'flex', flexWrap: 'wrap' as const } : {}),
-          },
-          styles?.body,
+        className={cx(
+          { 'ino-card__body--grid': hasGrid },
+          classNames?.body,
         )}
+        style={{
+          padding: hasGrid ? 0 : bodyPad,
+          ...styles?.body,
+        }}
       >
         {loading ? <CardLoadingSkeleton /> : children}
       </div>
@@ -386,38 +292,16 @@ function CardComponent({
       {/* ── Actions ────────────────────────────────────────────── */}
       {actions && actions.length > 0 && (
         <ul
-          className={classNames?.actions}
-          style={mergeSemanticStyle(
-            {
-              display: 'flex',
-              margin: 0,
-              padding: 0,
-              listStyle: 'none',
-              borderTop: `1px solid ${tokens.colorBorder}`,
-            },
-            styles?.actions,
-          )}
+          className={cx('ino-card__actions', classNames?.actions)}
+          style={styles?.actions}
         >
           {actions.map((action, i) => (
             <li
               key={i}
-              style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0.75rem 0',
-                color: tokens.colorTextMuted,
-                cursor: 'pointer',
-                borderRight: i < actions.length - 1 ? `1px solid ${tokens.colorBorder}` : 'none',
-                transition: 'color 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                ;(e.currentTarget as HTMLElement).style.color = tokens.colorPrimary
-              }}
-              onMouseLeave={(e) => {
-                ;(e.currentTarget as HTMLElement).style.color = tokens.colorTextMuted
-              }}
+              className={cx(
+                'ino-card__action',
+                { 'ino-card__action--bordered': i < actions.length - 1 },
+              )}
             >
               <span>{action}</span>
             </li>

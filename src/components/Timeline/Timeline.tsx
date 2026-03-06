@@ -1,7 +1,8 @@
 import { type ReactNode, type CSSProperties, useMemo } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Timeline.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -57,21 +58,6 @@ function resolveDotColor(color?: string): string {
 
 // ─── Spinner ────────────────────────────────────────────────────────────────────
 
-const TIMELINE_KEYFRAMES = `
-@keyframes j-timeline-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}`
-
-let timelineStylesInjected = false
-function injectTimelineStyles() {
-  if (timelineStylesInjected || typeof document === 'undefined') return
-  const style = document.createElement('style')
-  style.textContent = TIMELINE_KEYFRAMES
-  document.head.appendChild(style)
-  timelineStylesInjected = true
-}
-
 function SpinnerDot() {
   return (
     <svg viewBox="0 0 1024 1024" width="14" height="14" fill="currentColor" aria-hidden="true"
@@ -95,23 +81,18 @@ function renderDot(
   variant: TimelineVariant,
   dotColor: string,
   horizontal: boolean,
-  classNames?: TimelineClassNames,
-  styles?: TimelineStyles,
+  classNamesProp?: TimelineClassNames,
+  stylesProp?: TimelineStyles,
 ) {
   if (item.dot) {
     return (
       <div
-        className={classNames?.dot}
-        style={mergeSemanticStyle({
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+        className={cx('ino-timeline__dot', 'ino-timeline__dot--custom', classNamesProp?.dot)}
+        style={{
           color: dotColor,
-          flexShrink: 0,
           marginTop: horizontal ? 0 : '0.1875rem',
-          position: 'relative',
-          zIndex: 1,
-        }, styles?.dot)}
+          ...stylesProp?.dot,
+        }}
       >
         {item.dot}
       </div>
@@ -121,20 +102,19 @@ function renderDot(
   const isSolid = variant === 'solid'
   return (
     <div
-      className={classNames?.dot}
-      style={mergeSemanticStyle({
-        width: '0.625rem',
-        height: '0.625rem',
-        borderRadius: '50%',
+      className={cx(
+        'ino-timeline__dot',
+        'ino-timeline__dot--circle',
+        isSolid ? 'ino-timeline__dot--solid' : 'ino-timeline__dot--outlined',
+        classNamesProp?.dot,
+      )}
+      style={{
         ...(isSolid
           ? { backgroundColor: dotColor }
-          : { border: `2px solid ${dotColor}`, backgroundColor: tokens.colorBg }),
-        boxSizing: 'border-box',
-        flexShrink: 0,
+          : { border: `2px solid ${dotColor}` }),
         marginTop: horizontal ? 0 : '0.3125rem',
-        position: 'relative',
-        zIndex: 1,
-      }, styles?.dot)}
+        ...stylesProp?.dot,
+      }}
     />
   )
 }
@@ -152,11 +132,9 @@ export function Timeline({
   reverse = false,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: TimelineProps) {
-  if (pending) injectTimelineStyles()
-
   const finalItems = useMemo(() => {
     const list: InternalItem[] = [...items]
     if (pending) {
@@ -177,21 +155,15 @@ export function Timeline({
 
   const useThreeColumns = !horizontal && (mode === 'alternate' || hasLabels)
 
-  const rootStyle: CSSProperties = {
-    display: 'flex',
-    flexDirection: horizontal ? 'row' : 'column',
-    margin: 0,
-    padding: 0,
-    listStyle: 'none',
-    fontSize: '0.875rem',
-    lineHeight: 1.5,
-    color: tokens.colorText,
-  }
-
   return (
     <div
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      className={cx(
+        'ino-timeline',
+        horizontal ? 'ino-timeline--horizontal' : 'ino-timeline--vertical',
+        className,
+        classNamesProp?.root,
+      )}
+      style={{ ...styles?.root, ...style }}
     >
       {finalItems.map((item, index) => {
         const isLast = index === finalItems.length - 1
@@ -210,7 +182,7 @@ export function Timeline({
           contentSide,
           variant,
           dotColor: resolveDotColor(item.color),
-          classNames,
+          classNames: classNamesProp,
           styles,
         }
 
@@ -254,13 +226,11 @@ function VerticalItem({
   variant,
   titleSpan,
   dotColor,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: VerticalItemProps) {
-  // Spacing on content/label cells (NOT on the item!) so the dot column stretches fully
   const spacingPb = isLast ? 0 : '1.25rem'
 
-  // CSS Grid template — keeps dot column perfectly centered
   let gridColumns: string
   if (useThreeColumns) {
     if (titleSpan) {
@@ -273,44 +243,27 @@ function VerticalItem({
     gridColumns = contentSide === 'right' ? '0px 1.5rem 1fr' : '1fr 1.5rem 0px'
   }
 
-  const itemStyle: CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: gridColumns,
-  }
-
-  // ── Content node ──
   const contentPad: CSSProperties = contentSide === 'right'
     ? { paddingLeft: '0.75rem' }
     : { paddingRight: '0.75rem', textAlign: 'right' }
 
   const contentNode = (
     <div
-      className={classNames?.content}
-      style={mergeSemanticStyle({
-        paddingBottom: spacingPb,
-        lineHeight: 1.5,
-        ...contentPad,
-      }, styles?.content)}
+      className={cx('ino-timeline__content', classNamesProp?.content)}
+      style={{ paddingBottom: spacingPb, ...contentPad, ...styles?.content }}
     >
       {item.children}
     </div>
   )
 
-  // ── Label node (or empty spacer) ──
   const labelPad: CSSProperties = contentSide === 'right'
     ? { paddingRight: '0.75rem', textAlign: 'right' }
     : { paddingLeft: '0.75rem' }
 
   const labelNode = item.label != null ? (
     <div
-      className={classNames?.label}
-      style={mergeSemanticStyle({
-        paddingBottom: spacingPb,
-        lineHeight: 1.5,
-        color: tokens.colorTextMuted,
-        fontSize: '0.875rem',
-        ...labelPad,
-      }, styles?.label)}
+      className={cx('ino-timeline__label', classNamesProp?.label)}
+      style={{ paddingBottom: spacingPb, ...labelPad, ...styles?.label }}
     >
       {item.label}
     </div>
@@ -318,7 +271,6 @@ function VerticalItem({
     <div style={{ paddingBottom: spacingPb }} />
   )
 
-  // ── Arrange left / right children ──
   let leftChild: ReactNode
   let rightChild: ReactNode
 
@@ -332,32 +284,18 @@ function VerticalItem({
 
   return (
     <div
-      className={classNames?.item}
-      style={mergeSemanticStyle(itemStyle, styles?.item)}
+      className={cx('ino-timeline__item--vertical', classNamesProp?.item)}
+      style={{ gridTemplateColumns: gridColumns, ...styles?.item }}
     >
       {leftChild}
 
-      {/* Dot + Tail column */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}>
-        {renderDot(item, variant, dotColor, false, classNames, styles)}
+      <div className="ino-timeline__dot-col">
+        {renderDot(item, variant, dotColor, false, classNamesProp, styles)}
         {!isLast && (
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div className="ino-timeline__tail-wrapper">
             <div
-              className={classNames?.tail}
-              style={mergeSemanticStyle({
-                position: 'absolute',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                top: 0,
-                bottom: '-0.3125rem',
-                width: 2,
-                backgroundColor: tokens.colorBorder,
-                transition: 'background-color 0.3s',
-              }, styles?.tail)}
+              className={cx('ino-timeline__tail', classNamesProp?.tail)}
+              style={styles?.tail}
             />
           </div>
         )}
@@ -388,29 +326,15 @@ function HorizontalItem({
   contentSide,
   variant,
   dotColor,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: HorizontalItemProps) {
-  // contentSide 'right' → content on top, 'left' → content on bottom
   const contentOnTop = contentSide === 'right'
-
-  const areaStyle: CSSProperties = {
-    textAlign: 'center',
-    padding: '0.5rem 0.25rem',
-    lineHeight: 1.5,
-    minHeight: '1.5rem',
-  }
-
-  const labelAreaStyle: CSSProperties = {
-    ...areaStyle,
-    color: tokens.colorTextMuted,
-    fontSize: '0.875rem',
-  }
 
   const contentArea = (
     <div
-      className={classNames?.content}
-      style={mergeSemanticStyle(areaStyle, styles?.content)}
+      className={cx('ino-timeline__h-area', 'ino-timeline__content', classNamesProp?.content)}
+      style={styles?.content}
     >
       {item.children}
     </div>
@@ -418,8 +342,8 @@ function HorizontalItem({
 
   const labelArea = item.label != null ? (
     <div
-      className={classNames?.label}
-      style={mergeSemanticStyle(labelAreaStyle, styles?.label)}
+      className={cx('ino-timeline__h-area', 'ino-timeline__h-area--label', classNamesProp?.label)}
+      style={styles?.label}
     >
       {item.label}
     </div>
@@ -429,32 +353,20 @@ function HorizontalItem({
 
   return (
     <div
-      className={classNames?.item}
-      style={mergeSemanticStyle({
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        alignItems: 'center',
-      }, styles?.item)}
+      className={cx('ino-timeline__item--horizontal', classNamesProp?.item)}
+      style={styles?.item}
     >
       {contentOnTop ? contentArea : labelArea}
 
-      {/* Dot row */}
-      <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '0.25rem 0' }}>
+      <div className="ino-timeline__dot-row">
         <div
-          className={!isFirst ? classNames?.tail : undefined}
-          style={!isFirst
-            ? mergeSemanticStyle({ flex: 1, height: 2, backgroundColor: tokens.colorBorder, transition: 'background-color 0.3s' }, styles?.tail)
-            : { flex: 1 }
-          }
+          className={!isFirst ? cx('ino-timeline__tail--h', classNamesProp?.tail) : undefined}
+          style={!isFirst ? styles?.tail : { flex: 1 }}
         />
-        {renderDot(item, variant, dotColor, true, classNames, styles)}
+        {renderDot(item, variant, dotColor, true, classNamesProp, styles)}
         <div
-          className={!isLast ? classNames?.tail : undefined}
-          style={!isLast
-            ? mergeSemanticStyle({ flex: 1, height: 2, backgroundColor: tokens.colorBorder, transition: 'background-color 0.3s' }, styles?.tail)
-            : { flex: 1 }
-          }
+          className={!isLast ? cx('ino-timeline__tail--h', classNamesProp?.tail) : undefined}
+          style={!isLast ? styles?.tail : { flex: 1 }}
         />
       </div>
 

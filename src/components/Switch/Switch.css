@@ -1,0 +1,152 @@
+/* ================================================================
+   Switch – BEM classes
+   Uses fixed neutral/primary tokens (no per-instance color prop).
+   ================================================================ */
+
+/* --- Block (button reset) --- */
+.ino-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.ino-switch:disabled,
+.ino-switch--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- Track --- */
+.ino-switch__track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background-color: var(--j-secondary);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ino-switch--checked .ino-switch__track {
+  background-color: var(--j-primary);
+}
+
+/* Hover on track (non-custom colors only) */
+.ino-switch:not(:disabled):hover .ino-switch__track {
+  background-color: var(--j-secondary-hover);
+}
+
+.ino-switch--checked:not(:disabled):hover .ino-switch__track {
+  background-color: var(--j-primary-hover);
+}
+
+/* Focus ring (keyboard) */
+.ino-switch:focus-visible .ino-switch__track {
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+/* --- Sizes --- */
+
+/* Default size */
+.ino-switch__track {
+  min-width: 2.75rem;
+  height: 1.375rem;
+}
+
+.ino-switch__thumb {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.ino-switch--unchecked .ino-switch__thumb {
+  left: 0.125rem;
+}
+
+.ino-switch--checked .ino-switch__thumb {
+  left: calc(100% - 1.25rem);
+}
+
+.ino-switch__inner {
+  font-size: 0.75rem;
+  line-height: 1.375rem;
+}
+
+.ino-switch--unchecked .ino-switch__inner {
+  padding-left: calc(1.125rem + 0.125rem * 2 + 0.25rem);
+  padding-right: 0.5rem;
+}
+
+.ino-switch--checked .ino-switch__inner {
+  padding-left: 0.5rem;
+  padding-right: calc(1.125rem + 0.125rem * 2 + 0.25rem);
+}
+
+/* Small size */
+.ino-switch--small .ino-switch__track {
+  min-width: 1.75rem;
+  height: 1rem;
+}
+
+.ino-switch--small .ino-switch__thumb {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.ino-switch--small.ino-switch--unchecked .ino-switch__thumb {
+  left: 0.125rem;
+}
+
+.ino-switch--small.ino-switch--checked .ino-switch__thumb {
+  left: calc(100% - 0.875rem);
+}
+
+.ino-switch--small .ino-switch__inner {
+  font-size: 0.5625rem;
+  line-height: 1rem;
+}
+
+.ino-switch--small.ino-switch--unchecked .ino-switch__inner {
+  padding-left: calc(0.75rem + 0.125rem * 2 + 0.125rem);
+  padding-right: 0.375rem;
+}
+
+.ino-switch--small.ino-switch--checked .ino-switch__inner {
+  padding-left: 0.375rem;
+  padding-right: calc(0.75rem + 0.125rem * 2 + 0.125rem);
+}
+
+/* --- Thumb --- */
+.ino-switch__thumb {
+  position: absolute;
+  top: 0.125rem;
+  border-radius: 50%;
+  background-color: var(--j-bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: left 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+/* --- Inner (label text) --- */
+.ino-switch__inner {
+  display: block;
+  overflow: hidden;
+  color: #fff;
+  transition: padding 0.2s ease;
+  white-space: nowrap;
+}
+
+/* --- Loading spinner inside thumb --- */
+.ino-switch__spinner {
+  display: inline-flex;
+  animation: j-spin 1s linear infinite;
+}

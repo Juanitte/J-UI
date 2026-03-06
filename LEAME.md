@@ -16,6 +16,8 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [Hook useTheme](#hook-usetheme)
   - [Sistema de Colores](#sistema-de-colores)
   - [Theme Tokens](#theme-tokens)
+- [Estilos Semánticos del DOM](#estilos-semánticos-del-dom)
+  - [Personalización con Clases CSS](#personalización-con-clases-css)
 - [Utils](#utils)
   - [Utilidades DOM](#utilidades-dom)
   - [Utilidades de Objetos](#utilidades-de-objetos)
@@ -80,6 +82,7 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [TimePicker](#timepicker)
   - [Timeline](#timeline)
   - [Toggle](#toggle)
+  - [Tooltip](#tooltip)
   - [Tour](#tour)
   - [Transfer](#transfer)
   - [Tree](#tree)
@@ -87,7 +90,6 @@ Una libreria de componentes React moderna y ligera con soporte integrado de tema
   - [Upload](#upload)
   - [Waterfall](#waterfall)
   - [Watermark](#watermark)
-  - [Tooltip](#tooltip)
 
 ## Caracteristicas
 
@@ -117,6 +119,7 @@ Envuelve tu aplicacion con `ThemeProvider` y comienza a usar los componentes:
 
 ```tsx
 import { ThemeProvider, Button, Tooltip } from '@juanitte/inoui'
+import '@juanitte/inoui/styles.css'
 
 function App() {
   return (
@@ -403,6 +406,43 @@ Para `className`, el `className` del componente y `classNames.root` se fusionan 
 | Text | `root`, `content`, `copyButton`, `expandButton` |
 | Tooltip | `root`, `popup`, `arrow` |
 | Waterfall | `root`, `column`, `item` |
+
+### Personalización con Clases CSS
+
+Todos los componentes usan clases [BEM](https://getbem.com/) con el prefijo `ino-`, que puedes usar directamente en tus hojas de estilo.
+
+**Convención de nombres:**
+
+| Patrón | Ejemplo | Descripción |
+|--------|---------|-------------|
+| `ino-{bloque}` | `ino-btn` | Raíz del componente |
+| `ino-{bloque}--{modificador}` | `ino-btn--primary`, `ino-btn--sm` | Variante, tamaño o estado |
+| `ino-{bloque}__{elemento}` | `ino-btn__icon` | Parte interna |
+
+**Ejemplo — estilos personalizados de botón:**
+
+```css
+/* Tu hoja de estilos — cargada después de ino-ui */
+.ino-btn--primary {
+  border-radius: 999px;
+}
+
+.ino-tag--sm {
+  font-size: 0.7rem;
+}
+```
+
+También puedes combinar esto con la prop `classNames` para sobreescrituras con alcance:
+
+```tsx
+<Button classNames={{ root: 'mi-btn' }}>Clic</Button>
+```
+
+```css
+.mi-btn {
+  border-radius: 999px;
+}
+```
 
 ---
 
@@ -14479,6 +14519,259 @@ function CatalogoProductos() {
 ---
 
 <details>
+<summary><strong>Tooltip</strong> - Tooltips ligeros con 12 posiciones y presets de color</summary>
+
+### Tooltip
+
+Un componente ligero de tooltip para mostrar información adicional al pasar el cursor o al enfocar. Se renderiza en un portal (`document.body`), admite 12 posiciones, auto-flip al desbordarse del viewport, una flecha opcional con modo `pointAtCenter` y presets de color.
+
+#### Importar
+
+```tsx
+import { Tooltip } from '@juanitte/inoui'
+```
+
+#### Props
+
+| Prop | Tipo | Por defecto | Descripción |
+|------|------|-------------|-------------|
+| `content` | `ReactNode` | — | **Requerido.** Contenido del tooltip |
+| `children` | `ReactNode` | — | **Requerido.** Elemento disparador |
+| `placement` | `TooltipPlacement` | `'top'` | Posición preferida — 12 opciones |
+| `position` | `TooltipPlacement` | — | **Obsoleto.** Usa `placement` en su lugar |
+| `arrow` | `boolean \| { pointAtCenter: boolean }` | `true` | Mostrar flecha; pasa `{ pointAtCenter: true }` para centrarla en posiciones de esquina |
+| `color` | `string` | — | Nombre de preset o cualquier color CSS — coloriza el fondo del tooltip |
+| `autoAdjustOverflow` | `boolean` | `true` | Voltear al lado opuesto cuando el tooltip desborda el viewport |
+| `delay` | `number` | `200` | Retraso antes de mostrar (ms) |
+| `disabled` | `boolean` | `false` | Deshabilita el tooltip |
+| `className` | `string` | — | Clase CSS raíz |
+| `style` | `CSSProperties` | — | Estilo en línea raíz |
+| `classNames` | `TooltipClassNames` | — | Nombres de clase semánticos por slot |
+| `styles` | `TooltipStyles` | — | Estilos en línea semánticos por slot |
+
+#### Definiciones de Tipos
+
+```ts
+type TooltipPlacement =
+  | 'top' | 'topLeft' | 'topRight'
+  | 'bottom' | 'bottomLeft' | 'bottomRight'
+  | 'left' | 'leftTop' | 'leftBottom'
+  | 'right' | 'rightTop' | 'rightBottom'
+
+type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
+type TooltipClassNames   = SemanticClassNames<TooltipSemanticSlot>
+type TooltipStyles       = SemanticStyles<TooltipSemanticSlot>
+```
+
+#### Posiciones
+
+Las 12 posiciones relativas al elemento disparador:
+
+```
+         topLeft   top   topRight
+  leftTop  ┌─────────────────┐  rightTop
+  left     │    trigger      │  right
+  leftBottom └─────────────────┘  rightBottom
+       bottomLeft  bottom  bottomRight
+```
+
+#### Colores Predefinidos
+
+| Nombre | Hex |
+|--------|-----|
+| `'blue'` | `#1677ff` |
+| `'geekblue'` | `#2f54eb` |
+| `'purple'` | `#722ed1` |
+| `'cyan'` | `#13c2c2` |
+| `'green'` | `#52c41a` |
+| `'lime'` | `#a0d911` |
+| `'yellow'` | `#fadb14` |
+| `'gold'` | `#faad14` |
+| `'orange'` | `#fa8c16` |
+| `'volcano'` | `#fa541c` |
+| `'red'` | `#f5222d` |
+| `'pink'` / `'magenta'` | `#eb2f96` |
+
+Cualquier otro string se usa tal cual (hex, rgb, hsl…).
+
+#### DOM Semántico
+
+| Slot | Elemento | Descripción |
+|------|----------|-------------|
+| `root` | `<div>` | Contenedor en línea alrededor del elemento disparador |
+| `popup` | `<div>` | Popup del tooltip — portalizado a `document.body` |
+| `arrow` | `<div>` | Flecha que apunta al disparador |
+
+#### Ejemplos
+
+**1. Básico**
+
+```tsx
+<Tooltip content="Este es un tooltip">
+  <Button>Pasa el cursor</Button>
+</Tooltip>
+```
+
+---
+
+**2. Las 12 posiciones**
+
+```tsx
+<Tooltip content="Top centro"       placement="top">          <Button>top</Button>          </Tooltip>
+<Tooltip content="Top izquierda"    placement="topLeft">      <Button>topLeft</Button>      </Tooltip>
+<Tooltip content="Top derecha"      placement="topRight">     <Button>topRight</Button>     </Tooltip>
+<Tooltip content="Bottom centro"    placement="bottom">       <Button>bottom</Button>       </Tooltip>
+<Tooltip content="Bottom izquierda" placement="bottomLeft">   <Button>bottomLeft</Button>   </Tooltip>
+<Tooltip content="Bottom derecha"   placement="bottomRight">  <Button>bottomRight</Button>  </Tooltip>
+<Tooltip content="Left centro"      placement="left">         <Button>left</Button>         </Tooltip>
+<Tooltip content="Left arriba"      placement="leftTop">      <Button>leftTop</Button>      </Tooltip>
+<Tooltip content="Left abajo"       placement="leftBottom">   <Button>leftBottom</Button>   </Tooltip>
+<Tooltip content="Right centro"     placement="right">        <Button>right</Button>        </Tooltip>
+<Tooltip content="Right arriba"     placement="rightTop">     <Button>rightTop</Button>     </Tooltip>
+<Tooltip content="Right abajo"      placement="rightBottom">  <Button>rightBottom</Button>  </Tooltip>
+```
+
+---
+
+**3. Sin flecha**
+
+```tsx
+<Tooltip content="Sin flecha" arrow={false}>
+  <Button>Hover</Button>
+</Tooltip>
+```
+
+---
+
+**4. Flecha centrada (posiciones de esquina)**
+
+```tsx
+<Tooltip content="Flecha centrada" placement="topLeft" arrow={{ pointAtCenter: true }}>
+  <Button>topLeft + pointAtCenter</Button>
+</Tooltip>
+```
+
+---
+
+**5. Color predefinido**
+
+```tsx
+<Tooltip content="Acción exitosa" color="green">
+  <Button>Verde</Button>
+</Tooltip>
+
+<Tooltip content="Zona de peligro" color="red">
+  <Button>Rojo</Button>
+</Tooltip>
+
+<Tooltip content="Información" color="blue">
+  <Button>Azul</Button>
+</Tooltip>
+```
+
+---
+
+**6. Color CSS personalizado**
+
+```tsx
+<Tooltip content="Tooltip de marca" color="#722ed1">
+  <Button>Púrpura personalizado</Button>
+</Tooltip>
+```
+
+---
+
+**7. Deshabilitar auto-flip**
+
+```tsx
+<Tooltip content="Siempre arriba" placement="top" autoAdjustOverflow={false}>
+  <Button>Sin flip</Button>
+</Tooltip>
+```
+
+---
+
+**8. Retraso personalizado**
+
+```tsx
+<Tooltip content="Instantáneo" delay={0}>
+  <Button>Sin retraso</Button>
+</Tooltip>
+
+<Tooltip content="Aparición lenta" delay={800}>
+  <Button>800 ms de retraso</Button>
+</Tooltip>
+```
+
+---
+
+**9. Deshabilitado**
+
+```tsx
+<Tooltip content="No se mostrará" disabled>
+  <Button>Tooltip deshabilitado</Button>
+</Tooltip>
+```
+
+---
+
+**10. Contenido enriquecido**
+
+```tsx
+<Tooltip
+  content={
+    <div>
+      <strong>Atajo de teclado</strong>
+      <p style={{ margin: '0.25rem 0 0', opacity: 0.85 }}>⌘ + K para abrir la paleta de comandos</p>
+    </div>
+  }
+  placement="bottom"
+>
+  <Button>Hover para ver atajo</Button>
+</Tooltip>
+```
+
+---
+
+**11. Personalización semántica de estilos**
+
+```tsx
+<Tooltip
+  content="Tooltip estilizado"
+  styles={{
+    popup: { borderRadius: '0.75rem', fontSize: '0.75rem', padding: '0.375rem 0.625rem' },
+  }}
+>
+  <Button>Estilo personalizado</Button>
+</Tooltip>
+```
+
+---
+
+**12. Envolviendo un elemento deshabilitado**
+
+Los elementos deshabilitados no disparan eventos de ratón. Envuélvelos en un `<span>` para que el disparador del Tooltip reciba los eventos correctamente.
+
+```tsx
+<Tooltip content="El botón está deshabilitado">
+  <span style={{ display: 'inline-flex' }}>
+    <Button disabled>Enviar</Button>
+  </span>
+</Tooltip>
+```
+
+#### Accesibilidad
+
+- Se muestra con `mouseenter` y `focus`
+- Se oculta con `mouseleave` y `blur`
+- El popup tiene `role="tooltip"`
+- Se reposiciona al hacer scroll y al redimensionar la ventana mientras está visible
+
+</details>
+
+---
+
+<details>
 <summary><strong>Tour</strong> - Recorrido guiado paso a paso con spotlight</summary>
 
 ### Tour
@@ -16515,259 +16808,6 @@ type WatermarkStyles       = SemanticStyles<WatermarkSemanticSlot>
   <div style={{ height: 300 }} />
 </Watermark>
 ```
-
-</details>
-
----
-
-<details>
-<summary><strong>Tooltip</strong> - Tooltips ligeros con 12 posiciones y presets de color</summary>
-
-### Tooltip
-
-Un componente ligero de tooltip para mostrar información adicional al pasar el cursor o al enfocar. Se renderiza en un portal (`document.body`), admite 12 posiciones, auto-flip al desbordarse del viewport, una flecha opcional con modo `pointAtCenter` y presets de color.
-
-#### Importar
-
-```tsx
-import { Tooltip } from '@juanitte/inoui'
-```
-
-#### Props
-
-| Prop | Tipo | Por defecto | Descripción |
-|------|------|-------------|-------------|
-| `content` | `ReactNode` | — | **Requerido.** Contenido del tooltip |
-| `children` | `ReactNode` | — | **Requerido.** Elemento disparador |
-| `placement` | `TooltipPlacement` | `'top'` | Posición preferida — 12 opciones |
-| `position` | `TooltipPlacement` | — | **Obsoleto.** Usa `placement` en su lugar |
-| `arrow` | `boolean \| { pointAtCenter: boolean }` | `true` | Mostrar flecha; pasa `{ pointAtCenter: true }` para centrarla en posiciones de esquina |
-| `color` | `string` | — | Nombre de preset o cualquier color CSS — coloriza el fondo del tooltip |
-| `autoAdjustOverflow` | `boolean` | `true` | Voltear al lado opuesto cuando el tooltip desborda el viewport |
-| `delay` | `number` | `200` | Retraso antes de mostrar (ms) |
-| `disabled` | `boolean` | `false` | Deshabilita el tooltip |
-| `className` | `string` | — | Clase CSS raíz |
-| `style` | `CSSProperties` | — | Estilo en línea raíz |
-| `classNames` | `TooltipClassNames` | — | Nombres de clase semánticos por slot |
-| `styles` | `TooltipStyles` | — | Estilos en línea semánticos por slot |
-
-#### Definiciones de Tipos
-
-```ts
-type TooltipPlacement =
-  | 'top' | 'topLeft' | 'topRight'
-  | 'bottom' | 'bottomLeft' | 'bottomRight'
-  | 'left' | 'leftTop' | 'leftBottom'
-  | 'right' | 'rightTop' | 'rightBottom'
-
-type TooltipSemanticSlot = 'root' | 'popup' | 'arrow'
-type TooltipClassNames   = SemanticClassNames<TooltipSemanticSlot>
-type TooltipStyles       = SemanticStyles<TooltipSemanticSlot>
-```
-
-#### Posiciones
-
-Las 12 posiciones relativas al elemento disparador:
-
-```
-         topLeft   top   topRight
-  leftTop  ┌─────────────────┐  rightTop
-  left     │    trigger      │  right
-  leftBottom └─────────────────┘  rightBottom
-       bottomLeft  bottom  bottomRight
-```
-
-#### Colores Predefinidos
-
-| Nombre | Hex |
-|--------|-----|
-| `'blue'` | `#1677ff` |
-| `'geekblue'` | `#2f54eb` |
-| `'purple'` | `#722ed1` |
-| `'cyan'` | `#13c2c2` |
-| `'green'` | `#52c41a` |
-| `'lime'` | `#a0d911` |
-| `'yellow'` | `#fadb14` |
-| `'gold'` | `#faad14` |
-| `'orange'` | `#fa8c16` |
-| `'volcano'` | `#fa541c` |
-| `'red'` | `#f5222d` |
-| `'pink'` / `'magenta'` | `#eb2f96` |
-
-Cualquier otro string se usa tal cual (hex, rgb, hsl…).
-
-#### DOM Semántico
-
-| Slot | Elemento | Descripción |
-|------|----------|-------------|
-| `root` | `<div>` | Contenedor en línea alrededor del elemento disparador |
-| `popup` | `<div>` | Popup del tooltip — portalizado a `document.body` |
-| `arrow` | `<div>` | Flecha que apunta al disparador |
-
-#### Ejemplos
-
-**1. Básico**
-
-```tsx
-<Tooltip content="Este es un tooltip">
-  <Button>Pasa el cursor</Button>
-</Tooltip>
-```
-
----
-
-**2. Las 12 posiciones**
-
-```tsx
-<Tooltip content="Top centro"       placement="top">          <Button>top</Button>          </Tooltip>
-<Tooltip content="Top izquierda"    placement="topLeft">      <Button>topLeft</Button>      </Tooltip>
-<Tooltip content="Top derecha"      placement="topRight">     <Button>topRight</Button>     </Tooltip>
-<Tooltip content="Bottom centro"    placement="bottom">       <Button>bottom</Button>       </Tooltip>
-<Tooltip content="Bottom izquierda" placement="bottomLeft">   <Button>bottomLeft</Button>   </Tooltip>
-<Tooltip content="Bottom derecha"   placement="bottomRight">  <Button>bottomRight</Button>  </Tooltip>
-<Tooltip content="Left centro"      placement="left">         <Button>left</Button>         </Tooltip>
-<Tooltip content="Left arriba"      placement="leftTop">      <Button>leftTop</Button>      </Tooltip>
-<Tooltip content="Left abajo"       placement="leftBottom">   <Button>leftBottom</Button>   </Tooltip>
-<Tooltip content="Right centro"     placement="right">        <Button>right</Button>        </Tooltip>
-<Tooltip content="Right arriba"     placement="rightTop">     <Button>rightTop</Button>     </Tooltip>
-<Tooltip content="Right abajo"      placement="rightBottom">  <Button>rightBottom</Button>  </Tooltip>
-```
-
----
-
-**3. Sin flecha**
-
-```tsx
-<Tooltip content="Sin flecha" arrow={false}>
-  <Button>Hover</Button>
-</Tooltip>
-```
-
----
-
-**4. Flecha centrada (posiciones de esquina)**
-
-```tsx
-<Tooltip content="Flecha centrada" placement="topLeft" arrow={{ pointAtCenter: true }}>
-  <Button>topLeft + pointAtCenter</Button>
-</Tooltip>
-```
-
----
-
-**5. Color predefinido**
-
-```tsx
-<Tooltip content="Acción exitosa" color="green">
-  <Button>Verde</Button>
-</Tooltip>
-
-<Tooltip content="Zona de peligro" color="red">
-  <Button>Rojo</Button>
-</Tooltip>
-
-<Tooltip content="Información" color="blue">
-  <Button>Azul</Button>
-</Tooltip>
-```
-
----
-
-**6. Color CSS personalizado**
-
-```tsx
-<Tooltip content="Tooltip de marca" color="#722ed1">
-  <Button>Púrpura personalizado</Button>
-</Tooltip>
-```
-
----
-
-**7. Deshabilitar auto-flip**
-
-```tsx
-<Tooltip content="Siempre arriba" placement="top" autoAdjustOverflow={false}>
-  <Button>Sin flip</Button>
-</Tooltip>
-```
-
----
-
-**8. Retraso personalizado**
-
-```tsx
-<Tooltip content="Instantáneo" delay={0}>
-  <Button>Sin retraso</Button>
-</Tooltip>
-
-<Tooltip content="Aparición lenta" delay={800}>
-  <Button>800 ms de retraso</Button>
-</Tooltip>
-```
-
----
-
-**9. Deshabilitado**
-
-```tsx
-<Tooltip content="No se mostrará" disabled>
-  <Button>Tooltip deshabilitado</Button>
-</Tooltip>
-```
-
----
-
-**10. Contenido enriquecido**
-
-```tsx
-<Tooltip
-  content={
-    <div>
-      <strong>Atajo de teclado</strong>
-      <p style={{ margin: '0.25rem 0 0', opacity: 0.85 }}>⌘ + K para abrir la paleta de comandos</p>
-    </div>
-  }
-  placement="bottom"
->
-  <Button>Hover para ver atajo</Button>
-</Tooltip>
-```
-
----
-
-**11. Personalización semántica de estilos**
-
-```tsx
-<Tooltip
-  content="Tooltip estilizado"
-  styles={{
-    popup: { borderRadius: '0.75rem', fontSize: '0.75rem', padding: '0.375rem 0.625rem' },
-  }}
->
-  <Button>Estilo personalizado</Button>
-</Tooltip>
-```
-
----
-
-**12. Envolviendo un elemento deshabilitado**
-
-Los elementos deshabilitados no disparan eventos de ratón. Envuélvelos en un `<span>` para que el disparador del Tooltip reciba los eventos correctamente.
-
-```tsx
-<Tooltip content="El botón está deshabilitado">
-  <span style={{ display: 'inline-flex' }}>
-    <Button disabled>Enviar</Button>
-  </span>
-</Tooltip>
-```
-
-#### Accesibilidad
-
-- Se muestra con `mouseenter` y `focus`
-- Se oculta con `mouseleave` y `blur`
-- El popup tiene `role="tooltip"`
-- Se reposiciona al hacer scroll y al redimensionar la ventana mientras está visible
 
 </details>
 

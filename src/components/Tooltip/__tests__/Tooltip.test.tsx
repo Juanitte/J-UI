@@ -87,7 +87,7 @@ describe('Tooltip', () => {
       const { container } = render(
         <Tooltip content="Hint"><span>Target</span></Tooltip>,
       )
-      expect(getRoot(container).style.display).toBe('inline-flex')
+      expect(getRoot(container)).toHaveClass('ino-tooltip')
     })
 
     it('tooltip is hidden initially', () => {
@@ -345,7 +345,7 @@ describe('Tooltip', () => {
       )
       showTooltip(container)
       const popup = getPopup()!
-      expect(popup.style.backgroundColor).toBeTruthy()
+      expect(popup).toHaveClass('ino-tooltip__popup--default')
     })
 
     it('default tooltip has border', () => {
@@ -354,7 +354,7 @@ describe('Tooltip', () => {
       )
       showTooltip(container)
       const popup = getPopup()!
-      expect(popup.style.border).toContain('1px solid')
+      expect(popup).toHaveClass('ino-tooltip__popup--default')
     })
 
     it('preset color "blue" applies color', () => {
@@ -505,7 +505,7 @@ describe('Tooltip', () => {
         <Tooltip content="Fixed"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.position).toBe('fixed')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('popup has z-index 9999', () => {
@@ -513,7 +513,7 @@ describe('Tooltip', () => {
         <Tooltip content="Z"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.zIndex).toBe('9999')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('popup has border-radius', () => {
@@ -521,7 +521,7 @@ describe('Tooltip', () => {
         <Tooltip content="Rounded"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.borderRadius).toBe('0.375rem')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('popup has 0.8125rem font size', () => {
@@ -529,7 +529,7 @@ describe('Tooltip', () => {
         <Tooltip content="Font"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.fontSize).toBe('0.8125rem')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('popup has font-weight 500', () => {
@@ -537,7 +537,7 @@ describe('Tooltip', () => {
         <Tooltip content="Weight"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.fontWeight).toBe('500')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('popup has nowrap white-space', () => {
@@ -545,7 +545,7 @@ describe('Tooltip', () => {
         <Tooltip content="Nowrap"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.whiteSpace).toBe('nowrap')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('popup has pointer-events none', () => {
@@ -553,7 +553,7 @@ describe('Tooltip', () => {
         <Tooltip content="No click"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.pointerEvents).toBe('none')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
   })
 
@@ -697,7 +697,7 @@ describe('Tooltip', () => {
           <Tooltip content="Second"><span>B</span></Tooltip>
         </div>,
       )
-      const tooltips = Array.from(container.querySelectorAll('[style*="inline-flex"]')) as HTMLElement[]
+      const tooltips = Array.from(container.querySelectorAll('.ino-tooltip')) as HTMLElement[]
       expect(tooltips).toHaveLength(2)
     })
 
@@ -706,7 +706,7 @@ describe('Tooltip', () => {
         <Tooltip content="Padded"><span>A</span></Tooltip>,
       )
       showTooltip(container)
-      expect(getPopup()!.style.padding).toBe('0.5rem 0.75rem')
+      expect(getPopup()!).toHaveClass('ino-tooltip__popup')
     })
 
     it('autoAdjustOverflow is true by default', () => {

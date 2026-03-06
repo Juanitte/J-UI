@@ -9,7 +9,8 @@ import {
   type CSSProperties,
 } from 'react'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Space.css'
 
 // ============================================================================
 // Types
@@ -26,11 +27,11 @@ export type SpaceStyles = SemanticStyles<SpaceSemanticSlot>
 export interface SpaceProps {
   /** Contenido */
   children?: ReactNode
-  /** Tamaño del espacio entre elementos. Puede ser un valor o [horizontal, vertical] */
+  /** Tamano del espacio entre elementos. Puede ser un valor o [horizontal, vertical] */
   size?: SpaceSize | [SpaceSize, SpaceSize]
-  /** Orientación: horizontal o vertical */
+  /** Orientacion: horizontal o vertical */
   direction?: 'horizontal' | 'vertical'
-  /** Alineación de los elementos en el eje cruzado */
+  /** Alineacion de los elementos en el eje cruzado */
   align?: SpaceAlign
   /** Permitir wrap cuando se desborden */
   wrap?: boolean
@@ -49,7 +50,7 @@ export interface SpaceProps {
 export interface SpaceCompactProps {
   /** Contenido */
   children?: ReactNode
-  /** Dirección del grupo compacto */
+  /** Direccion del grupo compacto */
   direction?: 'horizontal' | 'vertical'
   /** Ocupa el 100% del ancho disponible */
   block?: boolean
@@ -113,7 +114,7 @@ function SpaceRoot({
   split,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: SpaceProps) {
   const items = Children.toArray(children)
@@ -126,33 +127,35 @@ function SpaceRoot({
 
   const resolvedAlign = align ?? (direction === 'horizontal' ? 'center' : undefined)
 
-  const alignMap: Record<SpaceAlign, string> = {
-    start: 'flex-start',
-    end: 'flex-end',
-    center: 'center',
-    baseline: 'baseline',
-  }
-
-  const containerStyle = mergeSemanticStyle(
-    {
-      display: 'inline-flex',
-      flexDirection: direction === 'vertical' ? 'column' : 'row',
-      flexWrap: wrap ? 'wrap' : 'nowrap',
-      alignItems: resolvedAlign ? alignMap[resolvedAlign] : undefined,
-      gap: split ? undefined : (horizontalGap === verticalGap ? formatGap(horizontalGap) : `${formatGap(verticalGap)} ${formatGap(horizontalGap)}`),
-    },
-    styles?.root,
-    style,
+  const rootClass = cx(
+    'ino-space',
+    `ino-space--${direction}`,
+    wrap ? 'ino-space--wrap' : 'ino-space--nowrap',
+    resolvedAlign ? `ino-space--align-${resolvedAlign}` : undefined,
+    className,
+    classNamesProp?.root,
   )
 
-  const rootClassName = mergeSemanticClassName(className, classNames?.root)
+  const gapStyle: CSSProperties = split
+    ? {}
+    : {
+        gap: horizontalGap === verticalGap
+          ? formatGap(horizontalGap)
+          : `${formatGap(verticalGap)} ${formatGap(horizontalGap)}`,
+      }
+
+  const rootStyle: CSSProperties = {
+    ...gapStyle,
+    ...styles?.root,
+    ...style,
+  }
 
   if (!split) {
     return (
-      <div style={containerStyle} className={rootClassName}>
-        {classNames?.item || styles?.item
+      <div className={rootClass} style={rootStyle}>
+        {classNamesProp?.item || styles?.item
           ? items.map((child, index) => (
-              <div key={index} className={classNames?.item} style={styles?.item}>{child}</div>
+              <div key={index} className={classNamesProp?.item} style={styles?.item}>{child}</div>
             ))
           : items
         }
@@ -163,25 +166,23 @@ function SpaceRoot({
   const isVertical = direction === 'vertical'
 
   return (
-    <div style={containerStyle} className={rootClassName}>
+    <div className={rootClass} style={rootStyle}>
       {items.map((child, index) => (
         <Fragment key={index}>
-          {classNames?.item || styles?.item ? (
-            <div className={classNames?.item} style={styles?.item}>{child}</div>
+          {classNamesProp?.item || styles?.item ? (
+            <div className={classNamesProp?.item} style={styles?.item}>{child}</div>
           ) : (
             child
           )}
           {index < items.length - 1 && (
             <span
+              className={cx('ino-space__separator', classNamesProp?.separator)}
               style={{
-                display: 'inline-flex',
-                alignSelf: 'center',
                 margin: isVertical
                   ? (typeof verticalGap === 'number' ? `${verticalGap / 2}px 0` : `calc(${verticalGap} / 2) 0`)
                   : (typeof horizontalGap === 'number' ? `0 ${horizontalGap / 2}px` : `0 calc(${horizontalGap} / 2)`),
                 ...styles?.separator,
               }}
-              className={classNames?.separator}
             >
               {split}
             </span>
@@ -209,14 +210,15 @@ function Compact({
 
   const isVertical = direction === 'vertical'
 
-  const containerStyles: CSSProperties = {
-    display: block ? 'flex' : 'inline-flex',
-    flexDirection: isVertical ? 'column' : 'row',
-    ...style,
-  }
+  const rootClass = cx(
+    'ino-space-compact',
+    `ino-space-compact--${direction}`,
+    { 'ino-space-compact--block': block },
+    className,
+  )
 
   return (
-    <div style={containerStyles} className={className}>
+    <div className={rootClass} style={style}>
       {items.map((child, index) => {
         const isFirst = index === 0
         const isLast = index === items.length - 1

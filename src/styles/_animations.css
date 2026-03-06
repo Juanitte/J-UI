@@ -1,0 +1,113 @@
+/* ================================================================
+   Shared keyframe animations
+   Components migrated to CSS import their keyframes from here.
+   ================================================================ */
+
+/* Button animations */
+@keyframes j-spin { to { transform: rotate(360deg); } }
+@keyframes j-ripple { to { transform: scale(4); opacity: 0; } }
+@keyframes j-pulse-wave {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+@keyframes j-shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+@keyframes j-particle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Skeleton / Loading pulse */
+@keyframes j-skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Progress active shimmer */
+@keyframes j-progress-active {
+  0% { transform: translateX(-100%); opacity: 0.1; }
+  20% { opacity: 0.5; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+
+/* PopAlert animations */
+@keyframes j-popalert-spin { to { transform: rotate(360deg); } }
+@keyframes j-popalert-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes j-popalert-update {
+  0% { transform: scale(0.94); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* PopConfirm spinner */
+@keyframes j-popconfirm-spin { to { transform: rotate(360deg); } }
+
+/* Spinner animations */
+@keyframes j-spinner-rotate { to { transform: rotate(360deg); } }
+@keyframes j-spinner-dash {
+  0%   { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 90, 200; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90, 200; stroke-dashoffset: -124; }
+}
+@keyframes j-spinner-pulse-text {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+@keyframes j-spinner-bounce {
+  0%, 80%, 100% { transform: scale(0.5); opacity: 0.35; }
+  40%           { transform: scale(1); opacity: 1; }
+}
+@keyframes j-spinner-bar-fade {
+  0%, 100% { opacity: 0.15; }
+  50%      { opacity: 1; }
+}
+@keyframes j-spinner-classic-dot {
+  0%   { transform: scale(0.6); opacity: 0.3; }
+  50%  { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0.3; }
+}
+
+/* Placeholder shimmer */
+@keyframes j-placeholder-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Card loading skeleton */
+@keyframes j-card-loading {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* Tabs pane fade-in */
+@keyframes j-tabs-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Carousel dot progress */
+@keyframes j-carousel-fill-h { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes j-carousel-fill-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+/* QRCode spinner */
+@keyframes j-qrcode-spin { to { transform: rotate(360deg); } }
+
+/* Statistic loading */
+@keyframes j-statistic-loading {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* Image shimmer */
+@keyframes j-image-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Timeline spinner */
+@keyframes j-timeline-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

@@ -11,7 +11,7 @@ function getRoot(container: HTMLElement) {
 
 /** Get all handle elements */
 function getHandles(container: HTMLElement) {
-  return container.querySelectorAll<HTMLDivElement>('.j-slider-handle')
+  return container.querySelectorAll<HTMLDivElement>('.ino-slider__handle')
 }
 
 describe('Slider', () => {
@@ -169,9 +169,9 @@ describe('Slider', () => {
 
   // ---------- Disabled ----------
 
-  it('applies opacity when disabled', () => {
+  it('applies disabled class when disabled', () => {
     const { container } = render(<Slider disabled />)
-    expect(getRoot(container).style.opacity).toBe('0.5')
+    expect(getRoot(container)).toHaveClass('ino-slider--disabled')
   })
 
   it('sets tabIndex=-1 when disabled', () => {
@@ -264,19 +264,16 @@ describe('Slider', () => {
   it('renders mark with custom style', () => {
     const marks = { 50: { style: { color: 'red' }, label: 'Custom' } }
     const { container } = render(<Slider marks={marks} />)
-    // The mark div should contain 'Custom' text and have color red
-    const markEls = Array.from(container.querySelectorAll('div')).filter(
-      el => el.textContent === 'Custom',
-    )
-    expect(markEls.length).toBeGreaterThan(0)
-    expect(markEls[0].style.color).toBe('red')
+    const markEl = container.querySelector('.ino-slider__mark')
+    expect(markEl).toBeTruthy()
+    expect(markEl!.textContent).toBe('Custom')
+    expect((markEl as HTMLElement).style.color).toBe('red')
   })
 
   it('renders dots at mark positions', () => {
     const marks = { 0: '0', 50: '50', 100: '100' }
     const { container } = render(<Slider marks={marks} />)
-    // Dots are rendered inside the rail for marks
-    const dots = container.querySelectorAll('[style*="border-radius: 50%"][style*="width: 0.5rem"]')
+    const dots = container.querySelectorAll('.ino-slider__dot')
     expect(dots.length).toBeGreaterThanOrEqual(3)
   })
 
@@ -285,7 +282,7 @@ describe('Slider', () => {
   it('renders step dots when dots=true', () => {
     const { container } = render(<Slider dots step={25} />)
     // With step=25, dots at 0, 25, 50, 75, 100 = 5 dots
-    const dotEls = container.querySelectorAll('[style*="width: 0.5rem"][style*="height: 0.5rem"]')
+    const dotEls = container.querySelectorAll('.ino-slider__dot')
     expect(dotEls).toHaveLength(5)
   })
 
@@ -293,20 +290,19 @@ describe('Slider', () => {
 
   it('renders a track segment in single mode', () => {
     const { container } = render(<Slider defaultValue={50} />)
-    // Track is a div inside the rail with background-color primary
-    const tracks = container.querySelectorAll('[style*="background-color: var(--j-primary)"]')
+    const tracks = container.querySelectorAll('.ino-slider__track')
     expect(tracks.length).toBeGreaterThanOrEqual(1)
   })
 
   it('does not render track when included=false', () => {
     const { container } = render(<Slider defaultValue={50} included={false} />)
-    const tracks = container.querySelectorAll('[style*="background-color: var(--j-primary)"]')
+    const tracks = container.querySelectorAll('.ino-slider__track')
     expect(tracks).toHaveLength(0)
   })
 
   it('renders track between handles in range mode', () => {
     const { container } = render(<Slider range defaultValue={[20, 80]} />)
-    const tracks = container.querySelectorAll('[style*="background-color: var(--j-primary)"]')
+    const tracks = container.querySelectorAll('.ino-slider__track')
     expect(tracks.length).toBeGreaterThanOrEqual(1)
   })
 
@@ -498,7 +494,8 @@ describe('Slider', () => {
     const { container } = render(
       <Slider range={{ editable: true, minCount: 1 }} defaultValue={[20, 50, 80]} onChange={onChange} />,
     )
-    expect(getHandles(container)).toHaveLength(3)
+    // Editable range renders handles with ino-slider__handle class
+    expect(container.querySelectorAll('.ino-slider__handle')).toHaveLength(3)
     fireEvent.keyDown(getRoot(container), { key: 'Delete' })
     expect(onChange).toHaveBeenCalled()
     // Should remove active handle (index 0)

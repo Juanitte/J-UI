@@ -1,0 +1,239 @@
+/* ================================================================
+   Slider – BEM classes
+   Uses fixed primary/neutral tokens (no per-instance color prop).
+   ================================================================ */
+
+/* --- Block --- */
+.ino-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  border-radius: 0.25rem;
+  user-select: none;
+  touch-action: none;
+}
+
+.ino-slider--horizontal {
+  width: 100%;
+  height: 1.875rem;
+  padding: 0.375rem 0;
+}
+
+.ino-slider--vertical {
+  flex-direction: column;
+  height: 100%;
+  width: 1.875rem;
+  padding: 0 0.375rem;
+}
+
+.ino-slider--disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Focus ring (keyboard) */
+.ino-slider:focus-visible {
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+/* --- Rail --- */
+.ino-slider__rail {
+  position: relative;
+  background-color: var(--j-bgMuted);
+}
+
+.ino-slider--horizontal .ino-slider__rail {
+  width: 100%;
+  height: 0.25rem;
+  border-radius: 0.125rem;
+}
+
+.ino-slider--vertical .ino-slider__rail {
+  width: 0.25rem;
+  height: 100%;
+  border-radius: 0.125rem;
+}
+
+/* --- Track (filled segment) --- */
+.ino-slider__track {
+  position: absolute;
+  border-radius: 0.125rem;
+  background-color: var(--j-primary);
+}
+
+.ino-slider--disabled .ino-slider__track {
+  background-color: var(--j-border);
+}
+
+.ino-slider--horizontal .ino-slider__track {
+  height: 100%;
+  top: 0;
+}
+
+.ino-slider--vertical .ino-slider__track {
+  width: 100%;
+  left: 0;
+}
+
+.ino-slider__track--draggable {
+  cursor: grab;
+}
+
+/* --- Handle --- */
+.ino-slider__handle {
+  position: absolute;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background-color: var(--j-bg);
+  border: 2px solid var(--j-primary);
+  cursor: grab;
+  z-index: 1;
+}
+
+.ino-slider--horizontal .ino-slider__handle {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ino-slider--vertical .ino-slider__handle {
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.ino-slider--disabled .ino-slider__handle {
+  border-color: var(--j-border);
+  cursor: default;
+}
+
+/* Handle hover */
+.ino-slider__handle:not(.ino-slider__handle--disabled):hover {
+  border-color: var(--j-primary-hover);
+  box-shadow: 0 0 0 4px var(--j-primary-light);
+}
+
+/* Handle active */
+.ino-slider__handle--active {
+  z-index: 2;
+}
+
+/* Handle removing (editable range) */
+.ino-slider__handle--removing {
+  opacity: 0.4;
+  filter: none;
+  box-shadow: none;
+}
+
+/* Transition (disabled during drag) */
+.ino-slider__handle--animated {
+  transition: left 0.15s ease, bottom 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* --- Dot --- */
+.ino-slider__dot {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--j-bg);
+  border: 2px solid var(--j-border);
+  transition: border-color 0.15s ease;
+}
+
+.ino-slider--horizontal .ino-slider__dot {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ino-slider--vertical .ino-slider__dot {
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.ino-slider__dot--active {
+  border-color: var(--j-primary);
+}
+
+/* --- Mark label --- */
+.ino-slider__mark {
+  position: absolute;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  color: var(--j-textSubtle);
+}
+
+.ino-slider--disabled .ino-slider__mark {
+  cursor: default;
+}
+
+.ino-slider__mark--active {
+  color: var(--j-text);
+}
+
+.ino-slider--horizontal .ino-slider__mark {
+  top: 100%;
+  margin-top: 0.5rem;
+  transform: translateX(-50%);
+}
+
+.ino-slider--vertical .ino-slider__mark {
+  left: 100%;
+  margin-left: 0.5rem;
+  transform: translateY(50%);
+}
+
+/* --- Tooltip --- */
+.ino-slider__tooltip {
+  position: absolute;
+  z-index: 1050;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  background-color: var(--j-bgMuted);
+  color: var(--j-text);
+  border: 1px solid var(--j-border);
+  box-shadow: var(--j-shadowMd);
+  pointer-events: none;
+}
+
+.ino-slider__tooltip--top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.375rem;
+}
+
+.ino-slider__tooltip--bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.375rem;
+}
+
+.ino-slider__tooltip--left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 0.375rem;
+}
+
+.ino-slider__tooltip--right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0.375rem;
+}
+
+/* --- Drag overlay --- */
+.ino-slider__drag-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  cursor: grabbing;
+}

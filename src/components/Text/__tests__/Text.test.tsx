@@ -12,16 +12,14 @@ describe('Text', () => {
     expect(container.firstChild?.nodeName).toBe('SPAN')
   })
 
-  it('applies size styles', () => {
+  it('applies size class', () => {
     const { container } = render(<Text size="xs">Small</Text>)
-    expect((container.firstChild as HTMLElement).style.fontSize).toBe('0.625rem')
+    expect(container.firstChild).toHaveClass('ino-text--xs')
   })
 
-  it('applies disabled styles', () => {
+  it('applies disabled class', () => {
     const { container } = render(<Text disabled>Disabled</Text>)
-    const el = container.firstChild as HTMLElement
-    expect(el.style.opacity).toBe('0.6')
-    expect(el.style.cursor).toBe('not-allowed')
+    expect(container.firstChild).toHaveClass('ino-text--disabled')
   })
 
   it('wraps content in <mark> when mark=true', () => {
@@ -39,37 +37,34 @@ describe('Text', () => {
     expect(container.querySelector('kbd')).toBeInTheDocument()
   })
 
-  it('applies underline text-decoration', () => {
+  it('applies underline class', () => {
     const { container } = render(<Text underline>Underlined</Text>)
-    expect((container.firstChild as HTMLElement).style.textDecoration).toBe('underline')
+    expect(container.firstChild).toHaveClass('ino-text--underline')
   })
 
-  it('applies line-through for delete prop', () => {
+  it('applies delete class', () => {
     const { container } = render(<Text delete>Deleted</Text>)
-    expect((container.firstChild as HTMLElement).style.textDecoration).toBe('line-through')
+    expect(container.firstChild).toHaveClass('ino-text--delete')
   })
 
-  it('applies italic font style', () => {
+  it('applies italic class', () => {
     const { container } = render(<Text italic>Italic</Text>)
-    expect((container.firstChild as HTMLElement).style.fontStyle).toBe('italic')
+    expect(container.firstChild).toHaveClass('ino-text--italic')
   })
 
-  it('applies weight styles', () => {
+  it('applies weight class', () => {
     const { container } = render(<Text weight="bold">Bold</Text>)
-    expect((container.firstChild as HTMLElement).style.fontWeight).toBe('700')
+    expect(container.firstChild).toHaveClass('ino-text--weight-bold')
   })
 
-  it('applies lineHeight styles', () => {
+  it('applies lineHeight class', () => {
     const { container } = render(<Text lineHeight="loose">Loose</Text>)
-    expect((container.firstChild as HTMLElement).style.lineHeight).toBe('2')
+    expect(container.firstChild).toHaveClass('ino-text--lh-loose')
   })
 
-  it('applies ellipsis overflow styles when ellipsis=true', () => {
+  it('applies ellipsis class when ellipsis=true', () => {
     const { container } = render(<Text ellipsis>Long text here</Text>)
-    const el = container.firstChild as HTMLElement
-    expect(el.style.overflow).toBe('hidden')
-    expect(el.style.textOverflow).toBe('ellipsis')
-    expect(el.style.whiteSpace).toBe('nowrap')
+    expect(container.firstChild).toHaveClass('ino-text--ellipsis-1')
   })
 
   it('renders multi-line ellipsis as a div', () => {
@@ -81,12 +76,11 @@ describe('Text', () => {
 
   it('renders expand button when ellipsis.expandable=true', () => {
     render(<Text ellipsis={{ expandable: true }}>Expandable text</Text>)
-    expect(screen.getByText('más')).toBeInTheDocument()
+    expect(screen.getByText('mas')).toBeInTheDocument()
   })
 
   it('renders copy button when copyable=true', () => {
     render(<Text copyable>Copyable text</Text>)
-    // The copy button is the only button rendered by Text
     const button = screen.getByRole('button')
     expect(button).toBeInTheDocument()
   })

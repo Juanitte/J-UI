@@ -14,10 +14,10 @@ import {
   useImperativeHandle,
   forwardRef,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { useConfig } from '../ConfigProvider'
+import './Input.css'
 
 // ============================================================================
 // Types
@@ -214,36 +214,6 @@ const sizeConfig: Record<InputSize, { height: string; fontSize: string; paddingH
   large:  { height: '2.5rem', fontSize: '1rem',     paddingH: '0.75rem', paddingV: '0.5rem',  radius: '0.5rem' },
 }
 
-function getVariantStyles(variant: InputVariant, radius: string): CSSProperties {
-  switch (variant) {
-    case 'outlined':
-      return { border: `1px solid ${tokens.colorBorder}`, backgroundColor: tokens.colorBg, borderRadius: radius }
-    case 'filled':
-      return { border: '1px solid transparent', backgroundColor: tokens.colorBgMuted, borderRadius: radius }
-    case 'borderless':
-      return { border: '1px solid transparent', backgroundColor: 'transparent', borderRadius: radius }
-    case 'underlined':
-      return { border: 'none', borderBottom: `1px solid ${tokens.colorBorder}`, borderRadius: 0, backgroundColor: 'transparent' }
-  }
-}
-
-function getStatusBorderColor(status?: InputStatus): string | undefined {
-  if (status === 'error') return tokens.colorError
-  if (status === 'warning') return tokens.colorWarning
-  return undefined
-}
-
-function getFocusRingColor(status?: InputStatus): string {
-  if (status === 'error') return tokens.colorErrorBg
-  if (status === 'warning') return tokens.colorWarningBg
-  return tokens.colorPrimaryLight
-}
-
-function getFocusBorderColor(status?: InputStatus): string {
-  if (status === 'error') return tokens.colorError
-  if (status === 'warning') return tokens.colorWarning
-  return tokens.colorPrimary
-}
 
 function resolveCountConfig(
   count?: CountConfig,
@@ -320,7 +290,6 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
   const [internalValue, setInternalValue] = useState(defaultValue)
   const currentValue = isControlled ? controlledValue : internalValue
 
-  const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const wrapperRef = useRef<HTMLSpanElement>(null)
   const mouseDownRef = useRef(false)
@@ -367,12 +336,10 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
   const handleFocus = useCallback((e: FocusEvent<HTMLInputElement>) => {
     focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
     mouseDownRef.current = false
-    setIsFocused(true)
     onFocus?.(e)
   }, [onFocus])
 
   const handleBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    setIsFocused(false)
     onBlur?.(e)
   }, [onBlur])
 
@@ -398,117 +365,9 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
     inputRef.current?.focus()
   }, [isControlled, onChange])
 
-  // ---- Hover (ref-based) ----
-  const handleMouseEnter = useCallback(() => {
-    if (disabled || isFocused) return
-    const el = wrapperRef.current
-    if (!el) return
-    if (variant === 'borderless') return
-    if (variant === 'underlined') {
-      el.style.borderBottomColor = getStatusBorderColor(status) || tokens.colorBorderHover
-    } else {
-      el.style.borderColor = getStatusBorderColor(status) || tokens.colorBorderHover
-    }
-  }, [disabled, isFocused, variant, status])
-
-  const handleMouseLeave = useCallback(() => {
-    if (disabled || isFocused) return
-    const el = wrapperRef.current
-    if (!el) return
-    if (variant === 'borderless') return
-    if (variant === 'underlined') {
-      el.style.borderBottomColor = getStatusBorderColor(status) || tokens.colorBorder
-    } else {
-      el.style.borderColor = getStatusBorderColor(status) || (variant === 'filled' ? 'transparent' : tokens.colorBorder)
-    }
-  }, [disabled, isFocused, variant, status])
-
   // ---- Sizing ----
-  const sc = sizeConfig[size]
   const hasPrefix = !!prefixNode
   const hasSuffix = !!suffixNode || (allowClear && !!currentValue && !disabled && !readOnly)
-
-  // ---- Styles ----
-  const statusBorder = getStatusBorderColor(status)
-  const focusRing = getFocusRingColor(status)
-  const focusBorder = getFocusBorderColor(status)
-
-  const wrapperBaseStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    width: '100%',
-    height: sc.height,
-    fontSize: sc.fontSize,
-    fontFamily: 'inherit',
-    lineHeight: sc.height,
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
-    boxSizing: 'border-box',
-    ...getVariantStyles(variant, sc.radius),
-    ...(variant === 'underlined'
-      ? { borderBottomColor: isFocused && !disabled ? focusBorder : (statusBorder || tokens.colorBorder) }
-      : { borderColor: isFocused && !disabled && variant !== 'borderless'
-          ? focusBorder
-          : (statusBorder || (variant === 'borderless' || variant === 'filled' ? 'transparent' : tokens.colorBorder)) }),
-    boxShadow: isFocused && !disabled && focusSourceRef.current === 'keyboard'
-      ? (variant === 'underlined' ? `0 1px 0 0 ${focusBorder}` : `0 0 0 2px ${focusRing}`)
-      : 'none',
-    ...(disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
-  }
-
-  const inputBaseStyle: CSSProperties = {
-    flex: 1,
-    minWidth: 0,
-    width: '100%',
-    height: '100%',
-    padding: 0,
-    paddingLeft: hasPrefix ? 0 : sc.paddingH,
-    paddingRight: hasSuffix ? 0 : sc.paddingH,
-    fontSize: 'inherit',
-    fontFamily: 'inherit',
-    lineHeight: 'inherit',
-    border: 'none',
-    outline: 'none',
-    backgroundColor: 'transparent',
-    color: disabled ? tokens.colorTextSubtle : tokens.colorText,
-    cursor: disabled ? 'not-allowed' : undefined,
-    boxSizing: 'border-box',
-  }
-
-  const prefixStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    paddingLeft: sc.paddingH,
-    paddingRight: '0.25rem',
-    color: tokens.colorTextMuted,
-    flexShrink: 0,
-  }
-
-  const suffixStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    paddingRight: sc.paddingH,
-    paddingLeft: '0.25rem',
-    color: tokens.colorTextMuted,
-    flexShrink: 0,
-    gap: '0.25rem',
-  }
-
-  const clearBtnStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '1.75rem',
-    height: '1.75rem',
-    margin: '-0.25rem',
-    borderRadius: '50%',
-    cursor: 'pointer',
-    color: tokens.colorTextMuted,
-    transition: 'color 0.15s ease',
-    padding: 0,
-    border: 'none',
-    background: 'none',
-    lineHeight: 1,
-  }
 
   // ---- Count display ----
   const charCount = countConfig.strategy(currentValue)
@@ -528,19 +387,10 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
       content = `${charCount}`
     }
 
-    const countStyle: CSSProperties = {
-      fontSize: '0.75rem',
-      lineHeight: '1.25rem',
-      color: countExceeded ? tokens.colorError : tokens.colorTextMuted,
-      whiteSpace: 'nowrap',
-      marginLeft: '0.25rem',
-      flexShrink: 0,
-    }
-
     return (
       <span
-        className={classNames?.count}
-        style={mergeSemanticStyle(countStyle, styles?.count)}
+        className={cx('ino-input__count', { 'ino-input__count--exceeded': countExceeded }, classNames?.count)}
+        style={styles?.count}
       >
         {content}
       </span>
@@ -551,59 +401,45 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
   const showClear = allowClear && !!currentValue && !disabled && !readOnly
   const clearIconNode = typeof allowClear === 'object' ? allowClear.clearIcon : <ClearIcon />
 
-  // ---- Addon styles ----
+  // ---- Addon & root classes ----
   const hasAddons = !!addonBefore || !!addonAfter
-  const addonBaseStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: `0 ${sc.paddingH}`,
-    height: sc.height,
-    fontSize: sc.fontSize,
-    fontFamily: 'inherit',
-    backgroundColor: tokens.colorBgMuted,
-    border: `1px solid ${statusBorder || tokens.colorBorder}`,
-    color: tokens.colorText,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-  }
 
-  const addonBeforeStyle: CSSProperties = {
-    ...addonBaseStyle,
-    borderRight: 'none',
-    borderRadius: `${sc.radius} 0 0 ${sc.radius}`,
-  }
+  const rootClass = cx(
+    'ino-input',
+    `ino-input--${size}`,
+    `ino-input--${variant}`,
+    {
+      'ino-input--has-addons': hasAddons,
+      'ino-input--has-addon-before': !!addonBefore,
+      'ino-input--has-addon-after': !!addonAfter,
+      'ino-input--disabled': disabled,
+      'ino-input--error': status === 'error',
+      'ino-input--warning': status === 'warning',
+    },
+    className,
+    classNames?.root,
+  )
 
-  const addonAfterStyle: CSSProperties = {
-    ...addonBaseStyle,
-    borderLeft: 'none',
-    borderRadius: `0 ${sc.radius} ${sc.radius} 0`,
-  }
-
-  // Adjust wrapper border radius when addons present
-  const wrapperBorderRadius = hasAddons
-    ? {
-        borderRadius: 0,
-        ...(addonBefore && !addonAfter ? { borderRadius: `0 ${sc.radius} ${sc.radius} 0` } : {}),
-        ...(!addonBefore && addonAfter ? { borderRadius: `${sc.radius} 0 0 ${sc.radius}` } : {}),
-      }
-    : {}
-
-  const mergedWrapperStyle: CSSProperties = { ...wrapperBaseStyle, ...wrapperBorderRadius }
+  const nativeClass = cx(
+    'ino-input__native',
+    {
+      'ino-input__native--has-prefix': hasPrefix,
+      'ino-input__native--has-suffix': hasSuffix,
+    },
+  )
 
   // ---- Render ----
   const inputElement = (
     <span
       ref={wrapperRef}
-      className={classNames?.input}
-      style={mergeSemanticStyle(mergedWrapperStyle, styles?.input)}
+      className={cx('ino-input__wrapper', classNames?.input)}
+      style={styles?.input}
       onMouseDown={() => { mouseDownRef.current = true }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {hasPrefix && (
         <span
-          className={classNames?.prefix}
-          style={mergeSemanticStyle(prefixStyle, styles?.prefix)}
+          className={cx('ino-input__prefix', classNames?.prefix)}
+          style={styles?.prefix}
         >
           {prefixNode}
         </span>
@@ -626,20 +462,20 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
-        style={inputBaseStyle}
+        className={nativeClass}
       />
 
       {(hasSuffix || suffixNode || countConfig.show) && (
         <span
-          className={classNames?.suffix}
-          style={mergeSemanticStyle(suffixStyle, styles?.suffix)}
+          className={cx('ino-input__suffix', classNames?.suffix)}
+          style={styles?.suffix}
         >
           {showClear && (
             <button
               type="button"
               tabIndex={-1}
               onClick={handleClear}
-              style={clearBtnStyle}
+              className="ino-input__clear"
               aria-label="Clear"
             >
               {clearIconNode}
@@ -653,21 +489,15 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
   )
 
   if (hasAddons) {
-    const rootStyle: CSSProperties = {
-      display: 'inline-flex',
-      width: '100%',
-      alignItems: 'stretch',
-    }
-
     return (
       <div
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+        className={rootClass}
+        style={{ ...styles?.root, ...style }}
       >
         {addonBefore && (
           <span
-            className={classNames?.addon}
-            style={mergeSemanticStyle(addonBeforeStyle, styles?.addon)}
+            className={cx('ino-input__addon', 'ino-input__addon--before', classNames?.addon)}
+            style={styles?.addon}
           >
             {addonBefore}
           </span>
@@ -675,8 +505,8 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
         {inputElement}
         {addonAfter && (
           <span
-            className={classNames?.addon}
-            style={mergeSemanticStyle(addonAfterStyle, styles?.addon)}
+            className={cx('ino-input__addon', 'ino-input__addon--after', classNames?.addon)}
+            style={styles?.addon}
           >
             {addonAfter}
           </span>
@@ -686,17 +516,10 @@ const InputComponent = forwardRef<InputRef, InputProps>(function InputInner(prop
     )
   }
 
-  // No addons — simpler structure
-  const rootStyle: CSSProperties = {
-    display: 'inline-flex',
-    flexDirection: 'column',
-    width: '100%',
-  }
-
   return (
     <span
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
     >
       {inputElement}
     </span>
@@ -746,7 +569,6 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
   const [internalValue, setInternalValue] = useState(defaultValue)
   const currentValue = isControlled ? controlledValue : internalValue
 
-  const [isFocused, setIsFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const mouseDownRef = useRef(false)
@@ -831,12 +653,10 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
   const handleFocus = useCallback((e: FocusEvent<HTMLTextAreaElement>) => {
     focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
     mouseDownRef.current = false
-    setIsFocused(true)
     onFocus?.(e)
   }, [onFocus])
 
   const handleBlur = useCallback((e: FocusEvent<HTMLTextAreaElement>) => {
-    setIsFocused(false)
     onBlur?.(e)
   }, [onBlur])
 
@@ -854,70 +674,19 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
     textareaRef.current?.focus()
   }, [isControlled, onChange])
 
-  // ---- Hover ----
-  const handleMouseEnter = useCallback(() => {
-    if (disabled || isFocused) return
-    const el = wrapperRef.current
-    if (!el) return
-    if (variant === 'borderless') return
-    if (variant === 'underlined') {
-      el.style.borderBottomColor = getStatusBorderColor(status) || tokens.colorBorderHover
-    } else {
-      el.style.borderColor = getStatusBorderColor(status) || tokens.colorBorderHover
-    }
-  }, [disabled, isFocused, variant, status])
-
-  const handleMouseLeave = useCallback(() => {
-    if (disabled || isFocused) return
-    const el = wrapperRef.current
-    if (!el) return
-    if (variant === 'borderless') return
-    if (variant === 'underlined') {
-      el.style.borderBottomColor = getStatusBorderColor(status) || tokens.colorBorder
-    } else {
-      el.style.borderColor = getStatusBorderColor(status) || (variant === 'filled' ? 'transparent' : tokens.colorBorder)
-    }
-  }, [disabled, isFocused, variant, status])
-
-  // ---- Styles ----
-  const sc = sizeConfig[size]
-  const statusBorder = getStatusBorderColor(status)
-  const focusRing = getFocusRingColor(status)
-  const focusBorder = getFocusBorderColor(status)
-
-  const wrapperStyle: CSSProperties = {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
-    boxSizing: 'border-box',
-    ...getVariantStyles(variant, sc.radius),
-    ...(variant === 'underlined'
-      ? { borderBottomColor: isFocused && !disabled ? focusBorder : (statusBorder || tokens.colorBorder) }
-      : { borderColor: isFocused && !disabled && variant !== 'borderless'
-          ? focusBorder
-          : (statusBorder || (variant === 'borderless' || variant === 'filled' ? 'transparent' : tokens.colorBorder)) }),
-    boxShadow: isFocused && !disabled && focusSourceRef.current === 'keyboard'
-      ? (variant === 'underlined' ? `0 1px 0 0 ${focusBorder}` : `0 0 0 2px ${focusRing}`)
-      : 'none',
-    ...(disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
-  }
-
-  const textareaBaseStyle: CSSProperties = {
-    width: '100%',
-    padding: `${sc.paddingV} ${sc.paddingH}`,
-    fontSize: sc.fontSize,
-    fontFamily: 'inherit',
-    lineHeight: '1.375rem',
-    border: 'none',
-    outline: 'none',
-    backgroundColor: 'transparent',
-    color: disabled ? tokens.colorTextSubtle : tokens.colorText,
-    cursor: disabled ? 'not-allowed' : undefined,
-    resize: autoSize ? 'none' : 'vertical',
-    boxSizing: 'border-box',
-  }
+  // ---- BEM classes ----
+  const textareaRootClass = cx(
+    'ino-textarea',
+    `ino-textarea--${size}`,
+    `ino-textarea--${variant}`,
+    {
+      'ino-textarea--disabled': disabled,
+      'ino-textarea--error': status === 'error',
+      'ino-textarea--warning': status === 'warning',
+    },
+    className,
+    classNames?.root,
+  )
 
   // ---- Count ----
   const charCount = countConfig.strategy(currentValue)
@@ -939,20 +708,10 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
       content = `${charCount}`
     }
 
-    const countStyle: CSSProperties = {
-      position: 'absolute',
-      bottom: '0.25rem',
-      right: sc.paddingH,
-      fontSize: '0.75rem',
-      lineHeight: '1.25rem',
-      color: countExceeded ? tokens.colorError : tokens.colorTextMuted,
-      pointerEvents: 'none',
-    }
-
     return (
       <span
-        className={classNames?.count}
-        style={mergeSemanticStyle(countStyle, styles?.count)}
+        className={cx('ino-textarea__count', { 'ino-textarea__count--exceeded': countExceeded }, classNames?.count)}
+        style={styles?.count}
       >
         {content}
       </span>
@@ -961,15 +720,13 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
 
   return (
     <div
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle({ position: 'relative', width: '100%' }, styles?.root, style)}
+      className={textareaRootClass}
+      style={{ ...styles?.root, ...style }}
     >
       <div
         ref={wrapperRef}
-        style={wrapperStyle}
+        className="ino-textarea__wrapper"
         onMouseDown={() => { mouseDownRef.current = true }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
       >
         <textarea
           ref={textareaRef}
@@ -987,8 +744,8 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
           onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className={classNames?.textarea}
-          style={mergeSemanticStyle(textareaBaseStyle, styles?.textarea)}
+          className={cx('ino-textarea__native', classNames?.textarea)}
+          style={{ resize: autoSize ? 'none' : 'vertical', ...styles?.textarea }}
         />
         {renderCount()}
       </div>
@@ -998,25 +755,7 @@ const TextAreaComponent = forwardRef<InputRef, TextAreaProps>(function TextAreaI
           tabIndex={-1}
           onClick={handleClear}
           aria-label="Clear"
-          style={{
-            position: 'absolute',
-            top: '0.5rem',
-            right: sc.paddingH,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '1.75rem',
-            height: '1.75rem',
-            margin: '-0.25rem',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            color: tokens.colorTextMuted,
-            transition: 'color 0.15s ease',
-            padding: 0,
-            border: 'none',
-            background: 'none',
-            lineHeight: 1,
-          }}
+          className="ino-textarea__clear"
         >
           {typeof allowClear === 'object' ? allowClear.clearIcon : <ClearIcon />}
         </button>
@@ -1078,27 +817,10 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
       ? (loading ? <LoadingSpinner /> : <SearchSvg />)
       : enterButton
 
-    const buttonStyle: CSSProperties = {
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: `0 ${sc.paddingH}`,
-      border: 'none',
-      backgroundColor: tokens.colorPrimary,
-      color: tokens.colorPrimaryContrast,
-      cursor: loading ? 'default' : 'pointer',
-      fontSize: sc.fontSize,
-      fontFamily: 'inherit',
-      borderRadius: `0 ${sc.radius} ${sc.radius} 0`,
-      transition: 'background-color 0.2s ease',
-      opacity: loading ? 0.7 : 1,
-      gap: '0.25rem',
-      whiteSpace: 'nowrap',
-      flexShrink: 0,
-    }
+    const searchSize = restProps.size || 'middle'
 
     return (
-      <div className={className} style={{ display: 'inline-flex', width: '100%', alignItems: 'stretch', ...style }}>
+      <div className={cx(`ino-input-search--${searchSize}`, className)} style={{ display: 'inline-flex', width: '100%', alignItems: 'stretch', ...style }}>
         <InputComponent
           ref={inputRef}
           {...inputProps}
@@ -1117,9 +839,7 @@ const SearchComponent = forwardRef<InputRef, SearchProps>(function SearchInner(p
         <button
           type="button"
           onClick={(e) => !loading && handleSearch(e)}
-          style={buttonStyle}
-          onMouseEnter={(e) => { if (!loading) e.currentTarget.style.backgroundColor = tokens.colorPrimaryHover }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = tokens.colorPrimary }}
+          className={cx('ino-input-search__button', { 'ino-input-search__button--loading': loading })}
         >
           {buttonContent}
         </button>
@@ -1305,47 +1025,18 @@ const OTPComponent = forwardRef<InputRef, OTPProps>(function OTPInner(props, ref
     inputRefs.current[focusIdx]?.focus()
   }, [chars, length, formatter, setValue])
 
-  // ---- Styles ----
-  const sc = sizeConfig[size]
-  const statusBorder = getStatusBorderColor(status)
-
-  const cellBaseStyle: CSSProperties = {
-    width: sc.height,
-    height: sc.height,
-    textAlign: 'center',
-    fontSize: sc.fontSize,
-    fontFamily: 'inherit',
-    outline: 'none',
-    transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-    boxSizing: 'border-box',
-    color: disabled ? tokens.colorTextSubtle : tokens.colorText,
-    ...getVariantStyles(variant, sc.radius),
-    ...(statusBorder ? (variant === 'underlined' ? { borderBottomColor: statusBorder } : { borderColor: statusBorder }) : {}),
-    ...(disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
-    ...(mask ? { WebkitTextSecurity: mask === true ? 'disc' : undefined, fontFamily: mask !== true ? 'monospace' : 'inherit' } as CSSProperties : {}),
-  }
-
-  // Focus style applied via ref-based DOM manipulation per cell
-  const handleCellFocus = (e: FocusEvent<HTMLInputElement>) => {
-    const focusBorder = getFocusBorderColor(status)
-    const focusRing = getFocusRingColor(status)
-    if (variant === 'underlined') {
-      e.currentTarget.style.borderBottomColor = focusBorder
-      e.currentTarget.style.boxShadow = `0 1px 0 0 ${focusBorder}`
-    } else {
-      e.currentTarget.style.borderColor = focusBorder
-      e.currentTarget.style.boxShadow = `0 0 0 2px ${focusRing}`
-    }
-  }
-  const handleCellBlur = (e: FocusEvent<HTMLInputElement>) => {
-    if (variant === 'underlined') {
-      e.currentTarget.style.borderBottomColor = statusBorder || tokens.colorBorder
-      e.currentTarget.style.boxShadow = 'none'
-    } else {
-      e.currentTarget.style.borderColor = statusBorder || (variant === 'filled' ? 'transparent' : tokens.colorBorder)
-      e.currentTarget.style.boxShadow = 'none'
-    }
-  }
+  // ---- BEM classes ----
+  const otpClass = cx(
+    'ino-otp',
+    `ino-otp--${size}`,
+    `ino-otp--${variant}`,
+    {
+      'ino-otp--disabled': disabled,
+      'ino-otp--error': status === 'error',
+      'ino-otp--warning': status === 'warning',
+    },
+    className,
+  )
 
   const getMaskDisplay = (char: string) => {
     if (!mask || !char) return char
@@ -1353,10 +1044,14 @@ const OTPComponent = forwardRef<InputRef, OTPProps>(function OTPInner(props, ref
     return typeof mask === 'string' ? mask : char
   }
 
+  const maskStyle: CSSProperties | undefined = mask
+    ? { WebkitTextSecurity: mask === true ? 'disc' : undefined, fontFamily: mask !== true ? 'monospace' : 'inherit' } as CSSProperties
+    : undefined
+
   return (
     <div
-      className={className}
-      style={{ display: 'inline-flex', gap: '0.5rem', ...style }}
+      className={otpClass}
+      style={style}
     >
       {Array.from({ length }, (_, i) => (
         <input
@@ -1371,9 +1066,9 @@ const OTPComponent = forwardRef<InputRef, OTPProps>(function OTPInner(props, ref
           onChange={(e) => handleInput(i, e.target.value)}
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={i === 0 ? handlePaste : undefined}
-          onFocus={(e) => { handleCellFocus(e); e.target.select() }}
-          onBlur={handleCellBlur}
-          style={cellBaseStyle}
+          onFocus={(e) => { e.target.select() }}
+          className="ino-otp__cell"
+          style={maskStyle}
         />
       ))}
     </div>

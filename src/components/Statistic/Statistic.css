@@ -1,0 +1,40 @@
+/* ================================================================
+   Statistic – BEM classes
+   ================================================================ */
+
+.ino-statistic__title {
+  margin-bottom: 0.25rem;
+  color: var(--j-textMuted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.ino-statistic__content {
+  color: var(--j-text);
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+
+.ino-statistic__prefix {
+  margin-right: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ino-statistic__suffix {
+  margin-left: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ino-statistic__loading {
+  display: inline-block;
+  height: 1.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--j-bgMuted);
+  animation: j-statistic-loading 1.5s ease-in-out infinite;
+  vertical-align: middle;
+}

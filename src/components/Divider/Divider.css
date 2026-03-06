@@ -1,0 +1,54 @@
+/* ================================================================
+   Divider – BEM classes
+   Border color/style depend on `color` and `dashed` props,
+   set via inline style.
+   ================================================================ */
+
+/* --- Horizontal (no text) --- */
+.ino-divider {
+  display: flex;
+  clear: both;
+  width: 100%;
+  min-width: 100%;
+  margin: 1.5rem 0;
+}
+
+/* --- Vertical --- */
+.ino-divider--vertical {
+  display: inline-block;
+  height: 0.9em;
+  margin: 0 0.5rem;
+  vertical-align: middle;
+  border-top: 0;
+  width: auto;
+  min-width: auto;
+  clear: none;
+}
+
+/* --- Horizontal with text --- */
+.ino-divider--with-text {
+  align-items: center;
+}
+
+/* --- Text element --- */
+.ino-divider__text {
+  display: inline-block;
+  padding: 0 1rem;
+  white-space: nowrap;
+}
+
+.ino-divider__text--plain {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.ino-divider__text--styled {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* --- Line element (before/after text) --- */
+.ino-divider__line {
+  flex-grow: 0;
+  flex-shrink: 0;
+}

@@ -7,9 +7,9 @@ import {
   type CSSProperties,
 } from 'react'
 import { createPortal } from 'react-dom'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Drawer.css'
 
 // ============================================================================
 // Types
@@ -99,11 +99,10 @@ function getPanelPosition(placement: DrawerPlacement): CSSProperties {
 
 function LoadingSkeleton() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '0.25rem 0' }}>
-      <style>{`@keyframes j-drawer-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }`}</style>
-      <div style={{ height: '1rem', width: '60%', borderRadius: '0.25rem', backgroundColor: tokens.colorBgMuted, animation: 'j-drawer-pulse 1.5s ease-in-out infinite' }} />
-      <div style={{ height: '1rem', width: '100%', borderRadius: '0.25rem', backgroundColor: tokens.colorBgMuted, animation: 'j-drawer-pulse 1.5s ease-in-out infinite 0.1s' }} />
-      <div style={{ height: '1rem', width: '80%', borderRadius: '0.25rem', backgroundColor: tokens.colorBgMuted, animation: 'j-drawer-pulse 1.5s ease-in-out infinite 0.2s' }} />
+    <div className="ino-drawer__skeleton">
+      <div className="ino-drawer__skeleton-bar" style={{ width: '60%' }} />
+      <div className="ino-drawer__skeleton-bar" style={{ width: '100%', animationDelay: '0.1s' }} />
+      <div className="ino-drawer__skeleton-bar" style={{ width: '80%', animationDelay: '0.2s' }} />
     </div>
   )
 }
@@ -220,87 +219,29 @@ export function Drawer({
     : { height: resolvedHeight, width: '100%' }
 
   // ── Styles ──
-  const wrapperStyle: CSSProperties = {
-    position: 'fixed',
-    inset: 0,
-    zIndex,
-    pointerEvents: mounted ? 'auto' : 'none',
-    display: mounted ? undefined : 'none',
-  }
+  const wrapperClass = cx(
+    'ino-drawer__wrapper',
+    { 'ino-drawer__wrapper--hidden': !mounted },
+  )
 
-  const maskStyle: CSSProperties = {
-    position: 'absolute',
-    inset: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-    opacity: animating ? 1 : 0,
-    transition: 'opacity 0.3s ease',
-    ...styles?.mask,
-  }
-
-  const panelStyle: CSSProperties = {
-    position: 'absolute',
+  const panelDynamicStyle: CSSProperties = {
     ...getPanelPosition(placement),
     ...panelDimensions,
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: tokens.colorBg,
-    color: tokens.colorText,
-    boxShadow: tokens.shadowLg,
     transform: getTransform(placement, animating),
-    transition: 'transform 0.3s ease',
     ...styles?.root,
     ...style,
-  }
-
-  const headerStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '1rem 1.5rem',
-    borderBottom: `1px solid ${tokens.colorBorder}`,
-    flexShrink: 0,
-    ...styles?.header,
-  }
-
-  const bodyStyle: CSSProperties = {
-    flex: 1,
-    padding: '1.5rem',
-    overflowY: 'auto',
-    ...styles?.body,
-  }
-
-  const footerStyle: CSSProperties = {
-    padding: '1rem 1.5rem',
-    borderTop: `1px solid ${tokens.colorBorder}`,
-    flexShrink: 0,
-    ...styles?.footer,
-  }
-
-  const closeBtnStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '0.25rem',
-    border: 'none',
-    background: 'none',
-    cursor: 'pointer',
-    color: tokens.colorTextSubtle,
-    borderRadius: '0.25rem',
-    transition: 'color 0.15s',
-    marginLeft: 'auto',
-    flexShrink: 0,
-    ...styles?.closeBtn,
   }
 
   const hasHeader = title != null || extra != null || closable
   const shouldRenderContent = !destroyOnClose || mounted
 
   const portal = createPortal(
-    <div style={wrapperStyle}>
+    <div className={wrapperClass} style={{ zIndex, pointerEvents: mounted ? 'auto' : 'none' }}>
       {/* Mask */}
       {showMask && (
         <div
-          className={classNames?.mask}
-          style={maskStyle}
+          className={cx('ino-drawer__mask', classNames?.mask)}
+          style={{ opacity: animating ? 1 : 0, ...styles?.mask }}
           onClick={handleMaskClick}
         />
       )}
@@ -310,20 +251,20 @@ export function Drawer({
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={panelStyle}
+        className={cx('ino-drawer__panel', className, classNames?.root)}
+        style={panelDynamicStyle}
         onTransitionEnd={handleTransitionEnd}
       >
         {/* Header */}
         {hasHeader && (
-          <div className={classNames?.header} style={headerStyle}>
+          <div className={cx('ino-drawer__header', classNames?.header)} style={styles?.header}>
             {title != null && (
-              <div style={{ flex: 1, fontSize: '1rem', fontWeight: 600, color: tokens.colorText, minWidth: 0 }}>
+              <div className="ino-drawer__title">
                 {title}
               </div>
             )}
             {extra != null && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: title != null ? '1rem' : 0 }}>
+              <div className="ino-drawer__extra" style={{ marginLeft: title != null ? '1rem' : 0 }}>
                 {extra}
               </div>
             )}
@@ -331,11 +272,9 @@ export function Drawer({
               <button
                 ref={closeBtnRef}
                 type="button"
-                className={classNames?.closeBtn}
-                style={closeBtnStyle}
+                className={cx('ino-drawer__close-btn', classNames?.closeBtn)}
+                style={styles?.closeBtn}
                 onClick={(e) => onClose?.(e)}
-                onMouseEnter={(e) => { e.currentTarget.style.color = tokens.colorText }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = tokens.colorTextSubtle }}
               >
                 {closeIcon ?? <CloseIcon />}
               </button>
@@ -345,14 +284,14 @@ export function Drawer({
 
         {/* Body */}
         {shouldRenderContent && (
-          <div className={classNames?.body} style={bodyStyle}>
+          <div className={cx('ino-drawer__body', classNames?.body)} style={styles?.body}>
             {loading ? <LoadingSkeleton /> : children}
           </div>
         )}
 
         {/* Footer */}
         {footer != null && (
-          <div className={classNames?.footer} style={footerStyle}>
+          <div className={cx('ino-drawer__footer', classNames?.footer)} style={styles?.footer}>
             {footer}
           </div>
         )}

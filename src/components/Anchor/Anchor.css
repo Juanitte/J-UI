@@ -1,0 +1,97 @@
+/* ================================================================
+   Anchor – BEM classes
+   Dynamic values (indicator position, indent depth) stay inline.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-anchor {
+  position: relative;
+  overflow: hidden;
+}
+
+.ino-anchor--vertical {
+  padding-left: 2px;
+}
+
+.ino-anchor--horizontal {
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 2px;
+}
+
+/* --- Track --- */
+.ino-anchor__track {
+  position: absolute;
+  background-color: var(--j-colorBorder);
+  border-radius: 1px;
+}
+
+.ino-anchor__track--vertical {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+
+.ino-anchor__track--horizontal {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
+/* --- Indicator --- */
+.ino-anchor__indicator {
+  position: absolute;
+  background-color: var(--j-colorPrimary);
+  border-radius: 1px;
+  opacity: 0;
+  z-index: 1;
+}
+
+.ino-anchor__indicator--vertical {
+  left: 0;
+  width: 2px;
+  transition: top 0.15s ease, height 0.15s ease, opacity 0.15s ease;
+}
+
+.ino-anchor__indicator--horizontal {
+  bottom: 0;
+  height: 2px;
+  transition: left 0.15s ease, width 0.15s ease, opacity 0.15s ease;
+}
+
+/* --- Link --- */
+.ino-anchor__link {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  text-decoration: none;
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  transition: color 0.15s ease;
+  cursor: pointer;
+  color: var(--j-colorTextMuted);
+}
+
+.ino-anchor__link--active {
+  color: var(--j-colorPrimary);
+}
+
+.ino-anchor__link--vertical {
+  padding: 0.25rem 0 0.25rem 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ino-anchor__link--horizontal {
+  display: inline-flex;
+  padding: 0.25rem 1rem;
+  white-space: nowrap;
+}
+
+/* --- Link wrapper (horizontal) --- */
+.ino-anchor__link-wrapper--horizontal {
+  display: inline-block;
+}

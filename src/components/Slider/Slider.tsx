@@ -9,9 +9,8 @@ import {
   forwardRef,
   useImperativeHandle,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -140,7 +139,7 @@ function SliderComponent(
     onChangeComplete,
     style,
     className,
-    classNames,
+    classNames: classNamesProp,
     styles: slotStyles,
   }: SliderProps,
   ref: React.Ref<SliderRef>,
@@ -199,9 +198,6 @@ function SliderComponent(
   const [dragging, setDragging] = useState(false)
   const [hoverHandle, setHoverHandle] = useState<number | null>(null)
   const [activeHandleIndex, setActiveHandleIndex] = useState(0)
-  const [isFocused, setIsFocused] = useState(false)
-  const [focusSource, setFocusSource] = useState<'mouse' | 'keyboard'>('keyboard')
-  const mouseDownRef = useRef(false)
   const [removingHandle, setRemovingHandle] = useState<number | null>(null)
   const removingHandleRef = useRef<number | null>(null)
   removingHandleRef.current = removingHandle
@@ -245,8 +241,6 @@ function SliderComponent(
     dragRef.current = { handleIndex, containerRect: rect, isDraggingTrack: false }
     setDragging(true)
     setActiveHandleIndex(handleIndex)
-    mouseDownRef.current = true
-    setFocusSource('mouse')
     rootRef.current?.focus()
   }, [disabled])
 
@@ -272,8 +266,6 @@ function SliderComponent(
       trackStartPercent: percent,
     }
     setDragging(true)
-    mouseDownRef.current = true
-    setFocusSource('mouse')
     rootRef.current?.focus()
   }, [disabled, rangeConfig.enabled, rangeConfig.draggableTrack, vertical, reverse, sortedValues])
 
@@ -334,7 +326,6 @@ function SliderComponent(
       if (!state) return
 
       if (state.isDraggingTrack && state.trackStartValues && state.trackStartPercent !== undefined) {
-        // Draggable track mode: move all handles
         const rail = railRef.current
         if (!rail) return
         const rect = rail.getBoundingClientRect()
@@ -348,7 +339,6 @@ function SliderComponent(
         const delta = ((percent - state.trackStartPercent) / 100) * (max - min)
 
         let newVals = state.trackStartValues.map(v => v + delta)
-        // Clamp: shift all if any overshoot
         const lo = Math.min(...newVals)
         if (lo < min) newVals = newVals.map(v => v + (min - lo))
         const hi2 = Math.max(...newVals)
@@ -399,7 +389,6 @@ function SliderComponent(
     const handleMouseUp = () => {
       const removing = removingHandleRef.current
       if (removing !== null && rangeConfig.editable) {
-        // Remove the handle
         const vals = [...(Array.isArray(valueRef.current) ? valueRef.current : [valueRef.current as number])]
         if (vals.length > rangeConfig.minCount) {
           vals.splice(removing, 1)
@@ -518,7 +507,7 @@ function SliderComponent(
     if (handled) e.preventDefault()
   }, [disabled, keyboard, step, marks, rangeConfig, sortedValues, handleCount, activeHandleIndex, min, max, reverse, updateValue, onChangeComplete])
 
-  // ---- Handle hover (tooltip only — visual hover is CSS-based) ----
+  // ---- Handle hover (tooltip only) ----
   const handleHandleMouseEnter = useCallback((index: number) => () => {
     if (disabled) return
     setHoverHandle(index)
@@ -600,91 +589,6 @@ function SliderComponent(
   // Mark dots
   const markEntries = marks ? Object.entries(marks).map(([k, v]) => [Number(k), v] as [number, SliderMarkLabel]) : []
 
-  // ---- Styles ----
-
-  const rootStyle: CSSProperties = {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    ...(vertical
-      ? { flexDirection: 'column', height: '100%', width: '1.875rem', padding: '0 0.375rem' }
-      : { width: '100%', height: '1.875rem', padding: '0.375rem 0' }),
-    cursor: disabled ? 'default' : 'pointer',
-    ...(disabled ? { opacity: 0.5 } : {}),
-    outline: 'none',
-    boxShadow: isFocused && !disabled && focusSource === 'keyboard'
-      ? `0 0 0 2px ${tokens.colorPrimaryLight}`
-      : 'none',
-    borderRadius: '0.25rem',
-    userSelect: 'none',
-    touchAction: 'none',
-  }
-
-  const railStyle: CSSProperties = {
-    position: 'relative',
-    ...(vertical
-      ? { width: '0.25rem', height: '100%', borderRadius: '0.125rem' }
-      : { width: '100%', height: '0.25rem', borderRadius: '0.125rem' }),
-    backgroundColor: tokens.colorBgMuted,
-  }
-
-  const handleBaseStyle: CSSProperties = {
-    position: 'absolute',
-    width: '0.875rem',
-    height: '0.875rem',
-    borderRadius: '50%',
-    backgroundColor: tokens.colorBg,
-    border: `2px solid ${disabled ? tokens.colorBorder : tokens.colorPrimary}`,
-    cursor: disabled ? 'default' : 'grab',
-    transition: dragging ? 'none' : 'left 0.15s ease, bottom 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease',
-    zIndex: 1,
-    ...(vertical
-      ? { left: '50%', transform: 'translate(-50%, 50%)' }
-      : { top: '50%', transform: 'translate(-50%, -50%)' }),
-  }
-
-  const dotBaseStyle: CSSProperties = {
-    position: 'absolute',
-    width: '0.5rem',
-    height: '0.5rem',
-    borderRadius: '50%',
-    backgroundColor: tokens.colorBg,
-    transition: 'border-color 0.15s ease',
-    ...(vertical
-      ? { left: '50%', transform: 'translate(-50%, 50%)' }
-      : { top: '50%', transform: 'translate(-50%, -50%)' }),
-  }
-
-  const markLabelBaseStyle: CSSProperties = {
-    position: 'absolute',
-    fontSize: '0.75rem',
-    whiteSpace: 'nowrap',
-    cursor: disabled ? 'default' : 'pointer',
-    transition: 'color 0.15s ease',
-    ...(vertical
-      ? { left: '100%', marginLeft: '0.5rem', transform: 'translateY(50%)' }
-      : { top: '100%', marginTop: '0.5rem', transform: 'translateX(-50%)' }),
-  }
-
-  const tooltipBaseStyle: CSSProperties = {
-    position: 'absolute',
-    zIndex: 1050,
-    padding: '0.25rem 0.5rem',
-    borderRadius: '0.25rem',
-    fontSize: '0.75rem',
-    fontWeight: 500,
-    whiteSpace: 'nowrap',
-    backgroundColor: tokens.colorBgMuted,
-    color: tokens.colorText,
-    border: `1px solid ${tokens.colorBorder}`,
-    boxShadow: tokens.shadowMd,
-    pointerEvents: 'none',
-    ...(tooltipPlacement === 'top' ? { bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: '0.375rem' } : {}),
-    ...(tooltipPlacement === 'bottom' ? { top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: '0.375rem' } : {}),
-    ...(tooltipPlacement === 'left' ? { right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: '0.375rem' } : {}),
-    ...(tooltipPlacement === 'right' ? { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: '0.375rem' } : {}),
-  }
-
   // ---- Check if a value is in an active track range ----
   const isInRange = (value: number): boolean => {
     if (!included) return false
@@ -697,10 +601,17 @@ function SliderComponent(
     return value >= min && value <= sortedValues[0]
   }
 
-  // ---- Handle custom colors detection (for CSS hover) ----
-  const hasCustomHandleColors = !!(slotStyles?.handle && (
-    'backgroundColor' in slotStyles.handle || 'borderColor' in slotStyles.handle || 'border' in slotStyles.handle
-  ))
+  // ---- BEM classes ----
+  const rootClass = cx(
+    'ino-slider',
+    {
+      'ino-slider--horizontal': !vertical,
+      'ino-slider--vertical': vertical,
+      'ino-slider--disabled': disabled,
+    },
+    className,
+    classNamesProp?.root,
+  )
 
   // ---- Render handles ----
   const renderHandle = (value: number, index: number) => {
@@ -711,6 +622,17 @@ function SliderComponent(
 
     const tooltipContent = tooltipFormatter ? tooltipFormatter(value) : value
 
+    const handleClass = cx(
+      'ino-slider__handle',
+      {
+        'ino-slider__handle--disabled': disabled,
+        'ino-slider__handle--active': activeHandleIndex === index,
+        'ino-slider__handle--removing': removingHandle === index,
+        'ino-slider__handle--animated': !dragging,
+      },
+      classNamesProp?.handle,
+    )
+
     return (
       <div
         key={index}
@@ -720,20 +642,16 @@ function SliderComponent(
         aria-valuemax={max}
         aria-valuenow={value}
         aria-label={handleCount > 1 ? `Handle ${index + 1} of ${handleCount}` : undefined}
-        style={mergeSemanticStyle({ ...handleBaseStyle, ...posStyle }, slotStyles?.handle)}
-        className={mergeSemanticClassName('j-slider-handle', classNames?.handle)}
-        data-disabled={disabled || undefined}
-        data-custom-colors={hasCustomHandleColors || undefined}
-        data-active={activeHandleIndex === index || undefined}
-        data-removing={removingHandle === index || undefined}
+        className={handleClass}
+        style={{ ...posStyle, ...slotStyles?.handle }}
         onMouseDown={handleMouseDown(index)}
         onMouseEnter={handleHandleMouseEnter(index)}
         onMouseLeave={handleHandleMouseLeave}
       >
         {isTooltipVisible(index) && (
           <div
-            style={mergeSemanticStyle(tooltipBaseStyle, slotStyles?.tooltip)}
-            className={classNames?.tooltip}
+            className={cx('ino-slider__tooltip', `ino-slider__tooltip--${tooltipPlacement}`, classNamesProp?.tooltip)}
+            style={slotStyles?.tooltip}
             role="tooltip"
           >
             {tooltipContent}
@@ -758,12 +676,8 @@ function SliderComponent(
     return (
       <div
         key={`dot-${value}`}
-        style={mergeSemanticStyle({
-          ...dotBaseStyle,
-          ...posStyle,
-          border: `2px solid ${active ? tokens.colorPrimary : tokens.colorBorder}`,
-        }, slotStyles?.dot)}
-        className={classNames?.dot}
+        className={cx('ino-slider__dot', { 'ino-slider__dot--active': active }, classNamesProp?.dot)}
+        style={{ ...posStyle, ...slotStyles?.dot }}
       />
     )
   }
@@ -776,18 +690,18 @@ function SliderComponent(
       ? { bottom: `${pos}%` }
       : { left: `${pos}%` }
 
-    const markStyle: CSSProperties = {
-      ...markLabelBaseStyle,
-      ...posStyle,
-      color: active ? tokens.colorText : tokens.colorTextSubtle,
-    }
+    const markClass = cx(
+      'ino-slider__mark',
+      { 'ino-slider__mark--active': active },
+      classNamesProp?.mark,
+    )
 
     if (isMarkLabel(label)) {
       return (
         <div
           key={`mark-${markValue}`}
-          style={mergeSemanticStyle({ ...markStyle, ...label.style }, slotStyles?.mark)}
-          className={classNames?.mark}
+          className={markClass}
+          style={{ ...posStyle, ...label.style, ...slotStyles?.mark }}
           onClick={() => handleMarkClick(markValue)}
         >
           {label.label}
@@ -798,8 +712,8 @@ function SliderComponent(
     return (
       <div
         key={`mark-${markValue}`}
-        style={mergeSemanticStyle(markStyle, slotStyles?.mark)}
-        className={classNames?.mark}
+        className={markClass}
+        style={{ ...posStyle, ...slotStyles?.mark }}
         onClick={() => handleMarkClick(markValue)}
       >
         {label}
@@ -822,73 +736,39 @@ function SliderComponent(
       aria-label={isMultiHandle ? 'Slider range' : undefined}
       aria-disabled={disabled}
       aria-orientation={vertical ? 'vertical' : 'horizontal'}
-      style={mergeSemanticStyle(rootStyle, slotStyles?.root, style)}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      className={rootClass}
+      style={{ ...slotStyles?.root, ...style }}
       onKeyDown={handleKeyDown}
-      onMouseDown={() => {
-        mouseDownRef.current = true
-        setFocusSource('mouse')
-      }}
-      onFocus={() => {
-        setFocusSource(mouseDownRef.current ? 'mouse' : 'keyboard')
-        mouseDownRef.current = false
-        setIsFocused(true)
-      }}
-      onBlur={() => setIsFocused(false)}
     >
-      {/* Handle hover + active + removing via CSS */}
-      <style>{`
-        .j-slider-handle:not([data-disabled]):not([data-custom-colors]):hover {
-          border-color: ${tokens.colorPrimaryHover} !important;
-          box-shadow: 0 0 0 4px ${tokens.colorPrimaryLight} !important;
-        }
-        .j-slider-handle[data-custom-colors]:not([data-disabled]):hover {
-          filter: brightness(1.15);
-        }
-        .j-slider-handle[data-active] {
-          z-index: 2 !important;
-        }
-        .j-slider-handle[data-removing] {
-          opacity: 0.4 !important;
-          filter: none !important;
-          box-shadow: none !important;
-        }
-      `}</style>
-
       {/* Cursor overlay during drag */}
-      {dragging && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 9999,
-          cursor: 'grabbing',
-        }} />
-      )}
+      {dragging && <div className="ino-slider__drag-overlay" />}
 
       {/* Rail */}
       <div
         ref={railRef}
-        style={mergeSemanticStyle(railStyle, slotStyles?.rail)}
-        className={classNames?.rail}
+        className={cx('ino-slider__rail', classNamesProp?.rail)}
+        style={slotStyles?.rail}
         onClick={handleRailClick}
       >
         {/* Track segments */}
         {trackSegments.map((seg, idx) => {
-          const segStyle: CSSProperties = {
-            position: 'absolute',
-            borderRadius: '0.125rem',
-            backgroundColor: disabled ? tokens.colorBorder : tokens.colorPrimary,
-            transition: dragging ? 'none' : 'all 0.15s ease',
-            ...(vertical
-              ? { width: '100%', bottom: `${seg.start}%`, height: `${seg.size}%`, left: 0 }
-              : { height: '100%', left: `${seg.start}%`, width: `${seg.size}%`, top: 0 }),
-            ...(rangeConfig.draggableTrack && rangeConfig.enabled && !disabled ? { cursor: 'grab' } : {}),
-          }
+          const segPosStyle: CSSProperties = vertical
+            ? { bottom: `${seg.start}%`, height: `${seg.size}%` }
+            : { left: `${seg.start}%`, width: `${seg.size}%` }
+
+          const segDynamic: CSSProperties = dragging ? { transition: 'none' } : { transition: 'all 0.15s ease' }
+
+          const trackClass = cx(
+            'ino-slider__track',
+            { 'ino-slider__track--draggable': rangeConfig.draggableTrack && rangeConfig.enabled && !disabled },
+            classNamesProp?.track,
+          )
+
           return (
             <div
               key={`track-${idx}`}
-              style={mergeSemanticStyle(segStyle, slotStyles?.track)}
-              className={classNames?.track}
+              className={trackClass}
+              style={{ ...segPosStyle, ...segDynamic, ...slotStyles?.track }}
               onMouseDown={rangeConfig.draggableTrack && rangeConfig.enabled ? handleTrackMouseDown : undefined}
             />
           )

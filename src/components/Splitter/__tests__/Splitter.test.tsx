@@ -21,7 +21,7 @@ describe('Splitter', () => {
       </Splitter>
     )
     const root = container.firstChild as HTMLElement
-    expect(root.style.display).toBe('flex')
+    expect(root).toHaveClass('ino-splitter')
   })
 
   it('renders horizontal by default (row direction)', () => {
@@ -32,7 +32,7 @@ describe('Splitter', () => {
       </Splitter>
     )
     const root = container.firstChild as HTMLElement
-    expect(root.style.flexDirection).toBe('row')
+    expect(root).toHaveClass('ino-splitter--horizontal')
   })
 
   it('renders vertical orientation (column direction)', () => {
@@ -43,7 +43,7 @@ describe('Splitter', () => {
       </Splitter>
     )
     const root = container.firstChild as HTMLElement
-    expect(root.style.flexDirection).toBe('column')
+    expect(root).toHaveClass('ino-splitter--vertical')
   })
 
   it('renders a split bar between panels', () => {
@@ -53,8 +53,8 @@ describe('Splitter', () => {
         <Splitter.Panel>B</Splitter.Panel>
       </Splitter>
     )
-    // The split bar is a div with cursor style
-    const bars = container.querySelectorAll('[style*="col-resize"]')
+    // The split bar now uses BEM class
+    const bars = container.querySelectorAll('.ino-splitter__bar')
     expect(bars.length).toBe(1)
   })
 
@@ -66,7 +66,7 @@ describe('Splitter', () => {
         <Splitter.Panel>C</Splitter.Panel>
       </Splitter>
     )
-    const bars = container.querySelectorAll('[style*="col-resize"]')
+    const bars = container.querySelectorAll('.ino-splitter__bar')
     expect(bars.length).toBe(2)
   })
 

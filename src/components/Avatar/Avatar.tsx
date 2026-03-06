@@ -8,9 +8,9 @@ import {
   type ReactNode,
   type CSSProperties,
 } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Avatar.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -87,7 +87,6 @@ function isResponsiveSize(size: AvatarSize): size is AvatarResponsiveSize {
 function resolveSize(size: AvatarSize, windowWidth?: number): number {
   if (typeof size === 'number') return size
   if (typeof size === 'string') return SIZE_MAP[size] ?? 32
-  // Responsive object
   if (windowWidth !== undefined) {
     for (const bp of BREAKPOINT_ORDER) {
       if (windowWidth >= BREAKPOINT_VALUES[bp] && size[bp] !== undefined) {
@@ -95,7 +94,6 @@ function resolveSize(size: AvatarSize, windowWidth?: number): number {
       }
     }
   }
-  // Fallback: use the smallest defined breakpoint
   for (let i = BREAKPOINT_ORDER.length - 1; i >= 0; i--) {
     const bp = BREAKPOINT_ORDER[i]
     if (size[bp] !== undefined) return size[bp]!
@@ -147,7 +145,7 @@ function AvatarComponent({
   children,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: AvatarProps) {
   const groupCtx = useContext(AvatarGroupContext)
@@ -162,12 +160,10 @@ function AvatarComponent({
   const rootRef = useRef<HTMLSpanElement>(null)
   const textRef = useRef<HTMLSpanElement>(null)
 
-  // Reset error when src changes
   useEffect(() => {
     setIsImgError(false)
   }, [src])
 
-  // Auto-scale text to fit
   useEffect(() => {
     if (!textRef.current || !rootRef.current) return
     if (src && !isImgError) return
@@ -195,7 +191,6 @@ function AvatarComponent({
 
   const sizePx = resolveSize(size, needsResponsive ? windowWidth : undefined)
   const sizeRem = sizeToRem(sizePx)
-  const borderRadius = shape === 'circle' ? '50%' : '0.5rem'
   const fontSize = sizeToRem(sizePx * 0.5)
   const iconSize = Math.round(sizePx * 0.55)
 
@@ -203,32 +198,26 @@ function AvatarComponent({
   const showIcon = !showImage && icon
   const showText = !showImage && !showIcon && children
 
-  const rootStyle = mergeSemanticStyle(
-    {
-      display: 'inline-flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: sizeRem,
-      height: sizeRem,
-      borderRadius,
-      backgroundColor: tokens.colorBgMuted,
-      color: tokens.colorTextMuted,
-      fontSize,
-      fontWeight: 500,
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      verticalAlign: 'middle',
-      position: 'relative',
-    },
-    styles?.root,
-    style,
+  const rootClass = cx(
+    'ino-avatar',
+    `ino-avatar--${shape}`,
+    className,
+    classNamesProp?.root,
   )
+
+  const dynamicStyle: CSSProperties = {
+    width: sizeRem,
+    height: sizeRem,
+    fontSize,
+    ...styles?.root,
+    ...style,
+  }
 
   return (
     <span
       ref={rootRef}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={rootStyle}
+      className={rootClass}
+      style={dynamicStyle}
     >
       {showImage && (
         <img
@@ -237,30 +226,16 @@ function AvatarComponent({
           alt={alt}
           draggable={draggable}
           crossOrigin={crossOrigin || undefined}
-          className={classNames?.image}
-          style={mergeSemanticStyle(
-            {
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-            },
-            styles?.image,
-          )}
+          className={cx('ino-avatar__image', classNamesProp?.image)}
+          style={styles?.image}
           onError={handleImgError}
         />
       )}
 
       {showIcon && (
         <span
-          className={classNames?.icon}
-          style={mergeSemanticStyle(
-            {
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-            styles?.icon,
-          )}
+          className={cx('ino-avatar__icon', classNamesProp?.icon)}
+          style={styles?.icon}
         >
           {icon}
         </span>
@@ -269,23 +244,16 @@ function AvatarComponent({
       {showText && (
         <span
           ref={textRef}
-          className={classNames?.text}
-          style={mergeSemanticStyle(
-            {
-              display: 'inline-block',
-              transform: textScale !== 1 ? `scale(${textScale})` : undefined,
-              transformOrigin: 'center',
-              lineHeight: 1,
-              userSelect: 'none',
-            },
-            styles?.text,
-          )}
+          className={cx('ino-avatar__text', classNamesProp?.text)}
+          style={{
+            transform: textScale !== 1 ? `scale(${textScale})` : undefined,
+            ...styles?.text,
+          }}
         >
           {children}
         </span>
       )}
 
-      {/* Default fallback: user icon */}
       {!showImage && !showIcon && !showText && (
         <UserIcon size={iconSize} />
       )}
@@ -312,27 +280,21 @@ function AvatarGroup({
   const sizePx = resolveSize(size)
   const overlapMargin = sizeToRem(Math.round(sizePx * -0.3))
 
+  const itemShapeClass = shape === 'circle' ? 'ino-avatar-group__item--circle' : 'ino-avatar-group__item--square'
+
   return (
     <AvatarGroupContext.Provider value={{ size, shape }}>
       <div
-        className={className}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          ...style,
-        }}
+        className={cx('ino-avatar-group', className)}
+        style={style}
       >
         {visible.map((child, i) => (
           <span
             key={i}
+            className={cx('ino-avatar-group__item', itemShapeClass)}
             style={{
               marginInlineStart: i === 0 ? undefined : overlapMargin,
-              position: 'relative',
               zIndex: visibleCount - i,
-              display: 'inline-flex',
-              padding: '0.125rem',
-              backgroundColor: tokens.colorBg,
-              borderRadius: shape === 'circle' ? '50%' : '0.625rem',
             }}
           >
             {child}
@@ -340,14 +302,10 @@ function AvatarGroup({
         ))}
         {hiddenCount > 0 && (
           <span
+            className={cx('ino-avatar-group__item', itemShapeClass)}
             style={{
               marginInlineStart: overlapMargin,
-              position: 'relative',
               zIndex: 0,
-              display: 'inline-flex',
-              padding: '0.125rem',
-              backgroundColor: tokens.colorBg,
-              borderRadius: shape === 'circle' ? '50%' : '0.625rem',
             }}
           >
             <AvatarComponent size={size} shape={shape} style={max?.style}>

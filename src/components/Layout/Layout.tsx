@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode, type CSSProperties } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -120,17 +119,14 @@ function LayoutComponent({
   className,
   style,
 }: LayoutProps) {
-  const layoutStyles: CSSProperties = {
-    display: 'flex',
-    flex: 'auto',
-    flexDirection: hasSider ? 'row' : 'column',
-    minHeight: 0,
-    backgroundColor: tokens.colorBgSubtle,
-    ...style,
-  }
+  const rootClass = cx(
+    'ino-layout',
+    { 'ino-layout--has-sider': hasSider },
+    className,
+  )
 
   return (
-    <div style={layoutStyles} className={className}>
+    <div className={rootClass} style={style}>
       {children}
     </div>
   )
@@ -145,18 +141,8 @@ function Header({
   className,
   style,
 }: HeaderProps) {
-  const headerStyles: CSSProperties = {
-    flex: '0 0 auto',
-    height: '4rem',
-    padding: '0 1.5rem',
-    backgroundColor: tokens.colorBgMuted,
-    display: 'flex',
-    alignItems: 'center',
-    ...style,
-  }
-
   return (
-    <header style={headerStyles} className={className}>
+    <header className={cx('ino-layout__header', className)} style={style}>
       {children}
     </header>
   )
@@ -171,15 +157,8 @@ function Footer({
   className,
   style,
 }: FooterProps) {
-  const footerStyles: CSSProperties = {
-    flex: '0 0 auto',
-    padding: '1.5rem 3.125rem',
-    backgroundColor: tokens.colorBgMuted,
-    ...style,
-  }
-
   return (
-    <footer style={footerStyles} className={className}>
+    <footer className={cx('ino-layout__footer', className)} style={style}>
       {children}
     </footer>
   )
@@ -194,15 +173,8 @@ function Content({
   className,
   style,
 }: ContentProps) {
-  const contentStyles: CSSProperties = {
-    flex: 'auto',
-    minHeight: 0,
-    padding: '1.5rem',
-    ...style,
-  }
-
   return (
-    <main style={contentStyles} className={className}>
+    <main className={cx('ino-layout__content', className)} style={style}>
       {children}
     </main>
   )
@@ -277,74 +249,52 @@ function Sider({
 
   const currentWidth = collapsed ? collapsedWidth : (typeof width === 'number' ? width : parseInt(width))
 
-  const siderStyle = mergeSemanticStyle(
-    {
-      flex: `0 0 ${currentWidth}px`,
-      maxWidth: currentWidth,
-      minWidth: currentWidth,
-      width: currentWidth,
-      backgroundColor: theme === 'dark' ? '#1f1f1f' : tokens.colorBg,
-      color: theme === 'dark' ? 'rgba(255, 255, 255, 0.85)' : tokens.colorText,
-      transition: 'all 0.2s ease',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    styles?.root,
-    style,
-  )
-
-  const contentWrapperStyles: CSSProperties = {
-    flex: 1,
-    overflow: 'hidden',
-    ...styles?.content,
+  // Dynamic: sider width must stay inline
+  const siderDynamicStyle: CSSProperties = {
+    flex: `0 0 ${currentWidth}px`,
+    maxWidth: currentWidth,
+    minWidth: currentWidth,
+    width: currentWidth,
+    ...styles?.root,
+    ...style,
   }
+
+  const siderClass = cx(
+    'ino-layout__sider',
+    `ino-layout__sider--${theme}`,
+    className,
+    classNames?.root,
+  )
 
   // Renderizar trigger
   const renderTrigger = () => {
     if (!collapsible) return null
     if (trigger === null) return null
 
-    const triggerStyles: CSSProperties = {
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      height: '3rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      cursor: 'pointer',
-      backgroundColor: theme === 'dark' ? 'rgba(0, 0, 0, 0.25)' : tokens.colorBgMuted,
-      transition: 'background-color 0.2s',
-    }
-
     // Si collapsedWidth es 0, mostrar trigger especial fuera del sider
     if (collapsedWidth === 0 && collapsed) {
-      const zeroWidthTriggerStyles: CSSProperties = {
-        position: 'absolute',
-        bottom: '3rem',
-        right: '-2.25rem',
-        width: '2.25rem',
-        height: '2.625rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer',
-        backgroundColor: theme === 'dark' ? '#2a2a2a' : tokens.colorBgMuted,
-        borderRadius: '0 0.25rem 0.25rem 0',
-        boxShadow: tokens.shadowMd,
-      }
+      const triggerClass = cx(
+        'ino-layout__sider-trigger',
+        'ino-layout__sider-trigger--zero',
+        `ino-layout__sider-trigger--${theme}`,
+        classNames?.trigger,
+      )
 
       return (
-        <div style={{ ...zeroWidthTriggerStyles, ...styles?.trigger }} className={classNames?.trigger} onClick={handleTriggerClick}>
+        <div className={triggerClass} style={styles?.trigger} onClick={handleTriggerClick}>
           {trigger || <DefaultTriggerIcon collapsed={collapsed} reverseArrow={reverseArrow} />}
         </div>
       )
     }
 
+    const triggerClass = cx(
+      'ino-layout__sider-trigger',
+      `ino-layout__sider-trigger--${theme}`,
+      classNames?.trigger,
+    )
+
     return (
-      <div style={{ ...triggerStyles, ...styles?.trigger }} className={classNames?.trigger} onClick={handleTriggerClick}>
+      <div className={triggerClass} style={styles?.trigger} onClick={handleTriggerClick}>
         {trigger || <DefaultTriggerIcon collapsed={collapsed} reverseArrow={reverseArrow} />}
       </div>
     )
@@ -352,8 +302,8 @@ function Sider({
 
   return (
     <SiderContext.Provider value={{ siderCollapsed: collapsed }}>
-      <aside style={siderStyle} className={mergeSemanticClassName(className, classNames?.root)}>
-        <div style={contentWrapperStyles} className={classNames?.content}>
+      <aside className={siderClass} style={siderDynamicStyle}>
+        <div className={cx('ino-layout__sider-content', classNames?.content)} style={styles?.content}>
           {children}
         </div>
         {renderTrigger()}
@@ -379,10 +329,7 @@ function DefaultTriggerIcon({ collapsed, reverseArrow }: { collapsed: boolean; r
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      style={{
-        transform: shouldPointRight ? 'rotate(180deg)' : 'rotate(0deg)',
-        transition: 'transform 0.2s',
-      }}
+      className={cx('ino-layout__trigger-icon', { 'ino-layout__trigger-icon--collapsed': shouldPointRight })}
     >
       <polyline points="15 18 9 12 15 6" />
     </svg>

@@ -42,42 +42,41 @@ describe('Input', () => {
 
   it('renders small size', () => {
     const { container } = render(<Input size="small" />)
-    // Size is applied to the wrapper
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.height).toBe('1.5rem')
+    // Size is applied via BEM class on root
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--small')
   })
 
   it('renders middle size (default)', () => {
     const { container } = render(<Input />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.height).toBe('2rem')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--middle')
   })
 
   it('renders large size', () => {
     const { container } = render(<Input size="large" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.height).toBe('2.5rem')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--large')
   })
 
   // ---------- Variants ----------
 
   it('renders outlined variant with border', () => {
     render(<Input variant="outlined" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper).toHaveStyle({ backgroundColor: 'var(--j-bg)' })
-    expect(wrapper).toHaveStyle({ borderRadius: '0.375rem' })
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--outlined')
   })
 
   it('renders filled variant with muted background', () => {
     render(<Input variant="filled" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.backgroundColor).toBe('var(--j-bgMuted)')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--filled')
   })
 
   it('renders borderless variant without border', () => {
     render(<Input variant="borderless" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.border).toContain('transparent')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--borderless')
   })
 
   it('renders underlined variant', () => {
@@ -92,14 +91,14 @@ describe('Input', () => {
 
   it('applies error status border color', () => {
     render(<Input status="error" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.borderColor).toBe('var(--j-error)')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--error')
   })
 
   it('applies warning status border color', () => {
     render(<Input status="warning" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.borderColor).toBe('var(--j-warning)')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--warning')
   })
 
   // ---------- Prefix / Suffix ----------
@@ -356,14 +355,14 @@ describe('Input.TextArea', () => {
 
   it('applies small size styles', () => {
     render(<Input.TextArea size="small" />)
-    const textarea = screen.getByRole('textbox') as HTMLTextAreaElement
-    expect(textarea).toHaveStyle({ fontSize: '0.75rem' })
+    const root = screen.getByRole('textbox').closest('.ino-textarea') as HTMLElement
+    expect(root).toHaveClass('ino-textarea--small')
   })
 
   it('applies error status', () => {
     render(<Input.TextArea status="error" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.borderColor).toBe('var(--j-error)')
+    const root = screen.getByRole('textbox').closest('.ino-textarea') as HTMLElement
+    expect(root).toHaveClass('ino-textarea--error')
   })
 
   it('applies custom className', () => {
@@ -448,8 +447,8 @@ describe('Input.Search', () => {
 
   it('applies custom size', () => {
     render(<Input.Search size="large" />)
-    const wrapper = screen.getByRole('textbox').parentElement as HTMLElement
-    expect(wrapper.style.height).toBe('2.5rem')
+    const root = screen.getByRole('textbox').closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--large')
   })
 })
 
@@ -525,9 +524,8 @@ describe('Input.Password', () => {
   it('applies custom size', () => {
     const { container } = render(<Input.Password size="small" />)
     const input = container.querySelector('input') as HTMLInputElement
-    const wrapper = input.parentElement as HTMLElement
-    const computedStyle = window.getComputedStyle(wrapper)
-    expect(computedStyle.height).toBe('1.5rem')
+    const root = input.closest('.ino-input') as HTMLElement
+    expect(root).toHaveClass('ino-input--small')
   })
 })
 
@@ -614,16 +612,14 @@ describe('Input.OTP', () => {
 
   it('applies small size', () => {
     const { container } = render(<Input.OTP size="small" length={3} />)
-    const inputs = container.querySelectorAll('input')
-    // Small size applies specific height styles
-    expect(inputs[0].style.height).toBe('1.5rem')
+    const root = container.querySelector('.ino-otp') as HTMLElement
+    expect(root).toHaveClass('ino-otp--small')
   })
 
   it('applies error status', () => {
     const { container } = render(<Input.OTP status="error" length={3} />)
-    const inputs = container.querySelectorAll('input')
-    // Error status applies red border
-    expect(inputs[0].style.borderColor).toContain('var(--j-error)')
+    const root = container.querySelector('.ino-otp') as HTMLElement
+    expect(root).toHaveClass('ino-otp--error')
   })
 
   it('auto-focuses first input when autoFocus=true', () => {

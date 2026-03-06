@@ -1,0 +1,177 @@
+/* ================================================================
+   TimePicker – BEM classes
+   ================================================================ */
+
+.ino-time-picker {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+/* --- Selector --- */
+.ino-time-picker__selector {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+  gap: 0.375rem;
+}
+
+/* Sizes */
+.ino-time-picker--sm .ino-time-picker__selector { height: 1.75rem; font-size: 0.75rem; padding: 0 0.5rem; }
+.ino-time-picker--md .ino-time-picker__selector { height: 2.25rem; font-size: 0.875rem; padding: 0 0.75rem; }
+.ino-time-picker--lg .ino-time-picker__selector { height: 2.75rem; font-size: 1rem; padding: 0 0.875rem; }
+
+/* Variants */
+.ino-time-picker--outlined .ino-time-picker__selector { border: 1px solid var(--j-border); background-color: var(--j-bg); }
+.ino-time-picker--filled .ino-time-picker__selector { border: 1px solid transparent; background-color: var(--j-bg-muted); }
+.ino-time-picker--borderless .ino-time-picker__selector { border: 1px solid transparent; background-color: transparent; }
+
+/* Border radius */
+.ino-time-picker--sm .ino-time-picker__selector { border-radius: 0.25rem; }
+.ino-time-picker--md .ino-time-picker__selector { border-radius: 0.375rem; }
+.ino-time-picker--lg .ino-time-picker__selector { border-radius: 0.5rem; }
+
+/* Hover */
+.ino-time-picker--outlined .ino-time-picker__selector:hover:not(:focus-within) { border-color: var(--j-border-hover); }
+.ino-time-picker--filled .ino-time-picker__selector:hover:not(:focus-within) { border-color: var(--j-border-hover); }
+
+/* Focus-within */
+.ino-time-picker--outlined .ino-time-picker__selector:focus-within { border-color: var(--j-primary); box-shadow: 0 0 0 2px var(--j-primary-light); }
+.ino-time-picker--filled .ino-time-picker__selector:focus-within { border-color: var(--j-primary); box-shadow: 0 0 0 2px var(--j-primary-light); }
+
+/* Status */
+.ino-time-picker--error .ino-time-picker__selector { border-color: var(--j-error); }
+.ino-time-picker--error .ino-time-picker__selector:focus-within { border-color: var(--j-error); box-shadow: 0 0 0 2px var(--j-error-bg); }
+.ino-time-picker--warning .ino-time-picker__selector { border-color: var(--j-warning); }
+.ino-time-picker--warning .ino-time-picker__selector:focus-within { border-color: var(--j-warning); box-shadow: 0 0 0 2px var(--j-warning-bg); }
+
+/* Disabled */
+.ino-time-picker--disabled .ino-time-picker__selector { opacity: 0.6; cursor: not-allowed; }
+
+/* --- Suffix --- */
+.ino-time-picker__suffix {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--j-text-muted);
+}
+
+/* --- Clear --- */
+.ino-time-picker__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--j-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.ino-time-picker__clear:hover { color: var(--j-text); }
+
+/* --- Popup --- */
+.ino-time-picker__popup {
+  position: absolute;
+  z-index: 1050;
+  background-color: var(--j-bg);
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadow-lg);
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+/* --- Time column --- */
+.ino-time-picker__column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 14rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 3.5rem;
+  flex: 1;
+  scrollbar-width: thin;
+}
+
+.ino-time-picker__column:not(:last-child) {
+  border-right: 1px solid var(--j-border);
+}
+
+/* --- Time column item --- */
+.ino-time-picker__column-item {
+  width: 3rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  color: var(--j-text);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  transition: background-color 0.1s ease;
+  padding: 0;
+}
+
+.ino-time-picker__column-item:hover:not(:disabled):not(.ino-time-picker__column-item--selected) {
+  background-color: var(--j-bg-muted);
+}
+
+.ino-time-picker__column-item--selected {
+  background-color: var(--j-primary-bg);
+  color: var(--j-primary);
+  font-weight: 600;
+}
+
+.ino-time-picker__column-item:disabled {
+  cursor: not-allowed;
+  color: var(--j-text-subtle);
+  opacity: 0.4;
+}
+
+/* --- Footer --- */
+.ino-time-picker__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-top: 1px solid var(--j-border);
+  gap: 0.5rem;
+}
+
+.ino-time-picker__footer-btn {
+  border: none;
+  background: none;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: var(--j-primary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease;
+}
+
+.ino-time-picker__footer-btn:hover { background-color: var(--j-primary-light); }
+
+.ino-time-picker__footer-btn--primary {
+  background-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+}
+
+.ino-time-picker__footer-btn--primary:hover { background-color: var(--j-primary-hover); }
+
+/* --- Range separator --- */
+.ino-time-picker__separator {
+  display: flex;
+  align-items: center;
+  color: var(--j-text-muted);
+  flex-shrink: 0;
+}

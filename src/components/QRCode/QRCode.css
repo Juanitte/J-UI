@@ -1,0 +1,57 @@
+/* ================================================================
+   QRCode – BEM classes
+   ================================================================ */
+
+.ino-qrcode {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.ino-qrcode--bordered {
+  padding: 0.75rem;
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  background-color: var(--j-bg);
+}
+
+.ino-qrcode__wrapper {
+  position: relative;
+}
+
+/* --- Mask overlay --- */
+.ino-qrcode__mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.96);
+  border-radius: 0.25rem;
+}
+
+.ino-qrcode__expired-text {
+  color: var(--j-textMuted);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.ino-qrcode__refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: var(--j-primary);
+  color: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ino-qrcode__scanned-text {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}

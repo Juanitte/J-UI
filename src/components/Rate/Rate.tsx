@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import type { ReactNode, CSSProperties, KeyboardEvent } from 'react'
-import { tokens } from '../../theme/tokens'
 import { Tooltip } from '../Tooltip'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -79,13 +78,13 @@ function StarIcon() {
 }
 
 // ============================================================================
-// Size Config
+// Size key map
 // ============================================================================
 
-const sizeConfig: Record<RateSize, { fontSize: string; gap: string }> = {
-  small:  { fontSize: '0.875rem', gap: '0.25rem' },
-  middle: { fontSize: '1.25rem', gap: '0.5rem' },
-  large:  { fontSize: '2rem', gap: '0.625rem' },
+const SIZE_KEY: Record<RateSize, string> = {
+  small: 'sm',
+  middle: 'md',
+  large: 'lg',
 }
 
 // ============================================================================
@@ -106,7 +105,7 @@ function RateComponent(
     value: controlledValue,
     style,
     className,
-    classNames,
+    classNames: classNamesProp,
     styles,
     onBlur,
     onChange,
@@ -117,9 +116,6 @@ function RateComponent(
   ref: React.Ref<RateRef>,
 ) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const starRefs = useRef<(HTMLDivElement | null)[]>([])
-  const mouseDownRef = useRef(false)
-  const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
 
   // State
   const isControlled = controlledValue !== undefined
@@ -127,7 +123,6 @@ function RateComponent(
   const currentValue = isControlled ? controlledValue : internalValue
 
   const [hoverValue, setHoverValue] = useState(0)
-  const [isFocused, setIsFocused] = useState(false)
 
   const displayValue = hoverValue > 0 ? hoverValue : currentValue
 
@@ -157,15 +152,8 @@ function RateComponent(
   const isHalf = (index: number): boolean =>
     allowHalf && displayValue >= index + 0.5 && displayValue < index + 1
 
-  // Custom color detection (for ref-based hover glow)
-  const hasCustomColors = !!(
-    (styles?.character && 'color' in styles.character) ||
-    (styles?.star && ('color' in styles.star || 'backgroundColor' in styles.star))
-  )
-
   // Filled color: use custom character color or default warning
   const filledColor = styles?.character?.color as string | undefined
-  const emptyColor = filledColor ? undefined : tokens.colorBorder
 
   // Click handler
   const handleStarClick = (starValue: number) => {
@@ -183,24 +171,14 @@ function RateComponent(
   }
 
   // Hover handlers
-  const handleStarMouseEnter = (index: number, value: number) => {
+  const handleStarMouseEnter = (_index: number, value: number) => {
     if (disabled) return
     setHoverValue(value)
     onHoverChange?.(value)
-
-    // Ref-based glow on specific star
-    const el = starRefs.current[index]
-    if (el && hasCustomColors) {
-      el.style.filter = 'brightness(1.15)'
-    }
   }
 
-  const handleStarMouseLeave = (index: number) => {
+  const handleStarMouseLeave = (_index: number) => {
     if (disabled) return
-    const el = starRefs.current[index]
-    if (el && hasCustomColors) {
-      el.style.filter = ''
-    }
   }
 
   const handleRootMouseLeave = () => {
@@ -236,46 +214,27 @@ function RateComponent(
     }
   }
 
-  // ---- Styles ----
-
-  const sc = sizeConfig[size]
-
-  const rootStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: sc.gap,
-    cursor: disabled ? 'default' : 'pointer',
-    userSelect: 'none',
-    outline: 'none',
-    lineHeight: 1,
-    fontSize: sc.fontSize,
-    ...(disabled ? { opacity: 0.5 } : {}),
-    boxShadow: isFocused && !disabled && focusSourceRef.current === 'keyboard'
-      ? `0 0 0 2px ${tokens.colorPrimaryLight}`
-      : 'none',
-    borderRadius: '0.25rem',
-    padding: '0.125rem',
-  }
+  // ---- BEM classes ----
+  const rootClass = cx(
+    'ino-rate',
+    `ino-rate--${SIZE_KEY[size]}`,
+    {
+      'ino-rate--disabled': disabled,
+    },
+    className,
+    classNamesProp?.root,
+  )
 
   return (
     <div
       ref={rootRef}
       role="radiogroup"
       tabIndex={disabled ? -1 : 0}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
       onMouseLeave={handleRootMouseLeave}
-      onMouseDown={() => { mouseDownRef.current = true }}
-      onFocus={() => {
-        focusSourceRef.current = mouseDownRef.current ? 'mouse' : 'keyboard'
-        mouseDownRef.current = false
-        setIsFocused(true)
-        onFocus?.()
-      }}
-      onBlur={() => {
-        setIsFocused(false)
-        onBlur?.()
-      }}
+      onFocus={() => { onFocus?.() }}
+      onBlur={() => { onBlur?.() }}
       onKeyDown={handleKeyDown}
       aria-valuenow={currentValue}
       aria-valuemin={0}
@@ -287,64 +246,54 @@ function RateComponent(
         const isHovered = hoverValue > 0 && Math.ceil(hoverValue) === index + 1
         const i = index + 1 // 1-based
 
-        const starWrapperStyle: CSSProperties = {
-          position: 'relative',
-          display: 'inline-flex',
-          cursor: disabled ? 'default' : 'pointer',
-          transition: 'transform 0.15s ease',
-          transform: isHovered && !disabled ? 'scale(1.15)' : 'scale(1)',
-        }
-
-        const bgCharStyle: CSSProperties = {
-          display: 'inline-flex',
-          color: emptyColor,
-          transition: 'color 0.2s ease',
-          ...(filledColor && !starIsFull && !starIsHalf ? { color: filledColor, opacity: 0.25 } : {}),
-        }
-
-        const fgCharStyle: CSSProperties = {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          color: filledColor || tokens.colorWarning,
-          clipPath: starIsFull ? 'inset(0 0% 0 0)' : starIsHalf ? 'inset(0 50% 0 0)' : 'inset(0 100% 0 0)',
-          transition: 'color 0.2s ease, clip-path 0.15s ease',
-          pointerEvents: 'none',
-        }
-
-        const hitAreaBase: CSSProperties = {
-          position: 'absolute',
-          top: 0,
-          height: '100%',
-          zIndex: 1,
-          cursor: 'inherit',
-        }
-
         const tooltipText = tooltips?.[index]
+
+        // Dynamic styles for custom character color
+        const bgCharDynamic: CSSProperties | undefined =
+          filledColor && !starIsFull && !starIsHalf
+            ? { color: filledColor, opacity: 0.25 }
+            : filledColor
+              ? { color: undefined } // let CSS handle it when there's no custom empty state
+              : undefined
+
+        const fgCharDynamic: CSSProperties | undefined = filledColor
+          ? { color: filledColor }
+          : undefined
+
+        const fgClipClass = starIsFull
+          ? 'ino-rate__char-fg--full'
+          : starIsHalf
+            ? 'ino-rate__char-fg--half'
+            : 'ino-rate__char-fg--empty'
+
+        const starClass = cx(
+          'ino-rate__star',
+          {
+            'ino-rate__star--hovered': isHovered && !disabled,
+          },
+          classNamesProp?.star,
+        )
 
         const starElement = (
           <div
-            ref={(el) => { starRefs.current[index] = el }}
-            className={classNames?.star}
-            style={mergeSemanticStyle(starWrapperStyle, styles?.star)}
+            className={starClass}
+            style={styles?.star}
             role="radio"
             aria-checked={displayValue >= i}
             aria-label={tooltipText ?? `${i} star${i > 1 ? 's' : ''}`}
           >
             {/* Background (empty) layer */}
             <span
-              className={classNames?.character}
-              style={mergeSemanticStyle(bgCharStyle, styles?.character)}
+              className={cx('ino-rate__char-bg', classNamesProp?.character)}
+              style={{ ...bgCharDynamic, ...styles?.character }}
             >
               {resolveCharacter(index)}
             </span>
 
-            {/* Foreground (filled) layer — always rendered for smooth width transition */}
+            {/* Foreground (filled) layer */}
             <span
-              className={classNames?.character}
-              style={mergeSemanticStyle(fgCharStyle, styles?.character)}
+              className={cx('ino-rate__char-fg', fgClipClass, classNamesProp?.character)}
+              style={{ ...fgCharDynamic, ...styles?.character }}
             >
               {resolveCharacter(index)}
             </span>
@@ -353,13 +302,13 @@ function RateComponent(
             {allowHalf ? (
               <>
                 <div
-                  style={{ ...hitAreaBase, left: 0, width: '50%' }}
+                  className="ino-rate__hit ino-rate__hit--left"
                   onMouseEnter={() => handleStarMouseEnter(index, i - 0.5)}
                   onMouseLeave={() => handleStarMouseLeave(index)}
                   onClick={() => handleStarClick(i - 0.5)}
                 />
                 <div
-                  style={{ ...hitAreaBase, right: 0, width: '50%' }}
+                  className="ino-rate__hit ino-rate__hit--right"
                   onMouseEnter={() => handleStarMouseEnter(index, i)}
                   onMouseLeave={() => handleStarMouseLeave(index)}
                   onClick={() => handleStarClick(i)}
@@ -367,7 +316,7 @@ function RateComponent(
               </>
             ) : (
               <div
-                style={{ ...hitAreaBase, left: 0, width: '100%' }}
+                className="ino-rate__hit ino-rate__hit--full"
                 onMouseEnter={() => handleStarMouseEnter(index, i)}
                 onMouseLeave={() => handleStarMouseLeave(index)}
                 onClick={() => handleStarClick(i)}

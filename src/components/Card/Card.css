@@ -1,0 +1,171 @@
+/* ================================================================
+   Card – BEM classes
+   ================================================================ */
+
+/* --- Block --- */
+.ino-card {
+  background-color: var(--j-bg);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  font-family: inherit;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.ino-card--outlined {
+  border: 1px solid var(--j-border);
+}
+
+.ino-card--borderless {
+  border: none;
+}
+
+.ino-card--hoverable:hover {
+  box-shadow: var(--j-shadowLg);
+  transform: translateY(-1px);
+}
+
+/* --- Cover --- */
+.ino-card__cover {
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.ino-card__header {
+  border-bottom: 1px solid var(--j-border);
+}
+
+.ino-card__header--inner {
+  background-color: var(--j-bgSubtle);
+}
+
+/* --- Title row --- */
+.ino-card__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* --- Title --- */
+.ino-card__title {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--j-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ino-card__title--sm {
+  font-size: 0.875rem;
+}
+
+.ino-card__title--default {
+  font-size: 1rem;
+}
+
+/* --- Extra --- */
+.ino-card__extra {
+  flex-shrink: 0;
+  font-size: 0.875rem;
+  color: var(--j-primary);
+}
+
+/* --- Body --- */
+.ino-card__body--grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+/* --- Actions --- */
+.ino-card__actions {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--j-border);
+}
+
+.ino-card__action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+  color: var(--j-textMuted);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.ino-card__action:hover {
+  color: var(--j-primary);
+}
+
+.ino-card__action--bordered {
+  border-right: 1px solid var(--j-border);
+}
+
+/* --- Meta --- */
+.ino-card-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.ino-card-meta__avatar {
+  flex-shrink: 0;
+}
+
+.ino-card-meta__detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.ino-card-meta__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--j-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ino-card-meta__description {
+  font-size: 0.875rem;
+  color: var(--j-textMuted);
+}
+
+/* --- Grid --- */
+.ino-card-grid {
+  width: 33.33%;
+  padding: 1.5rem;
+  border-right: 1px solid var(--j-border);
+  border-bottom: 1px solid var(--j-border);
+  transition: box-shadow 0.2s ease;
+}
+
+.ino-card-grid--hoverable {
+  cursor: pointer;
+}
+
+.ino-card-grid--hoverable:hover {
+  box-shadow: var(--j-shadowMd);
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Loading skeleton --- */
+.ino-card__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ino-card__skeleton-line {
+  height: 1rem;
+  background-color: var(--j-bgMuted);
+  border-radius: 0.25rem;
+  animation: j-card-loading 1.5s ease-in-out infinite;
+}

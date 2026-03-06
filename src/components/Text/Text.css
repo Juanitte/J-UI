@@ -1,0 +1,149 @@
+/* ================================================================
+   Text – BEM classes
+   Color/size/weight are mostly dynamic (set via inline style)
+   since they depend on many prop combinations.
+   ================================================================ */
+
+/* --- Sizes --- */
+.ino-text--xs { font-size: 0.625rem; }
+.ino-text--sm { font-size: 0.8125rem; }
+.ino-text--md { font-size: 1rem; }
+.ino-text--lg { font-size: 1.5rem; }
+.ino-text--xl { font-size: 2.25rem; }
+
+/* --- Types (color) --- */
+.ino-text--default { color: var(--j-text); }
+.ino-text--secondary { color: var(--j-text-muted); }
+.ino-text--success { color: var(--j-success); }
+.ino-text--warning { color: var(--j-warning); }
+.ino-text--error { color: var(--j-error); }
+.ino-text--info { color: var(--j-info); }
+
+/* --- States --- */
+.ino-text--disabled {
+  color: var(--j-text-subtle);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* --- Decorations --- */
+.ino-text--italic { font-style: italic; }
+.ino-text--underline { text-decoration: underline; }
+.ino-text--delete { text-decoration: line-through; }
+
+/* --- Weight --- */
+.ino-text--weight-thin { font-weight: 100; }
+.ino-text--weight-light { font-weight: 300; }
+.ino-text--weight-normal { font-weight: 400; }
+.ino-text--weight-medium { font-weight: 500; }
+.ino-text--weight-semibold { font-weight: 600; }
+.ino-text--weight-bold { font-weight: 700; }
+.ino-text--weight-extrabold { font-weight: 800; }
+.ino-text--weight-black { font-weight: 900; }
+
+/* --- Line height --- */
+.ino-text--lh-none { line-height: 1; }
+.ino-text--lh-tight { line-height: 1.25; }
+.ino-text--lh-snug { line-height: 1.375; }
+.ino-text--lh-normal { line-height: 1.5; }
+.ino-text--lh-relaxed { line-height: 1.625; }
+.ino-text--lh-loose { line-height: 2; }
+
+/* --- Ellipsis (single line) --- */
+.ino-text--ellipsis-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: bottom;
+}
+
+/* --- Ellipsis (multi-line) --- */
+.ino-text--ellipsis-multi {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+/* --- Expandable wrapper --- */
+.ino-text--expandable-multi {
+  /* wrapper for multi-line expandable */
+}
+
+.ino-text--expandable-single {
+  display: inline-flex;
+  align-items: baseline;
+  max-width: 100%;
+}
+
+.ino-text__content--expandable-single {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* --- Inner elements --- */
+.ino-text__mark {
+  background-color: var(--j-warning-200);
+  color: var(--j-warning-900);
+  padding: 0 0.125rem;
+  border-radius: 0.125rem;
+}
+
+.ino-text__code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background-color: var(--j-bg-muted);
+  border: 1px solid var(--j-border);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.ino-text__kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background-color: var(--j-bg-muted);
+  border: 1px solid var(--j-border);
+  border-bottom: 2px solid var(--j-border);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  box-shadow: inset 0 -1px 0 var(--j-border);
+}
+
+.ino-text__copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25rem;
+  padding: 0.125rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  vertical-align: middle;
+}
+
+.ino-text__copy-btn--copied {
+  color: var(--j-success);
+}
+
+.ino-text__copy-btn:not(.ino-text__copy-btn--copied) {
+  color: var(--j-text-muted);
+}
+
+.ino-text__copy-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ino-text__expand-btn {
+  display: inline;
+  margin-left: 0.25rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--j-primary);
+  font-size: inherit;
+  font-family: inherit;
+}

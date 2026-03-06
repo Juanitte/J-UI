@@ -1,6 +1,6 @@
 {
   "name": "@juanitte/inoui",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A modern React UI component library",
   "keywords": [
     "react",
@@ -24,19 +24,21 @@
   "main": "./dist/ino-ui.cjs",
   "module": "./dist/ino-ui.mjs",
   "types": "./dist/index.d.ts",
+  "style": "./dist/inoui.css",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/ino-ui.mjs",
       "require": "./dist/ino-ui.cjs"
-    }
+    },
+    "./styles.css": "./dist/inoui.css"
   },
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-  "sideEffects": false,
+  "sideEffects": ["**/*.css"],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

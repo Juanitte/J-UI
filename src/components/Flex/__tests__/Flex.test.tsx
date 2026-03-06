@@ -19,39 +19,39 @@ describe('Flex', () => {
 
   it('applies horizontal direction by default', () => {
     const { container } = render(<Flex>Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('row')
+    expect(container.firstChild).toHaveClass('ino-flex--row')
   })
 
   it('applies vertical direction', () => {
     const { container } = render(<Flex vertical>Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('column')
+    expect(container.firstChild).toHaveClass('ino-flex--column')
   })
 
   it('applies wrap', () => {
     const { container } = render(<Flex wrap="wrap">Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.flexWrap).toBe('wrap')
+    expect(container.firstChild).toHaveClass('ino-flex--wrap')
   })
 
   it('applies wrap as boolean', () => {
     const { container } = render(<Flex wrap>Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.flexWrap).toBe('wrap')
+    expect(container.firstChild).toHaveClass('ino-flex--wrap')
   })
 
   it('applies nowrap by default', () => {
     const { container } = render(<Flex>Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.flexWrap).toBe('nowrap')
+    expect(container.firstChild).toHaveClass('ino-flex--nowrap')
   })
 
   it('applies justify and align', () => {
     const { container } = render(<Flex justify="center" align="flex-end">Content</Flex>)
     const el = container.firstChild as HTMLElement
-    expect(el.style.justifyContent).toBe('center')
-    expect(el.style.alignItems).toBe('flex-end')
+    expect(el).toHaveClass('ino-flex--justify-center')
+    expect(el).toHaveClass('ino-flex--align-end')
   })
 
   it('applies named gap values', () => {
     const { container } = render(<Flex gap="small">Content</Flex>)
-    expect((container.firstChild as HTMLElement).style.gap).toBe('0.5rem')
+    expect(container.firstChild).toHaveClass('ino-flex--gap-small')
   })
 
   it('applies numeric gap', () => {

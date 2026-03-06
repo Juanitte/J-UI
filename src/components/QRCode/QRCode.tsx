@@ -8,8 +8,9 @@ import {
 import { tokens } from '../../theme/tokens'
 import { useThemeMode } from '../../theme'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { generateQRMatrix, type ErrorCorrectionLevel } from './qr-encoder'
+import './QRCode.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -28,39 +29,22 @@ export interface StatusRenderInfo {
 }
 
 export interface QRCodeProps {
-  /** Text/URL to encode */
   value: string
-  /** Render method */
   type?: QRCodeType
-  /** Image URL for embedded logo */
   icon?: string
-  /** QR code size in pixels */
   size?: number
-  /** Icon size */
   iconSize?: number | { width: number; height: number }
-  /** QR code module color */
   color?: string
-  /** Background color */
   bgColor?: string
-  /** Quiet zone in modules */
   marginSize?: number
-  /** Show border */
   bordered?: boolean
-  /** Error correction level */
   errorLevel?: QRCodeErrorLevel
-  /** Current status */
   status?: QRCodeStatus
-  /** Custom status display */
   statusRender?: (info: StatusRenderInfo) => ReactNode
-  /** Callback when refresh is clicked */
   onRefresh?: () => void
-  /** Root CSS class */
   className?: string
-  /** Root inline style */
   style?: CSSProperties
-  /** Semantic class names */
   classNames?: QRCodeClassNames
-  /** Semantic styles */
   styles?: QRCodeStyles
 }
 
@@ -99,7 +83,6 @@ function resolveIconSize(iconSize: number | { width: number; height: number }): 
   return { iw: iconSize.width, ih: iconSize.height }
 }
 
-/** Resolve CSS variable to computed color for canvas (canvas API can't use var()) */
 function resolveColor(value: string, el: HTMLElement): string {
   if (!value.startsWith('var(')) return value
   const prev = el.style.color
@@ -127,7 +110,7 @@ export function QRCode({
   onRefresh,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: QRCodeProps) {
   const matrix = useMemo(() => generateQRMatrix(value, errorLevel), [value, errorLevel])
@@ -151,19 +134,16 @@ export function QRCode({
     canvas.height = size * dpr
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
-    // Resolve CSS variables for canvas
     const resolvedColor = resolveColor(color, canvas)
     const resolvedBg = bgColor !== 'transparent' ? resolveColor(bgColor, canvas) : 'transparent'
     const resolvedIconBg = resolvedBg !== 'transparent' ? resolvedBg : resolveColor(tokens.colorBg, canvas)
 
-    // Background
     ctx.clearRect(0, 0, size, size)
     if (resolvedBg !== 'transparent') {
       ctx.fillStyle = resolvedBg
       ctx.fillRect(0, 0, size, size)
     }
 
-    // Modules — snap to pixel grid to avoid sub-pixel gaps
     ctx.fillStyle = resolvedColor
     for (let r = 0; r < moduleCount; r++) {
       for (let c = 0; c < moduleCount; c++) {
@@ -177,7 +157,6 @@ export function QRCode({
       }
     }
 
-    // Icon
     if (icon) {
       let aborted = false
       const img = new Image()
@@ -233,8 +212,8 @@ export function QRCode({
 
     return (
       <svg
-        className={classNames?.canvas}
-        style={mergeSemanticStyle({ display: 'block' }, styles?.canvas)}
+        className={classNamesProp?.canvas}
+        style={{ display: 'block', ...styles?.canvas }}
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
@@ -252,58 +231,35 @@ export function QRCode({
         )}
       </svg>
     )
-  }, [matrix, size, color, bgColor, marginSize, icon, iconSize, type, classNames?.canvas, styles?.canvas])
+  }, [matrix, size, color, bgColor, marginSize, icon, iconSize, type, classNamesProp?.canvas, styles?.canvas])
 
   // ─── Status overlay ───────────────────────────────────────
 
   const locale = { expired: 'QR code expired', loading: 'Loading...', scanned: 'Scanned' }
 
-  const maskBaseStyle: CSSProperties = {
-    position: 'absolute',
-    inset: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.96)',
-    borderRadius: '0.25rem',
-  }
-
   let statusOverlay: ReactNode = null
   if (status !== 'active') {
     if (statusRender) {
       statusOverlay = (
-        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+        <div className={cx('ino-qrcode__mask', classNamesProp?.mask)} style={styles?.mask}>
           {statusRender({ status, locale, onRefresh })}
         </div>
       )
     } else if (status === 'loading') {
       statusOverlay = (
-        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+        <div className={cx('ino-qrcode__mask', classNamesProp?.mask)} style={styles?.mask}>
           <SpinnerIcon />
         </div>
       )
     } else if (status === 'expired') {
       statusOverlay = (
-        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
-          <span style={{ color: tokens.colorTextMuted, fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+        <div className={cx('ino-qrcode__mask', classNamesProp?.mask)} style={styles?.mask}>
+          <span className="ino-qrcode__expired-text">
             {locale.expired}
           </span>
           <button
+            className="ino-qrcode__refresh-btn"
             onClick={onRefresh}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-              padding: '0.25rem 0.75rem',
-              border: 'none',
-              borderRadius: '0.25rem',
-              backgroundColor: tokens.colorPrimary,
-              color: '#fff',
-              fontSize: '0.875rem',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-            }}
           >
             <RefreshIcon /> Refresh
           </button>
@@ -311,9 +267,9 @@ export function QRCode({
       )
     } else if (status === 'scanned') {
       statusOverlay = (
-        <div className={classNames?.mask} style={mergeSemanticStyle(maskBaseStyle, styles?.mask)}>
+        <div className={cx('ino-qrcode__mask', classNamesProp?.mask)} style={styles?.mask}>
           <CheckIcon />
-          <span style={{ color: tokens.colorSuccess, fontSize: '0.875rem', marginTop: '0.5rem' }}>
+          <span className="ino-qrcode__scanned-text" style={{ color: tokens.colorSuccess }}>
             {locale.scanned}
           </span>
         </div>
@@ -321,39 +277,29 @@ export function QRCode({
     }
   }
 
-  // ─── Styles ───────────────────────────────────────────────
-
-  const rootBaseStyle: CSSProperties = {
-    position: 'relative',
-    display: 'inline-block',
-    lineHeight: 0,
-    ...(bordered
-      ? {
-          padding: '0.75rem',
-          border: `1px solid ${tokens.colorBorder}`,
-          borderRadius: '0.5rem',
-          backgroundColor: tokens.colorBg,
-        }
-      : {}),
-  }
-
-  const rootStyle = mergeSemanticStyle(rootBaseStyle, styles?.root, style)
-
   // ─── Render ───────────────────────────────────────────────
 
   return (
-    <div className={mergeSemanticClassName(className, classNames?.root)} style={rootStyle}>
-      <style>{`@keyframes j-qrcode-spin { to { transform: rotate(360deg); } }`}</style>
-
-      <div style={{ position: 'relative', width: size, height: size }}>
+    <div
+      className={cx(
+        'ino-qrcode',
+        { 'ino-qrcode--bordered': bordered },
+        className,
+        classNamesProp?.root,
+      )}
+      style={{ ...styles?.root, ...style }}
+    >
+      <div className="ino-qrcode__wrapper" style={{ width: size, height: size }}>
         {type === 'canvas' ? (
           <canvas
             ref={canvasRef}
-            className={classNames?.canvas}
-            style={mergeSemanticStyle(
-              { display: 'block', width: size, height: size },
-              styles?.canvas,
-            )}
+            className={classNamesProp?.canvas}
+            style={{
+              display: 'block',
+              width: size,
+              height: size,
+              ...styles?.canvas,
+            }}
           />
         ) : (
           svgContent

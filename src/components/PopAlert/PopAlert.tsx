@@ -11,7 +11,8 @@ import { createPortal } from 'react-dom'
 import { tokens } from '../../theme/tokens'
 import { useThemeMode } from '../../theme'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './PopAlert.css'
 
 // ============================================================================
 // Types
@@ -380,35 +381,25 @@ function PopAlertItem({
     maxHeight: isEntering || isExiting ? 0 : '9.375rem',
     opacity: isEntering || isExiting ? 0 : 1,
     transform: isEntering ? getEnterTransform(placement) : isExiting ? getExitTransform(placement) : 'translate(0, 0)',
-    transition: 'max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease, margin 0.3s ease',
-    overflow: 'hidden',
-    borderRadius: '0.5rem',
     marginBottom: isExiting ? 0 : '0.5rem',
-    pointerEvents: 'all' as const,
   }
 
   const hasProgress = instance.showProgress && !!instance.duration && !isExiting
 
   const cardStyle: CSSProperties = {
-    position: 'relative',
-    display: 'inline-flex',
-    alignItems: 'center',
     gap: sizeConfig.gap,
     padding: sizeConfig.padding,
     backgroundColor: colors.bg,
     border: `1px solid ${colors.border}`,
-    borderRadius: '0.5rem',
-    boxShadow: tokens.shadowMd,
     fontSize: sizeConfig.fontSize,
-    lineHeight: 1.5,
-    color: tokens.colorText,
-    overflow: 'hidden',
-    transition: 'background-color 0.3s ease, border-color 0.3s ease',
+    ...instance.styles?.root,
+    ...instance.style,
   }
 
   return (
     <div
       ref={itemRef}
+      className="ino-pop-alert__item"
       style={wrapperStyle}
       onTransitionEnd={handleTransitionEnd}
       onMouseEnter={handleMouseEnter}
@@ -416,45 +407,29 @@ function PopAlertItem({
     >
       <div
         ref={cardRef}
-        className={mergeSemanticClassName(instance.className, instance.classNames?.root)}
-        style={mergeSemanticStyle(cardStyle, instance.styles?.root, instance.style)}
+        className={cx('ino-pop-alert__card', instance.className, instance.classNames?.root)}
+        style={cardStyle}
       >
         {/* Icon */}
         <span
-          className={instance.classNames?.icon}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            flexShrink: 0,
-            color: colors.icon,
-            transition: 'color 0.3s ease',
-            ...instance.styles?.icon,
-          }}
+          className={cx('ino-pop-alert__icon', instance.classNames?.icon)}
+          style={{ color: colors.icon, ...instance.styles?.icon }}
         >
           {instance.icon ?? DEFAULT_ICONS[instance.type](sizeConfig.iconSize)}
         </span>
 
         {/* Content + Description */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="ino-pop-alert__content-wrapper">
           <span
-            className={instance.classNames?.content}
-            style={{
-              display: 'block',
-              ...instance.styles?.content,
-            }}
+            className={cx('ino-pop-alert__content', instance.classNames?.content)}
+            style={instance.styles?.content}
           >
             {instance.content}
           </span>
           {instance.description != null && (
             <span
-              className={instance.classNames?.description}
-              style={{
-                display: 'block',
-                color: tokens.colorTextMuted,
-                fontSize: '0.8125em',
-                marginTop: '0.125rem',
-                ...instance.styles?.description,
-              }}
+              className={cx('ino-pop-alert__description', instance.classNames?.description)}
+              style={instance.styles?.description}
             >
               {instance.description}
             </span>
@@ -465,23 +440,8 @@ function PopAlertItem({
         {instance.closable && (
           <button
             type="button"
+            className="ino-pop-alert__close-btn"
             onClick={() => onRequestClose(instance.key)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0.125rem',
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              color: tokens.colorTextSubtle,
-              flexShrink: 0,
-              borderRadius: '0.25rem',
-              transition: 'color 0.15s',
-              marginLeft: '0.25rem',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = tokens.colorText }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = tokens.colorTextSubtle }}
           >
             <CloseIcon />
           </button>
@@ -491,16 +451,9 @@ function PopAlertItem({
         {hasProgress && (
           <div
             ref={progressRef}
+            className="ino-pop-alert__progress"
             style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 2,
               backgroundColor: colors.icon,
-              opacity: 0.6,
-              borderRadius: 0,
-              transformOrigin: 'left',
               animation: `j-popalert-progress ${instance.duration}s linear forwards`,
             }}
           />
@@ -533,22 +486,17 @@ function PopAlertContainer({
   const containerStyle = getContainerPosition(placement, offset)
 
   return createPortal(
-    <>
-      <style>{`@keyframes j-popalert-spin { to { transform: rotate(360deg); } }
-@keyframes j-popalert-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-@keyframes j-popalert-update { 0% { transform: scale(0.94); opacity: 0.6; } 100% { transform: scale(1); opacity: 1; } }`}</style>
-      <div style={containerStyle}>
-        {instances.map((inst) => (
-          <PopAlertItem
-            key={inst.key}
-            instance={inst}
-            placement={placement}
-            onRequestClose={onRequestClose}
-            onRemoved={onRemoved}
-          />
-        ))}
-      </div>
-    </>,
+    <div className="ino-pop-alert__container" style={containerStyle}>
+      {instances.map((inst) => (
+        <PopAlertItem
+          key={inst.key}
+          instance={inst}
+          placement={placement}
+          onRequestClose={onRequestClose}
+          onRemoved={onRemoved}
+        />
+      ))}
+    </div>,
     document.body,
   )
 }

@@ -1,0 +1,143 @@
+/* ================================================================
+   Bubble – BEM classes
+   Colors use CSS custom property bridge (--_base, --_contrast).
+   Dynamic values (offsets, positions, animation transforms) stay inline.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-bubble {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  background-color: var(--_base);
+  color: var(--_contrast);
+}
+
+.ino-bubble--circle {
+  border-radius: 50%;
+}
+
+.ino-bubble--square {
+  border-radius: 0.5rem;
+}
+
+/* --- Sizes --- */
+.ino-bubble--sm {
+  width: 40px;
+  height: 40px;
+  font-size: 0.75rem;
+}
+
+.ino-bubble--md {
+  width: 48px;
+  height: 48px;
+  font-size: 0.875rem;
+}
+
+.ino-bubble--lg {
+  width: 56px;
+  height: 56px;
+  font-size: 1rem;
+}
+
+/* --- State modifiers --- */
+.ino-bubble--bordered {
+  border: 1px solid var(--j-colorBorder);
+}
+
+.ino-bubble--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* --- Shadow --- */
+.ino-bubble--shadow-sm { box-shadow: var(--j-shadowSm); }
+.ino-bubble--shadow-md { box-shadow: var(--j-shadowMd); }
+.ino-bubble--shadow-lg { box-shadow: var(--j-shadowLg); }
+
+/* --- Hover effects --- */
+.ino-bubble:hover:not(.ino-bubble--disabled) {
+  transform: scale(1.1);
+}
+
+.ino-bubble:hover:not(.ino-bubble--disabled).ino-bubble--in-group {
+  transform: none;
+  filter: brightness(1.15);
+}
+
+.ino-bubble--hovered {
+  z-index: 1002;
+}
+
+/* --- Icon element --- */
+.ino-bubble__icon {
+  display: flex;
+}
+
+/* --- Tooltip --- */
+.ino-bubble__tooltip {
+  position: absolute;
+  z-index: 1001;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background-color: var(--j-colorBgMuted);
+  color: var(--j-colorText);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--j-shadowMd);
+  border: 1px solid var(--j-colorBorder);
+  opacity: 0;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+  pointer-events: none;
+}
+
+.ino-bubble__tooltip--visible {
+  opacity: 1;
+}
+
+/* --- Tooltip arrow --- */
+.ino-bubble__tooltip-arrow {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--j-colorBgMuted);
+}
+
+/* --- Group --- */
+.ino-bubble-group {
+  position: fixed;
+  display: flex;
+  z-index: 1000;
+}
+
+/* --- Menu --- */
+.ino-bubble-menu {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+}
+
+.ino-bubble-menu--inline {
+  position: relative;
+  display: inline-flex;
+}
+
+.ino-bubble-menu__children {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+}
+
+.ino-bubble-menu__trigger {
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

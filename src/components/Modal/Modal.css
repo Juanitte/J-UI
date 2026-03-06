@@ -1,0 +1,205 @@
+/* ================================================================
+   Modal – BEM classes
+   Animation states (opacity, transform, scale) stay inline
+   because they are driven by JS state transitions.
+   ================================================================ */
+
+/* --- Wrapper (fixed overlay) --- */
+.ino-modal__wrapper {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+}
+
+.ino-modal__wrapper--hidden {
+  display: none;
+  pointer-events: none;
+}
+
+/* --- Mask --- */
+.ino-modal__mask {
+  position: fixed;
+  inset: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ino-modal__mask--default {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+.ino-modal__mask--blur {
+  background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* --- Scroll container --- */
+.ino-modal__scroll {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+}
+
+.ino-modal__scroll--centered {
+  align-items: center;
+  padding: 1rem;
+}
+
+.ino-modal__scroll--top {
+  align-items: flex-start;
+  padding: 6rem 1rem 1.5rem;
+}
+
+/* --- Content panel --- */
+.ino-modal__content {
+  position: relative;
+  max-width: calc(100vw - 2rem);
+  background-color: var(--j-bg);
+  color: var(--j-text);
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadowLg);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* --- Header --- */
+.ino-modal__header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--j-border);
+  flex-shrink: 0;
+}
+
+/* --- Header title --- */
+.ino-modal__header-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--j-text);
+  min-width: 0;
+}
+
+.ino-modal__header-title--closable {
+  padding-right: 2rem;
+}
+
+/* --- Body --- */
+.ino-modal__body {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* --- Footer --- */
+.ino-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--j-border);
+  flex-shrink: 0;
+}
+
+/* --- Close button --- */
+.ino-modal__close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--j-text-subtle);
+  border-radius: 0.25rem;
+  transition: color 0.15s;
+  z-index: 1;
+}
+
+.ino-modal__close-btn:hover {
+  color: var(--j-text);
+}
+
+/* --- Footer button base --- */
+.ino-modal__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.375rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: filter 0.15s, border-color 0.15s, opacity 0.15s;
+  line-height: 1.5;
+}
+
+/* Cancel button */
+.ino-modal__btn--cancel {
+  background-color: var(--j-bg);
+  color: var(--j-text);
+  border: 1px solid var(--j-border);
+}
+
+.ino-modal__btn--cancel:hover {
+  border-color: var(--j-border-hover);
+}
+
+/* OK button */
+.ino-modal__btn--ok {
+  background-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+  border: 1px solid var(--j-primary);
+}
+
+.ino-modal__btn--ok:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.ino-modal__btn--ok:disabled,
+.ino-modal__btn--ok--loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* --- Loading skeleton --- */
+.ino-modal__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+.ino-modal__skeleton-bar {
+  height: 1rem;
+  border-radius: 0.25rem;
+  background-color: var(--j-bg-muted);
+  animation: j-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* --- Confirm dialog --- */
+.ino-modal__confirm-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.ino-modal__confirm-icon {
+  flex-shrink: 0;
+  margin-top: 0.0625rem;
+}
+
+.ino-modal__confirm-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.ino-modal__confirm-content {
+  color: var(--j-text-muted);
+  font-size: 0.875rem;
+}

@@ -52,7 +52,7 @@ describe('Radio', () => {
     const radioBox = container.querySelector('label > span') as HTMLElement
     const indicator = radioBox.querySelector('span')
     expect(indicator).toBeInTheDocument()
-    expect(indicator!.style.borderRadius).toBe('50%')
+    expect(indicator!).toHaveClass('ino-radio__indicator')
   })
 
   it('does not show indicator when unchecked', () => {
@@ -73,13 +73,13 @@ describe('Radio', () => {
   it('applies opacity when disabled', () => {
     const { container } = render(<Radio disabled />)
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.opacity).toBe('0.5')
+    expect(label).toHaveClass('ino-radio--disabled')
   })
 
   it('applies cursor not-allowed when disabled', () => {
     const { container } = render(<Radio disabled />)
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.cursor).toBe('not-allowed')
+    expect(label).toHaveClass('ino-radio--disabled')
   })
 
   // ---------- onChange ----------
@@ -193,13 +193,13 @@ describe('Radio', () => {
   it('applies circular shape to radio box', () => {
     const { container } = render(<Radio />)
     const radioBox = container.querySelector('label > span') as HTMLElement
-    expect(radioBox.style.borderRadius).toBe('50%')
+    expect(radioBox).toHaveClass('ino-radio__circle')
   })
 
   it('applies primary background when checked', () => {
     const { container } = render(<Radio checked />)
-    const radioBox = container.querySelector('label > span') as HTMLElement
-    expect(radioBox.style.backgroundColor).toContain('var(--j-primary)')
+    const label = container.querySelector('label') as HTMLElement
+    expect(label).toHaveClass('ino-radio--checked')
   })
 })
 
@@ -217,7 +217,7 @@ describe('Radio.Button', () => {
   it('applies middle size by default', () => {
     const { container } = render(<Radio.Button>Btn</Radio.Button>)
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.height).toBe('2rem')
+    expect(label).toHaveClass('ino-radio-btn--md')
   })
 
   it('is unchecked by default', () => {
@@ -419,9 +419,9 @@ describe('Radio.Group', () => {
     const labels = container.querySelectorAll('label')
     expect(labels).toHaveLength(3)
     // First label should have border-radius only on left side
-    expect(labels[0].style.borderRadius).toContain('0.375rem 0 0 0.375rem')
+    expect(labels[0]).toHaveClass('ino-radio-btn--first')
     // Last label should have border-radius only on right side
-    expect(labels[2].style.borderRadius).toContain('0 0.375rem 0.375rem 0')
+    expect(labels[2]).toHaveClass('ino-radio-btn--last')
   })
 
   it('renders single button with full border-radius', () => {
@@ -429,7 +429,7 @@ describe('Radio.Group', () => {
       <Radio.Group options={['Only']} optionType="button" />,
     )
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.borderRadius).toBe('0.375rem')
+    expect(label).toHaveClass('ino-radio-btn--only')
   })
 
   it('renders middle button without border-radius', () => {
@@ -437,7 +437,7 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A', 'B', 'C']} optionType="button" />,
     )
     const labels = container.querySelectorAll('label')
-    expect(labels[1].style.borderRadius).toBe('0')
+    expect(labels[1]).toHaveClass('ino-radio-btn--middle')
   })
 
   it('applies negative margin on non-first buttons', () => {
@@ -445,8 +445,8 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A', 'B', 'C']} optionType="button" />,
     )
     const labels = container.querySelectorAll('label')
-    expect(labels[1].style.marginLeft).toBe('-1px')
-    expect(labels[2].style.marginLeft).toBe('-1px')
+    expect(labels[1]).toHaveClass('ino-radio-btn--collapse')
+    expect(labels[2]).toHaveClass('ino-radio-btn--collapse')
   })
 
   it('renders button-style children with optionType=button', () => {
@@ -459,8 +459,8 @@ describe('Radio.Group', () => {
     const labels = container.querySelectorAll('label')
     expect(labels).toHaveLength(2)
     // First gets left radius, last gets right radius
-    expect(labels[0].style.borderRadius).toContain('0.375rem 0 0 0.375rem')
-    expect(labels[1].style.borderRadius).toContain('0 0.375rem 0.375rem 0')
+    expect(labels[0]).toHaveClass('ino-radio-btn--first')
+    expect(labels[1]).toHaveClass('ino-radio-btn--last')
   })
 
   // ---------- buttonStyle ----------
@@ -470,9 +470,9 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A', 'B']} optionType="button" buttonStyle="solid" value="A" />,
     )
     const labels = container.querySelectorAll('label')
-    // Checked button has primary background
-    expect(labels[0].style.backgroundColor).toContain('var(--j-primary)')
-    expect(labels[0].style.color).toContain('var(--j-primary-contrast)')
+    // Checked button has solid style via BEM class
+    expect(labels[0]).toHaveClass('ino-radio-btn--checked')
+    expect(labels[0]).toHaveClass('ino-radio-btn--solid')
   })
 
   it('applies outline style on checked button', () => {
@@ -480,10 +480,9 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A', 'B']} optionType="button" buttonStyle="outline" value="A" />,
     )
     const labels = container.querySelectorAll('label')
-    // Checked outline button has primary border and text, bg is colorBg
-    expect(labels[0].style.borderColor).toContain('var(--j-primary)')
-    expect(labels[0].style.color).toContain('var(--j-primary)')
-    expect(labels[0].style.backgroundColor).toContain('var(--j-bg)')
+    // Checked outline button has BEM class
+    expect(labels[0]).toHaveClass('ino-radio-btn--checked')
+    expect(labels[0]).toHaveClass('ino-radio-btn--outline')
   })
 
   // ---------- Sizes ----------
@@ -493,8 +492,7 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A']} optionType="button" size="small" />,
     )
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.height).toBe('1.5rem')
-    expect(label.style.fontSize).toBe('0.75rem')
+    expect(label).toHaveClass('ino-radio-btn--sm')
   })
 
   it('applies middle size to button options (default)', () => {
@@ -502,8 +500,7 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A']} optionType="button" />,
     )
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.height).toBe('2rem')
-    expect(label.style.fontSize).toBe('0.875rem')
+    expect(label).toHaveClass('ino-radio-btn--md')
   })
 
   it('applies large size to button options', () => {
@@ -511,8 +508,7 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A']} optionType="button" size="large" />,
     )
     const label = container.querySelector('label') as HTMLElement
-    expect(label.style.height).toBe('2.5rem')
-    expect(label.style.fontSize).toBe('1rem')
+    expect(label).toHaveClass('ino-radio-btn--lg')
   })
 
   // ---------- Styling ----------
@@ -539,12 +535,12 @@ describe('Radio.Group', () => {
 
   it('uses gap 0 for button optionType', () => {
     render(<Radio.Group options={['A', 'B']} optionType="button" />)
-    expect(screen.getByRole('radiogroup').style.gap).toBe('0')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-radio-group--button')
   })
 
   it('uses gap 0.5rem for default optionType', () => {
     render(<Radio.Group options={['A', 'B']} />)
-    expect(screen.getByRole('radiogroup').style.gap).toBe('0.5rem')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-radio-group--default')
   })
 
   // ---------- Mixed: group disabled + individual disabled ----------
@@ -576,8 +572,8 @@ describe('Radio.Group', () => {
       <Radio.Group options={['A', 'B']} optionType="button" value="A" />,
     )
     const labels = container.querySelectorAll('label')
-    expect(labels[0].style.zIndex).toBe('1')
-    expect(labels[1].style.zIndex).toBe('')
+    expect(labels[0]).toHaveClass('ino-radio-btn--checked')
+    expect(labels[1]).not.toHaveClass('ino-radio-btn--checked')
   })
 
   // ---------- Uncontrolled group ----------

@@ -77,48 +77,46 @@ describe('Button', () => {
     expect(screen.queryByTestId('icon')).not.toBeInTheDocument()
   })
 
-  it('applies sm size styles', () => {
+  it('applies sm size class', () => {
     const { container } = render(<Button size="sm">Small</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.fontSize).toBe('0.8125rem')
+    expect(button).toHaveClass('ino-btn--sm')
   })
 
-  it('applies lg size styles', () => {
+  it('applies lg size class', () => {
     const { container } = render(<Button size="lg">Large</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.fontSize).toBe('1rem')
+    expect(button).toHaveClass('ino-btn--lg')
   })
 
-  it('applies block width', () => {
+  it('applies block class', () => {
     const { container } = render(<Button block>Block</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.width).toBe('100%')
+    expect(button).toHaveClass('ino-btn--block')
   })
 
-  it('applies outline variant border', () => {
+  it('applies outline variant class', () => {
     const { container } = render(<Button variant="outline">Outline</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.border).toContain('1px solid')
-    expect(button.style.backgroundColor).toBe('transparent')
+    expect(button).toHaveClass('ino-btn--outline')
   })
 
-  it('applies dashed variant border', () => {
+  it('applies dashed variant class', () => {
     const { container } = render(<Button variant="dashed">Dashed</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.border).toContain('1px dashed')
+    expect(button).toHaveClass('ino-btn--dashed')
   })
 
-  it('applies ghost variant', () => {
+  it('applies ghost variant class', () => {
     const { container } = render(<Button variant="ghost">Ghost</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.backgroundColor).toBe('transparent')
+    expect(button).toHaveClass('ino-btn--ghost')
   })
 
-  it('applies link variant with no padding', () => {
+  it('applies link variant class', () => {
     const { container } = render(<Button variant="link">Link</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.backgroundColor).toBe('transparent')
-    expect(button.style.padding).toBe('0px')
+    expect(button).toHaveClass('ino-btn--link')
   })
 
   it('applies custom className and style', () => {
@@ -130,16 +128,16 @@ describe('Button', () => {
     expect(button.style.margin).toBe('5px')
   })
 
-  it('applies shadow', () => {
+  it('applies shadow class', () => {
     const { container } = render(<Button shadow="lg">Shadow</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.boxShadow).toBeTruthy()
+    expect(button).toHaveClass('ino-btn--shadow-lg')
   })
 
-  it('applies bordered style to non-outline variant', () => {
+  it('applies bordered class to non-outline variant', () => {
     const { container } = render(<Button bordered>Bordered</Button>)
     const button = container.querySelector('button') as HTMLElement
-    expect(button.style.border).toContain('1px solid')
+    expect(button).toHaveClass('ino-btn--bordered')
   })
 
   it('passes native button props', () => {
@@ -154,5 +152,26 @@ describe('Button', () => {
       <Button classNames={{ content: 'btn-content' }}>Wrapped</Button>
     )
     expect(container.querySelector('.btn-content')).toBeInTheDocument()
+  })
+
+  it('applies BEM base class and variant class', () => {
+    const { container } = render(<Button variant="primary">Primary</Button>)
+    const button = container.querySelector('button') as HTMLElement
+    expect(button).toHaveClass('ino-btn')
+    expect(button).toHaveClass('ino-btn--primary')
+    expect(button).toHaveClass('ino-btn--md')
+  })
+
+  it('applies gradient class when gradient prop is set', () => {
+    const { container } = render(<Button gradient="success">Gradient</Button>)
+    const button = container.querySelector('button') as HTMLElement
+    expect(button).toHaveClass('ino-btn--gradient')
+  })
+
+  it('sets color bridge CSS custom properties', () => {
+    const { container } = render(<Button color="success">Success</Button>)
+    const button = container.querySelector('button') as HTMLElement
+    expect(button.style.getPropertyValue('--_base')).toBe('var(--j-success)')
+    expect(button.style.getPropertyValue('--_hover')).toBe('var(--j-success-hover)')
   })
 })

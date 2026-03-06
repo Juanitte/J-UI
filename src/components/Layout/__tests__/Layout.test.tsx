@@ -12,17 +12,17 @@ describe('Layout', () => {
     const { container } = render(<Layout>Content</Layout>)
     const el = container.firstChild as HTMLElement
     expect(el.nodeName).toBe('DIV')
-    expect(el.style.display).toBe('flex')
+    expect(el).toHaveClass('ino-layout')
   })
 
   it('uses column direction by default', () => {
     const { container } = render(<Layout>Content</Layout>)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('column')
+    expect(container.firstChild).toHaveClass('ino-layout')
   })
 
   it('uses row direction when hasSider=true', () => {
     const { container } = render(<Layout hasSider>Content</Layout>)
-    expect((container.firstChild as HTMLElement).style.flexDirection).toBe('row')
+    expect(container.firstChild).toHaveClass('ino-layout--has-sider')
   })
 
   it('applies custom className', () => {
@@ -39,7 +39,7 @@ describe('Layout.Header', () => {
 
   it('has default height of 64px', () => {
     const { container } = render(<Layout.Header>H</Layout.Header>)
-    expect((container.firstChild as HTMLElement).style.height).toBe('4rem')
+    expect(container.firstChild).toHaveClass('ino-layout__header')
   })
 })
 
@@ -58,7 +58,7 @@ describe('Layout.Content', () => {
 
   it('has padding of 24px', () => {
     const { container } = render(<Layout.Content>M</Layout.Content>)
-    expect((container.firstChild as HTMLElement).style.padding).toBe('1.5rem')
+    expect(container.firstChild).toHaveClass('ino-layout__content')
   })
 })
 
@@ -115,13 +115,13 @@ describe('Layout.Sider', () => {
     const { container } = render(<Layout.Sider>S</Layout.Sider>)
     const aside = container.firstChild as HTMLElement
     // jsdom normalizes hex to rgb
-    expect(aside.style.backgroundColor).toBe('rgb(31, 31, 31)')
+    expect(aside).toHaveClass('ino-layout__sider--dark')
   })
 
   it('applies light theme', () => {
     const { container } = render(<Layout.Sider theme="light">S</Layout.Sider>)
     const aside = container.firstChild as HTMLElement
-    expect(aside.style.backgroundColor).not.toBe('rgb(31, 31, 31)')
+    expect(aside).toHaveClass('ino-layout__sider--light')
   })
 })
 

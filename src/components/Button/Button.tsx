@@ -1,7 +1,8 @@
 import { type ButtonHTMLAttributes, type ReactNode, useRef } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import { getColorVars } from '../../utils/colorVars'
 import { useConfig } from '../ConfigProvider'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'dashed' | 'ghost' | 'link'
@@ -10,93 +11,6 @@ export type ButtonColor = 'primary' | 'secondary' | 'success' | 'warning' | 'err
 export type ButtonShadow = boolean | 'sm' | 'md' | 'lg'
 export type ButtonIconPlacement = 'start' | 'end'
 export type ButtonAnimation = 'pulse' | 'ripple' | 'shake' | 'firecracker' | 'confetti'
-
-// Mapeo de colores a tokens para acceso dinámico
-const colorTokens: Record<ButtonColor, {
-  base: string
-  hover: string
-  light: string
-  dark: string
-  contrast: string
-  border: string
-  200: string
-  300: string
-  400: string
-  600: string
-}> = {
-  primary: {
-    base: tokens.colorPrimary,
-    hover: tokens.colorPrimaryHover,
-    light: tokens.colorPrimaryLight,
-    dark: tokens.colorPrimaryDark,
-    contrast: tokens.colorPrimaryContrast,
-    border: tokens.colorPrimaryBorder,
-    200: tokens.colorPrimary200,
-    300: tokens.colorPrimary300,
-    400: tokens.colorPrimary400,
-    600: tokens.colorPrimary600,
-  },
-  secondary: {
-    base: tokens.colorSecondary,
-    hover: tokens.colorSecondaryHover,
-    light: tokens.colorSecondaryLight,
-    dark: tokens.colorSecondaryDark,
-    contrast: tokens.colorSecondaryContrast,
-    border: tokens.colorSecondaryBorder,
-    200: tokens.colorSecondary200,
-    300: tokens.colorSecondary300,
-    400: tokens.colorSecondary400,
-    600: tokens.colorSecondary600,
-  },
-  success: {
-    base: tokens.colorSuccess,
-    hover: tokens.colorSuccessHover,
-    light: tokens.colorSuccessLight,
-    dark: tokens.colorSuccessDark,
-    contrast: tokens.colorSuccessContrast,
-    border: tokens.colorSuccessBorder,
-    200: tokens.colorSuccess200,
-    300: tokens.colorSuccess300,
-    400: tokens.colorSuccess400,
-    600: tokens.colorSuccess600,
-  },
-  warning: {
-    base: tokens.colorWarning,
-    hover: tokens.colorWarningHover,
-    light: tokens.colorWarningLight,
-    dark: tokens.colorWarningDark,
-    contrast: tokens.colorWarningContrast,
-    border: tokens.colorWarningBorder,
-    200: tokens.colorWarning200,
-    300: tokens.colorWarning300,
-    400: tokens.colorWarning400,
-    600: tokens.colorWarning600,
-  },
-  error: {
-    base: tokens.colorError,
-    hover: tokens.colorErrorHover,
-    light: tokens.colorErrorLight,
-    dark: tokens.colorErrorDark,
-    contrast: tokens.colorErrorContrast,
-    border: tokens.colorErrorBorder,
-    200: tokens.colorError200,
-    300: tokens.colorError300,
-    400: tokens.colorError400,
-    600: tokens.colorError600,
-  },
-  info: {
-    base: tokens.colorInfo,
-    hover: tokens.colorInfoHover,
-    light: tokens.colorInfoLight,
-    dark: tokens.colorInfoDark,
-    contrast: tokens.colorInfoContrast,
-    border: tokens.colorInfoBorder,
-    200: tokens.colorInfo200,
-    300: tokens.colorInfo300,
-    400: tokens.colorInfo400,
-    600: tokens.colorInfo600,
-  },
-}
 
 export type ButtonSemanticSlot = 'root' | 'icon' | 'spinner' | 'content'
 export type ButtonClassNames = SemanticClassNames<ButtonSemanticSlot>
@@ -155,7 +69,7 @@ export function Button({
   children,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
   onMouseEnter,
   onMouseLeave,
@@ -168,89 +82,32 @@ export function Button({
   const buttonRef = useRef<HTMLButtonElement>(null)
   const isDisabled = disabled || loading
 
-  const getShadow = (): string | undefined => {
-    if (!shadow) return undefined
-    if (shadow === true || shadow === 'md') return tokens.shadowMd
-    if (shadow === 'sm') return tokens.shadowSm
-    if (shadow === 'lg') return tokens.shadowLg
-    return undefined
-  }
-
-  const baseStyles: React.CSSProperties = {
-    position: 'relative',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.5rem',
-    borderRadius: '0.5rem',
-    fontWeight: 500,
-    cursor: isDisabled ? 'not-allowed' : 'pointer',
-    opacity: isDisabled ? 0.6 : 1,
-    transition: 'all 0.15s ease',
-    border: 'none',
-    outline: 'none',
-    fontFamily: 'inherit',
-    overflow: 'hidden',
-    boxShadow: getShadow(),
-  }
-
-  const sizeStyles: Record<ButtonSize, React.CSSProperties> = {
-    sm: { minHeight: '2rem', padding: '0.25rem 0.75rem', fontSize: '0.8125rem' },
-    md: { minHeight: '2.5rem', padding: '0.5rem 1rem', fontSize: '0.875rem' },
-    lg: { minHeight: '3rem', padding: '0.75rem 1.5rem', fontSize: '1rem' },
-  }
-
-  const ct = colorTokens[color]
-
-  const variantStyles: Record<ButtonVariant, React.CSSProperties> = {
-    primary: {
-      backgroundColor: ct.base,
-      color: ct.contrast,
-    },
-    secondary: {
-      backgroundColor: ct.light,
-      color: ct.dark,
-    },
-    outline: {
-      backgroundColor: 'transparent',
-      color: ct.base,
-      border: `1px solid ${ct.base}`,
-    },
-    dashed: {
-      backgroundColor: 'transparent',
-      color: ct.base,
-      border: `1px dashed ${ct.base}`,
-    },
-    ghost: {
-      backgroundColor: 'transparent',
-      color: ct.base,
-    },
-    link: {
-      backgroundColor: 'transparent',
-      color: ct.base,
-      padding: 0,
-    },
-  }
-
-  const variantHoverStyles: Record<ButtonVariant, React.CSSProperties> = {
-    primary: { backgroundColor: ct.hover },
-    secondary: { backgroundColor: ct[200] },
-    outline: { backgroundColor: ct.light },
-    dashed: { backgroundColor: ct.light },
-    ghost: { backgroundColor: ct.light },
-    link: { color: ct.hover },
-  }
-
-  // Borde adicional si bordered=true
-  const borderStyle: React.CSSProperties = bordered && variant !== 'outline'
-    ? { border: `1px solid ${ct.border}` }
-    : {}
-
-  // Determinar si tiene gradiente o color custom
+  // Determine if has gradient or custom background
   const hasGradient = Boolean(gradient || gradientCss)
   const hasCustomBg = Boolean(style?.backgroundColor || styles?.root?.backgroundColor)
+  const useGradientHover = hasGradient || hasCustomBg
 
-  // Estilos de gradiente
+  // Build BEM class string
+  const shadowKey = shadow === true ? 'md' : shadow
+  const rootClass = cx(
+    'ino-btn',
+    `ino-btn--${variant}`,
+    `ino-btn--${size}`,
+    {
+      'ino-btn--disabled': isDisabled,
+      'ino-btn--loading': loading,
+      'ino-btn--block': block,
+      'ino-btn--bordered': bordered && variant !== 'outline',
+      'ino-btn--gradient': useGradientHover,
+      [`ino-btn--shadow-${shadowKey}`]: !!shadow,
+    },
+    className,
+    classNamesProp?.root,
+  )
+
+  // Dynamic inline styles: color bridge + gradient + user overrides
+  const colorVars = getColorVars(color)
+
   const getGradientStyles = (): React.CSSProperties | null => {
     if (gradientCss) {
       return {
@@ -260,9 +117,8 @@ export function Button({
       }
     }
     if (gradient) {
-      const gt = colorTokens[gradient]
       return {
-        background: `linear-gradient(${gradientAngle}deg, ${gt[400]}, ${gt[600]})`,
+        background: `linear-gradient(${gradientAngle}deg, var(--j-${gradient}-400), var(--j-${gradient}-600))`,
         backgroundColor: 'transparent',
         color: '#ffffff',
       }
@@ -272,20 +128,14 @@ export function Button({
 
   const gradientStyles = getGradientStyles()
 
-  const combinedStyles = mergeSemanticStyle(
-    {
-      ...baseStyles,
-      ...sizeStyles[size],
-      ...variantStyles[variant],
-      ...borderStyle,
-      ...gradientStyles,
-      ...(block && { width: '100%' }),
-    },
-    styles?.root,
-    style,
-  )
+  const dynamicStyle: React.CSSProperties = {
+    ...colorVars,
+    ...gradientStyles,
+    ...styles?.root,
+    ...style,
+  } as React.CSSProperties
 
-  // Función para ejecutar animaciones
+  // Animation runner
   const runAnimation = (animation: ButtonAnimation, e: React.MouseEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return
     const button = buttonRef.current
@@ -313,96 +163,62 @@ export function Button({
   }
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!isDisabled) {
-      if (hasGradient || hasCustomBg) {
-        // Para gradientes y colores custom usamos filter en lugar de cambiar el background
-        e.currentTarget.style.filter = 'brightness(1.15)'
-      } else {
-        Object.assign(e.currentTarget.style, variantHoverStyles[variant])
-      }
-      if (hoverAnimation) {
-        runAnimation(hoverAnimation, e)
-      }
+    if (!isDisabled && hoverAnimation) {
+      runAnimation(hoverAnimation, e)
     }
     onMouseEnter?.(e)
   }
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (hasGradient || hasCustomBg) {
-      e.currentTarget.style.filter = ''
-    } else {
-      Object.assign(e.currentTarget.style, variantStyles[variant])
-    }
     onMouseLeave?.(e)
   }
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isDisabled) return
-
     if (clickAnimation) {
       runAnimation(clickAnimation, e)
     }
-
     onClick?.(e)
   }
 
   return (
-    <>
-      <style>{`
-        @keyframes j-spin { to { transform: rotate(360deg); } }
-        @keyframes j-ripple { to { transform: scale(4); opacity: 0; } }
-        @keyframes j-pulse-wave {
-          0% { transform: scale(1); opacity: 0.6; }
-          100% { transform: scale(1.15); opacity: 0; }
-        }
-        @keyframes j-shake {
-          0%, 100% { transform: translateX(0); }
-          10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-          20%, 40%, 60%, 80% { transform: translateX(2px); }
-        }
-        @keyframes j-particle {
-          0% { transform: translate(0, 0) scale(1); opacity: 1; }
-          100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
-        }
-      `}</style>
-      <button
-        ref={buttonRef}
-        disabled={isDisabled}
-        style={combinedStyles}
-        className={mergeSemanticClassName(className, classNames?.root)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
-        {...props}
-      >
-        {loading && (
-          <span className={classNames?.spinner} style={styles?.spinner}>
-            <Spinner />
-          </span>
-        )}
-        {!loading && icon && iconPlacement === 'start' && (
-          <span
-            style={{ display: 'inline-flex', fontSize: '1.1em', ...styles?.icon }}
-            className={classNames?.icon}
-          >
-            {icon}
-          </span>
-        )}
-        {classNames?.content || styles?.content ? (
-          <span className={classNames?.content} style={styles?.content}>{children}</span>
-        ) : (
-          children
-        )}
-        {!loading && icon && iconPlacement === 'end' && (
-          <span
-            style={{ display: 'inline-flex', fontSize: '1.1em', ...styles?.icon }}
-            className={classNames?.icon}
-          >
-            {icon}
-          </span>
-        )}
-      </button>
-    </>
+    <button
+      ref={buttonRef}
+      disabled={isDisabled}
+      className={rootClass}
+      style={dynamicStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
+      {...props}
+    >
+      {loading && (
+        <span className={cx('ino-btn__spinner', classNamesProp?.spinner)} style={styles?.spinner}>
+          <Spinner />
+        </span>
+      )}
+      {!loading && icon && iconPlacement === 'start' && (
+        <span
+          className={cx('ino-btn__icon', classNamesProp?.icon)}
+          style={styles?.icon}
+        >
+          {icon}
+        </span>
+      )}
+      {classNamesProp?.content || styles?.content ? (
+        <span className={cx(classNamesProp?.content)} style={styles?.content}>{children}</span>
+      ) : (
+        children
+      )}
+      {!loading && icon && iconPlacement === 'end' && (
+        <span
+          className={cx('ino-btn__icon', classNamesProp?.icon)}
+          style={styles?.icon}
+        >
+          {icon}
+        </span>
+      )}
+    </button>
   )
 }
 
@@ -433,9 +249,8 @@ function createPulse(button: HTMLButtonElement, color: ButtonColor) {
   const rect = button.getBoundingClientRect()
   const computedStyle = getComputedStyle(button)
   const borderRadius = computedStyle.borderRadius
-  const pulseColor = colorTokens[color].base
+  const pulseColor = `var(--j-${color})`
 
-  // Contenedor en el body para que no sea cortado por overflow:hidden
   const container = document.createElement('div')
   container.style.cssText = `
     position: fixed;
@@ -447,7 +262,6 @@ function createPulse(button: HTMLButtonElement, color: ButtonColor) {
     z-index: 9999;
   `
 
-  // Primera onda
   const pulseEl = document.createElement('span')
   pulseEl.style.cssText = `
     position: absolute;
@@ -462,7 +276,6 @@ function createPulse(button: HTMLButtonElement, color: ButtonColor) {
   `
   container.appendChild(pulseEl)
 
-  // Segunda onda con delay
   const pulseEl2 = document.createElement('span')
   pulseEl2.style.cssText = `
     position: absolute;
@@ -492,12 +305,11 @@ function createShake(button: HTMLButtonElement) {
 
 // Animación confetti (partículas desde el punto de click)
 function createConfetti(button: HTMLButtonElement, x: number, y: number, color: ButtonColor) {
-  const ct = colorTokens[color]
   const colors = [
-    ct.base,
-    ct[300],
-    ct[400],
-    ct[600],
+    `var(--j-${color})`,
+    `var(--j-${color}-300)`,
+    `var(--j-${color}-400)`,
+    `var(--j-${color}-600)`,
     tokens.colorWarning,
     tokens.colorSuccess,
   ]
@@ -542,12 +354,11 @@ function createConfetti(button: HTMLButtonElement, x: number, y: number, color: 
 
 // Animación firecracker (partículas desde los bordes del botón hacia afuera)
 function createFirecracker(button: HTMLButtonElement, color: ButtonColor) {
-  const ct = colorTokens[color]
   const colors = [
-    ct.base,
-    ct[300],
-    ct[400],
-    ct[600],
+    `var(--j-${color})`,
+    `var(--j-${color}-300)`,
+    `var(--j-${color}-400)`,
+    `var(--j-${color}-600)`,
     tokens.colorWarning,
     tokens.colorSuccess,
   ]
@@ -555,7 +366,6 @@ function createFirecracker(button: HTMLButtonElement, color: ButtonColor) {
   const rect = button.getBoundingClientRect()
   const particleCount = 12
 
-  // Contenedor en el body para que las partículas no sean cortadas por overflow:hidden
   const container = document.createElement('div')
   container.style.cssText = `
     position: fixed;
@@ -572,16 +382,13 @@ function createFirecracker(button: HTMLButtonElement, color: ButtonColor) {
     const angle = (i / particleCount) * 360
     const distance = 35 + Math.random() * 25
 
-    // Calcular posición inicial en el borde del botón
     const radians = angle * Math.PI / 180
     const halfWidth = rect.width / 2
     const halfHeight = rect.height / 2
 
-    // Punto en el borde del botón (elipse aproximada)
     const edgeX = halfWidth + Math.cos(radians) * halfWidth
     const edgeY = halfHeight + Math.sin(radians) * halfHeight
 
-    // Punto final hacia afuera
     const tx = Math.cos(radians) * distance
     const ty = Math.sin(radians) * distance
 

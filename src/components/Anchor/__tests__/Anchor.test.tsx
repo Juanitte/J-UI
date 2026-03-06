@@ -31,13 +31,13 @@ describe('Anchor', () => {
     const { container } = render(<Anchor items={items} />)
     // Vertical has a track (background line)
     const wrapper = container.firstChild as HTMLElement
-    expect(wrapper.style.paddingLeft).toBe('2px')
+    expect(wrapper).toHaveClass('ino-anchor--vertical')
   })
 
   it('renders horizontal direction', () => {
     const { container } = render(<Anchor items={items} direction="horizontal" />)
     const wrapper = container.firstChild as HTMLElement
-    expect(wrapper.style.display).toBe('flex')
+    expect(wrapper).toHaveClass('ino-anchor--horizontal')
   })
 
   it('calls onClick when a link is clicked', () => {

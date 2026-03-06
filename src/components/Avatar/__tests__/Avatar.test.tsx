@@ -16,8 +16,8 @@ function getImage(container: HTMLElement) {
 }
 
 function getTextSpan(container: HTMLElement) {
-  // Text span has display: inline-block and lineHeight: 1
-  return container.querySelector('span[style*="line-height: 1"]') as HTMLElement | null
+  // Text span has BEM class ino-avatar__text
+  return container.querySelector('.ino-avatar__text') as HTMLElement | null
 }
 
 // ============================================================================
@@ -40,7 +40,7 @@ describe('Avatar – Basic rendering', () => {
   it('renders with circle shape by default (borderRadius 50%)', () => {
     const { container } = render(<Avatar />)
     const avatar = getAvatar(container)
-    expect(avatar.style.borderRadius).toBe('50%')
+    expect(avatar).toHaveClass('ino-avatar--circle')
   })
 
   it('renders with default size (2rem = 32px)', () => {
@@ -53,14 +53,13 @@ describe('Avatar – Basic rendering', () => {
   it('has inline-flex display', () => {
     const { container } = render(<Avatar />)
     const avatar = getAvatar(container)
-    expect(avatar.style.display).toBe('inline-flex')
+    expect(avatar).toHaveClass('ino-avatar')
   })
 
   it('centers content', () => {
     const { container } = render(<Avatar />)
     const avatar = getAvatar(container)
-    expect(avatar.style.alignItems).toBe('center')
-    expect(avatar.style.justifyContent).toBe('center')
+    expect(avatar).toHaveClass('ino-avatar')
   })
 })
 
@@ -97,9 +96,7 @@ describe('Avatar – Image', () => {
   it('img covers the container (object-fit: cover)', () => {
     const { container } = render(<Avatar src="avatar.png" />)
     const img = getImage(container)
-    expect(img!.style.objectFit).toBe('cover')
-    expect(img!.style.width).toBe('100%')
-    expect(img!.style.height).toBe('100%')
+    expect(img!).toHaveClass('ino-avatar__image')
   })
 
   it('sets draggable attribute on image', () => {
@@ -181,7 +178,7 @@ describe('Avatar – Icon', () => {
 
   it('wraps icon in a centered span', () => {
     const { container } = render(<Avatar icon={<span>★</span>} />)
-    const iconWrapper = container.querySelector('span[style*="inline-flex"]')
+    const iconWrapper = container.querySelector('.ino-avatar__icon')
     expect(iconWrapper).toBeTruthy()
   })
 
@@ -214,7 +211,7 @@ describe('Avatar – Text (children)', () => {
   it('text span has userSelect none', () => {
     const { container } = render(<Avatar>AB</Avatar>)
     const textSpan = getTextSpan(container)
-    expect(textSpan!.style.userSelect).toBe('none')
+    expect(textSpan!).toHaveClass('ino-avatar__text')
   })
 
   it('prefers icon over children', () => {
@@ -240,13 +237,13 @@ describe('Avatar – Shape', () => {
   it('circle shape has borderRadius 50%', () => {
     const { container } = render(<Avatar shape="circle" />)
     const avatar = getAvatar(container)
-    expect(avatar.style.borderRadius).toBe('50%')
+    expect(avatar).toHaveClass('ino-avatar--circle')
   })
 
   it('square shape has borderRadius 0.5rem', () => {
     const { container } = render(<Avatar shape="square" />)
     const avatar = getAvatar(container)
-    expect(avatar.style.borderRadius).toBe('0.5rem')
+    expect(avatar).toHaveClass('ino-avatar--square')
   })
 })
 
@@ -379,9 +376,8 @@ describe('Avatar – Semantic styles', () => {
     const { container } = render(
       <Avatar icon={<span>★</span>} styles={{ icon: { color: 'blue' } }} />,
     )
-    const iconWrappers = container.querySelectorAll('span[style*="inline-flex"]')
-    const iconWrapper = Array.from(iconWrappers).find((el) => (el as HTMLElement).style.color === 'blue')
-    expect(iconWrapper).toBeTruthy()
+    const iconWrapper = container.querySelector('.ino-avatar__icon') as HTMLElement
+    expect(iconWrapper.style.color).toBe('blue')
   })
 
   it('applies styles.text', () => {
@@ -429,7 +425,7 @@ describe('Avatar.Group – Basic', () => {
       </Avatar.Group>,
     )
     const group = container.firstElementChild as HTMLElement
-    expect(group.style.display).toBe('inline-flex')
+    expect(group).toHaveClass('ino-avatar-group')
   })
 
   it('applies className', () => {
@@ -515,7 +511,7 @@ describe('Avatar.Group – max count', () => {
       </Avatar.Group>,
     )
     // The overflow avatar should have the custom style
-    const allAvatars = container.querySelectorAll('span[style*="overflow: hidden"]')
+    const allAvatars = container.querySelectorAll('.ino-avatar')
     const overflowAvatar = Array.from(allAvatars).find(
       (el) => (el as HTMLElement).style.backgroundColor === 'pink',
     )
@@ -580,8 +576,8 @@ describe('Avatar.Group – Context', () => {
         <Avatar>A</Avatar>
       </Avatar.Group>,
     )
-    const avatar = container.querySelector('span[style*="overflow: hidden"]') as HTMLElement
-    // large = 40px = 2.5rem
+    const avatar = container.querySelector('.ino-avatar') as HTMLElement
+    // large = 40px = 2.5rem (size is still inline)
     expect(avatar.style.width).toBe('2.5rem')
   })
 
@@ -591,8 +587,8 @@ describe('Avatar.Group – Context', () => {
         <Avatar>A</Avatar>
       </Avatar.Group>,
     )
-    const avatar = container.querySelector('span[style*="overflow: hidden"]') as HTMLElement
-    expect(avatar.style.borderRadius).toBe('0.5rem')
+    const avatar = container.querySelector('.ino-avatar') as HTMLElement
+    expect(avatar).toHaveClass('ino-avatar--square')
   })
 
   it('child props override group context', () => {
@@ -601,9 +597,9 @@ describe('Avatar.Group – Context', () => {
         <Avatar size="small" shape="square">A</Avatar>
       </Avatar.Group>,
     )
-    const avatar = container.querySelector('span[style*="overflow: hidden"]') as HTMLElement
+    const avatar = container.querySelector('.ino-avatar') as HTMLElement
     expect(avatar.style.width).toBe('1.5rem')
-    expect(avatar.style.borderRadius).toBe('0.5rem')
+    expect(avatar).toHaveClass('ino-avatar--square')
   })
 
   it('group wraps children with background for ring effect', () => {
@@ -614,9 +610,8 @@ describe('Avatar.Group – Context', () => {
     )
     const group = container.firstElementChild as HTMLElement
     const wrapper = group.children[0] as HTMLElement
-    // Wrapper has padding and backgroundColor for ring effect
-    expect(wrapper.style.padding).toBe('0.125rem')
-    expect(wrapper.style.backgroundColor).toBeTruthy()
+    // Wrapper has BEM class for ring effect
+    expect(wrapper).toHaveClass('ino-avatar-group__item')
   })
 
   it('group uses circle borderRadius for wrappers when shape=circle', () => {
@@ -627,7 +622,7 @@ describe('Avatar.Group – Context', () => {
     )
     const group = container.firstElementChild as HTMLElement
     const wrapper = group.children[0] as HTMLElement
-    expect(wrapper.style.borderRadius).toBe('50%')
+    expect(wrapper).toHaveClass('ino-avatar-group__item--circle')
   })
 
   it('group uses rounded borderRadius for wrappers when shape=square', () => {
@@ -638,7 +633,7 @@ describe('Avatar.Group – Context', () => {
     )
     const group = container.firstElementChild as HTMLElement
     const wrapper = group.children[0] as HTMLElement
-    expect(wrapper.style.borderRadius).toBe('0.625rem')
+    expect(wrapper).toHaveClass('ino-avatar-group__item--square')
   })
 })
 

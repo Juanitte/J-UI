@@ -1,0 +1,258 @@
+/* ================================================================
+   Menu – BEM classes
+   Colors use design tokens via CSS custom properties.
+   Inline indent levels stay inline.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  background-color: var(--j-colorBg);
+  color: var(--j-colorText);
+  font-size: 0.875rem;
+  overflow: hidden;
+}
+
+/* --- Mode modifiers --- */
+.ino-menu--horizontal {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  border-bottom: 1px solid var(--j-colorBorder);
+}
+
+.ino-menu--vertical {
+  border-right: 1px solid var(--j-colorBorder);
+}
+
+.ino-menu--inline {
+  border-right: 1px solid var(--j-colorBorder);
+}
+
+.ino-menu--collapsed {
+  width: 3rem;
+  overflow: hidden;
+}
+
+/* --- Divider --- */
+.ino-menu__divider {
+  margin: 0.25rem 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--j-colorBorder);
+}
+
+.ino-menu__divider--dashed {
+  border-top-style: dashed;
+}
+
+/* --- Group --- */
+.ino-menu__group {
+  list-style: none;
+}
+
+.ino-menu__group-title {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--j-colorTextSubtle);
+  line-height: 1.5;
+}
+
+.ino-menu__group-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Item (leaf) --- */
+.ino-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  line-height: 1.375rem;
+  cursor: pointer;
+  color: var(--j-colorText);
+  background-color: transparent;
+  transition: color 0.2s, background-color 0.2s;
+  list-style: none;
+  position: relative;
+  white-space: nowrap;
+}
+
+.ino-menu__item--horizontal {
+  padding: 0 1.25rem;
+  line-height: 2.875rem;
+}
+
+.ino-menu__item--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ino-menu__item--danger {
+  color: var(--j-colorError);
+}
+
+.ino-menu__item--selected {
+  color: var(--j-colorPrimary);
+  background-color: var(--j-colorPrimaryLight);
+}
+
+.ino-menu__item--selected.ino-menu__item--horizontal {
+  background-color: transparent;
+  border-bottom: 2px solid var(--j-colorPrimary);
+}
+
+.ino-menu__item--selected.ino-menu__item--vertical {
+  border-right: 3px solid var(--j-colorPrimary);
+}
+
+.ino-menu__item--collapsed {
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.ino-menu__item:hover:not(.ino-menu__item--disabled):not(.ino-menu__item--selected) {
+  background-color: var(--j-colorBgMuted);
+}
+
+.ino-menu__item--danger:hover:not(.ino-menu__item--disabled) {
+  background-color: var(--j-colorErrorBg);
+}
+
+.ino-menu__item--horizontal:hover:not(.ino-menu__item--disabled):not(.ino-menu__item--selected) {
+  color: var(--j-colorPrimary);
+}
+
+.ino-menu__item--selected.ino-menu__item--horizontal:hover {
+  background-color: var(--j-colorBgMuted);
+}
+
+/* --- Item icon --- */
+.ino-menu__item-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  font-size: 0.875rem;
+}
+
+/* --- Item label --- */
+.ino-menu__item-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Submenu wrapper --- */
+.ino-menu__submenu-wrapper {
+  list-style: none;
+}
+
+.ino-menu__submenu-wrapper--popup {
+  position: relative;
+}
+
+/* --- Submenu trigger --- */
+.ino-menu__submenu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  line-height: 1.375rem;
+  cursor: pointer;
+  color: var(--j-colorText);
+  transition: color 0.2s, background-color 0.2s;
+  list-style: none;
+  position: relative;
+  white-space: nowrap;
+}
+
+.ino-menu__submenu-trigger--horizontal {
+  padding: 0 1.25rem;
+  line-height: 2.875rem;
+}
+
+.ino-menu__submenu-trigger--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ino-menu__submenu-trigger--active {
+  color: var(--j-colorPrimary);
+}
+
+.ino-menu__submenu-trigger--active.ino-menu__submenu-trigger--horizontal {
+  border-bottom: 2px solid var(--j-colorPrimary);
+}
+
+.ino-menu__submenu-trigger--collapsed {
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.ino-menu__submenu-trigger:hover:not(.ino-menu__submenu-trigger--disabled) {
+  background-color: var(--j-colorBgMuted);
+}
+
+.ino-menu__submenu-trigger--horizontal:hover:not(.ino-menu__submenu-trigger--disabled) {
+  color: var(--j-colorPrimary);
+}
+
+/* --- Expand icon --- */
+.ino-menu__expand-icon {
+  display: inline-flex;
+  margin-left: auto;
+  transition: transform 0.2s;
+}
+
+.ino-menu__expand-icon--open {
+  transform: rotate(180deg);
+}
+
+/* --- Popup submenu --- */
+.ino-menu__submenu-popup {
+  position: absolute;
+  z-index: 1050;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  min-width: 10rem;
+  background-color: var(--j-colorBg);
+  border: 1px solid var(--j-colorBorder);
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadowMd);
+}
+
+.ino-menu__submenu-popup--horizontal {
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+}
+
+.ino-menu__submenu-popup--vertical {
+  left: 100%;
+  top: 0;
+  margin-left: 0.25rem;
+}
+
+/* --- Inline submenu --- */
+.ino-menu__submenu-inline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.2s ease;
+}
+
+.ino-menu__submenu-inline--closed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.ino-menu__submenu-inline--open {
+  max-height: 1000px;
+  opacity: 1;
+}

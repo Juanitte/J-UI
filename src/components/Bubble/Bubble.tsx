@@ -1,7 +1,7 @@
 import { type ButtonHTMLAttributes, type ReactNode, useState, useRef, useEffect, Children, cloneElement, isValidElement } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 export type BubblePosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 export type BubbleShape = 'circle' | 'square'
@@ -110,18 +110,10 @@ function BubbleComponent({
     return () => window.removeEventListener('scroll', handleScroll)
   }, [visibleOnScroll])
 
-  const getShadow = (): string | undefined => {
-    if (!shadow) return undefined
-    if (shadow === true || shadow === 'lg') return tokens.shadowLg
-    if (shadow === 'sm') return tokens.shadowSm
-    if (shadow === 'md') return tokens.shadowMd
-    return undefined
-  }
-
-  const sizeMap: Record<BubbleSize, { size: number; fontSize: string; iconSize: number }> = {
-    sm: { size: 40, fontSize: '0.75rem', iconSize: 16 },
-    md: { size: 48, fontSize: '0.875rem', iconSize: 20 },
-    lg: { size: 56, fontSize: '1rem', iconSize: 24 },
+  const sizeMap: Record<BubbleSize, { iconSize: number }> = {
+    sm: { iconSize: 16 },
+    md: { iconSize: 20 },
+    lg: { iconSize: 24 },
   }
 
   const positionStyles: Record<BubblePosition, React.CSSProperties> = {
@@ -142,42 +134,33 @@ function BubbleComponent({
   // Aplicar estilos de posición para fixed y absolute, pero no para relative
   const shouldApplyPositionStyles = !style?.position || style.position === 'fixed' || style.position === 'absolute'
 
-  // Hover effect: brightness para grupo, scale para normal
-  const getHoverStyles = (): React.CSSProperties => {
-    if (_inGroup) {
-      return {
-        filter: isHovered && !disabled ? 'brightness(1.15)' : 'brightness(1)',
-      }
-    }
-    return {
-      transform: isHovered && !disabled ? 'scale(1.1)' : 'scale(1)',
-    }
-  }
-
+  const shadowKey = shadow === true ? 'lg' : shadow
   const ct = colorTokens[color]
 
-  const baseStyles: React.CSSProperties = {
-    position: 'fixed',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: sizeMap[size].size,
-    height: sizeMap[size].size,
-    borderRadius: shape === 'circle' ? '50%' : '0.5rem',
-    backgroundColor: ct.base,
-    color: ct.contrast,
-    border: bordered ? `1px solid ${tokens.colorBorder}` : 'none',
-    outline: 'none',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    opacity: disabled ? 0.6 : 1,
-    boxShadow: getShadow(),
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    ...getHoverStyles(),
+  const rootClass = cx(
+    'ino-bubble',
+    `ino-bubble--${shape}`,
+    `ino-bubble--${size}`,
+    {
+      'ino-bubble--bordered': bordered,
+      'ino-bubble--disabled': disabled,
+      'ino-bubble--in-group': _inGroup,
+      'ino-bubble--hovered': isHovered,
+      [`ino-bubble--shadow-${shadowKey}`]: !!shadow,
+    },
+    className,
+    semanticClassNames?.root,
+  )
+
+  // Dynamic: position offsets, color bridge
+  const dynamicStyle: React.CSSProperties = {
+    '--_base': ct.base,
+    '--_contrast': ct.contrast,
+    ...(shouldApplyPositionStyles ? positionStyles[position] : {}),
     zIndex: isHovered ? 1002 : (shouldApplyPositionStyles ? 1000 : undefined),
-    fontFamily: 'inherit',
-    fontSize: sizeMap[size].fontSize,
-    ...(shouldApplyPositionStyles && positionStyles[position]),
-  }
+    ...semanticStyles?.root,
+    ...style,
+  } as React.CSSProperties
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return
@@ -192,55 +175,29 @@ function BubbleComponent({
 
   if (!isVisible) return null
 
-  // Estilos del tooltip (mismo estilo que el componente Tooltip)
+  // Tooltip positioning - dynamic transforms
   const tooltipPos = getTooltipPos()
 
-  const tooltipPositionStyles: Record<'left' | 'right' | 'top' | 'bottom', React.CSSProperties> = {
+  const tooltipPositionStylesMap: Record<'left' | 'right' | 'top' | 'bottom', React.CSSProperties> = {
     top: { bottom: '100%', left: '50%', marginBottom: '0.5rem', transform: `translateX(-50%) translateY(${isHovered ? 0 : 6}px)` },
     bottom: { top: '100%', left: '50%', marginTop: '0.5rem', transform: `translateX(-50%) translateY(${isHovered ? 0 : -6}px)` },
     left: { right: '100%', top: '50%', marginRight: '0.5rem', transform: `translateY(-50%) translateX(${isHovered ? 0 : 6}px)` },
     right: { left: '100%', top: '50%', marginLeft: '0.5rem', transform: `translateY(-50%) translateX(${isHovered ? 0 : -6}px)` },
   }
 
-  const arrowStyles: Record<'left' | 'right' | 'top' | 'bottom', React.CSSProperties> = {
+  const arrowStylesMap: Record<'left' | 'right' | 'top' | 'bottom', React.CSSProperties> = {
     top: { bottom: '-0.25rem', left: '50%', transform: 'translateX(-50%) rotate(45deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
     bottom: { top: '-0.25rem', left: '50%', transform: 'translateX(-50%) rotate(-135deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
     left: { right: '-0.25rem', top: '50%', transform: 'translateY(-50%) rotate(-45deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
     right: { left: '-0.25rem', top: '50%', transform: 'translateY(-50%) rotate(135deg)', borderRight: `1px solid ${tokens.colorBorder}`, borderBottom: `1px solid ${tokens.colorBorder}` },
   }
 
-  const tooltipStyle: React.CSSProperties = {
-    position: 'absolute',
-    zIndex: 1001,
-    padding: '0.5rem 0.75rem',
-    borderRadius: '0.375rem',
-    backgroundColor: tokens.colorBgMuted,
-    color: tokens.colorText,
-    fontSize: '0.8125rem',
-    fontWeight: 500,
-    whiteSpace: 'nowrap',
-    boxShadow: tokens.shadowMd,
-    border: `1px solid ${tokens.colorBorder}`,
-    opacity: isHovered ? 1 : 0,
-    transition: 'opacity 0.15s ease-out, transform 0.15s ease-out',
-    pointerEvents: 'none',
-    ...tooltipPositionStyles[tooltipPos],
-  }
-
-  const arrowStyle: React.CSSProperties = {
-    position: 'absolute',
-    width: '0.5rem',
-    height: '0.5rem',
-    backgroundColor: tokens.colorBgMuted,
-    ...arrowStyles[tooltipPos],
-  }
-
   return (
     <button
       ref={buttonRef}
       disabled={disabled}
-      style={mergeSemanticStyle(baseStyles, semanticStyles?.root, style)}
-      className={mergeSemanticClassName(className, semanticClassNames?.root)}
+      className={rootClass}
+      style={dynamicStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
@@ -248,18 +205,25 @@ function BubbleComponent({
     >
       {/* Icono o descripción */}
       {icon ? (
-        <span style={{ display: 'flex', fontSize: sizeMap[size].iconSize, ...semanticStyles?.icon }} className={semanticClassNames?.icon}>{icon}</span>
+        <span className={cx('ino-bubble__icon', semanticClassNames?.icon)} style={{ fontSize: sizeMap[size].iconSize, ...semanticStyles?.icon }}>{icon}</span>
       ) : description ? (
-        <span style={semanticStyles?.icon} className={semanticClassNames?.icon}>{description}</span>
+        <span className={semanticClassNames?.icon} style={semanticStyles?.icon}>{description}</span>
       ) : (
         <DefaultIcon size={sizeMap[size].iconSize} />
       )}
 
       {/* Tooltip inline */}
       {tooltip && (
-        <div style={{ ...tooltipStyle, ...semanticStyles?.tooltip }} className={semanticClassNames?.tooltip} role="tooltip">
+        <div
+          className={cx('ino-bubble__tooltip', { 'ino-bubble__tooltip--visible': isHovered }, semanticClassNames?.tooltip)}
+          style={{ ...tooltipPositionStylesMap[tooltipPos], ...semanticStyles?.tooltip }}
+          role="tooltip"
+        >
           {tooltip}
-          <div style={{ ...arrowStyle, ...semanticStyles?.tooltipArrow }} className={semanticClassNames?.tooltipArrow} />
+          <div
+            className={cx('ino-bubble__tooltip-arrow', semanticClassNames?.tooltipArrow)}
+            style={{ ...arrowStylesMap[tooltipPos], ...semanticStyles?.tooltipArrow }}
+          />
         </div>
       )}
     </button>
@@ -349,7 +313,7 @@ function BubbleGroup({
   style,
   className,
 }: BubbleGroupProps) {
-  const positionStyles: Record<BubblePosition, React.CSSProperties> = {
+  const positionStylesMap: Record<BubblePosition, React.CSSProperties> = {
     'top-left': { top: offsetY, left: offsetX },
     'top-right': { top: offsetY, right: offsetX },
     'bottom-left': { bottom: offsetY, left: offsetX },
@@ -359,13 +323,7 @@ function BubbleGroup({
   // Determinar si es dirección vertical u horizontal
   const isVertical = direction === 'top' || direction === 'bottom'
 
-  const getShadow = (): string | undefined => {
-    if (!shadow) return undefined
-    if (shadow === true || shadow === 'lg') return tokens.shadowLg
-    if (shadow === 'sm') return tokens.shadowSm
-    if (shadow === 'md') return tokens.shadowMd
-    return undefined
-  }
+  const shadowKey = shadow === true ? 'lg' : shadow
 
   // Determinar flexDirection basado en direction
   const getFlexDirection = (): React.CSSProperties['flexDirection'] => {
@@ -377,14 +335,11 @@ function BubbleGroup({
     }
   }
 
-  // Estilos del contenedor compacto
-  const containerStyles: React.CSSProperties = {
-    position: 'fixed',
-    display: 'flex',
+  // Dynamic: position offsets, flex direction, shadow
+  const containerDynamicStyle: React.CSSProperties = {
     flexDirection: getFlexDirection(),
-    boxShadow: getShadow(),
-    zIndex: 1000,
-    ...positionStyles[position],
+    boxShadow: shadowKey ? `var(--j-shadow${shadowKey.charAt(0).toUpperCase() + shadowKey.slice(1)})` : undefined,
+    ...positionStylesMap[position],
     ...style,
   }
 
@@ -423,7 +378,7 @@ function BubbleGroup({
   }
 
   return (
-    <div style={containerStyles} className={className}>
+    <div className={cx('ino-bubble-group', className)} style={containerDynamicStyle}>
       {validChildren.map((child, index) => {
         if (!isValidElement<BubbleProps>(child)) return null
 
@@ -564,11 +519,8 @@ function BubbleMenu({
   if (isInlineMode) {
     return (
       <div
-        style={mergeSemanticStyle({
-          position: 'relative',
-          display: 'inline-flex',
-        }, semanticStyles?.root, style)}
-        className={mergeSemanticClassName(className, semanticClassNames?.root)}
+        className={cx('ino-bubble-menu', 'ino-bubble-menu--inline', className, semanticClassNames?.root)}
+        style={{ ...semanticStyles?.root, ...style }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -597,18 +549,14 @@ function BubbleMenu({
 
         {/* Children en contenedor absoluto - no afecta el layout */}
         <div
+          className={cx('ino-bubble-menu__children', semanticClassNames?.menu)}
           style={{
-            position: 'absolute',
-            display: 'flex',
             flexDirection: getFlexDirection(),
-            alignItems: 'center',
             gap: gap,
-            zIndex: 1000,
             pointerEvents: isOpen ? 'auto' : 'none',
             ...getChildrenContainerPosition(),
             ...semanticStyles?.menu,
           }}
-          className={semanticClassNames?.menu}
         >
           {validChildren.map((child, index) => {
             if (!isValidElement<BubbleProps>(child)) return null
@@ -638,20 +586,19 @@ function BubbleMenu({
   }
 
   // Modo fixed/absolute: comportamiento original
-  const containerStyle = mergeSemanticStyle({
-    display: 'flex',
+  const containerDynStyle: React.CSSProperties = {
     flexDirection: getFlexDirection(),
-    alignItems: 'center',
     gap: gap,
     position: style?.position === 'absolute' ? undefined : ('fixed' as const),
-    zIndex: 1000,
     ...positionStyles[position],
-  }, semanticStyles?.root, style)
+    ...semanticStyles?.root,
+    ...style,
+  }
 
   return (
     <div
-      style={containerStyle}
-      className={mergeSemanticClassName(className, semanticClassNames?.root)}
+      className={cx('ino-bubble-menu', className, semanticClassNames?.root)}
+      style={containerDynStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

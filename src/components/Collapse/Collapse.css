@@ -1,0 +1,150 @@
+/* ================================================================
+   Collapse – BEM classes
+   ================================================================ */
+
+/* --- Block --- */
+.ino-collapse {
+  overflow: hidden;
+}
+
+.ino-collapse--bordered {
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  background-color: var(--j-bg);
+}
+
+.ino-collapse--ghost {
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.ino-collapse--borderless {
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--j-bg);
+}
+
+/* --- Header --- */
+.ino-collapse__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  user-select: none;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+}
+
+.ino-collapse__header--default {
+  background-color: var(--j-bgSubtle);
+}
+
+.ino-collapse__header--ghost {
+  background-color: transparent;
+}
+
+.ino-collapse__header--disabled {
+  cursor: not-allowed;
+  color: var(--j-textSubtle);
+}
+
+.ino-collapse__header--clickable {
+  cursor: pointer;
+}
+
+.ino-collapse__header--icon-only {
+  cursor: default;
+}
+
+.ino-collapse__header--default:not(.ino-collapse__header--disabled):hover {
+  filter: brightness(0.97);
+}
+
+.ino-collapse__header--ghost:not(.ino-collapse__header--disabled):hover {
+  background-color: var(--j-bgSubtle);
+}
+
+.ino-collapse__header--not-first {
+  border-top: 1px solid var(--j-border);
+}
+
+/* --- Size variants --- */
+.ino-collapse__header--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.ino-collapse__header--md {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.ino-collapse__header--lg {
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+}
+
+/* --- Arrow --- */
+.ino-collapse__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 200ms ease;
+}
+
+.ino-collapse__arrow--active {
+  transform: rotate(90deg);
+}
+
+.ino-collapse__arrow--disabled {
+  color: var(--j-textSubtle);
+}
+
+.ino-collapse__arrow--enabled {
+  color: var(--j-textMuted);
+}
+
+.ino-collapse__arrow--icon-clickable {
+  cursor: pointer;
+}
+
+/* --- Header label --- */
+.ino-collapse__label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Header extra --- */
+.ino-collapse__extra {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* --- Content wrapper (animation) --- */
+.ino-collapse__content-wrapper {
+  overflow: hidden;
+}
+
+/* --- Content body --- */
+.ino-collapse__content {
+  color: var(--j-text);
+  border-top: 1px solid var(--j-border);
+}
+
+.ino-collapse__content--sm {
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.ino-collapse__content--md {
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+.ino-collapse__content--lg {
+  padding: 1.25rem;
+  font-size: 1rem;
+}

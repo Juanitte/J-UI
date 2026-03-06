@@ -1,0 +1,114 @@
+/* ================================================================
+   Alert – BEM classes
+   Colors (bg, border, icon) are dynamic based on type + theme,
+   so they stay inline via CSS custom property bridge or direct.
+   ================================================================ */
+
+/* --- Collapse wrapper --- */
+.ino-alert__collapse {
+  display: grid;
+  transition: grid-template-rows 0.3s ease;
+}
+
+.ino-alert__collapse--open {
+  grid-template-rows: 1fr;
+}
+
+.ino-alert__collapse--closing {
+  grid-template-rows: 0fr;
+}
+
+.ino-alert__collapse-inner {
+  overflow: hidden;
+}
+
+/* --- Block --- */
+.ino-alert {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--j-text);
+  transition: opacity 0.25s ease;
+}
+
+.ino-alert--closing {
+  opacity: 0;
+}
+
+/* Size modifiers */
+.ino-alert--compact {
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+}
+
+.ino-alert--with-description {
+  align-items: flex-start;
+  padding: 0.9375rem 1rem;
+}
+
+/* Banner modifier */
+.ino-alert--banner {
+  border: none;
+  border-radius: 0;
+}
+
+.ino-alert--rounded {
+  border-radius: 0.5rem;
+}
+
+/* --- Icon --- */
+.ino-alert__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* --- Content --- */
+.ino-alert__content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Message (title) --- */
+.ino-alert__message--with-description {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.ino-alert__message--standalone {
+  font-size: 0.875rem;
+}
+
+/* --- Description --- */
+.ino-alert__description {
+  font-size: 0.8125rem;
+  color: var(--j-text-muted);
+}
+
+/* --- Action --- */
+.ino-alert__action {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+/* --- Close button --- */
+.ino-alert__close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--j-text-subtle);
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+  transition: color 0.15s;
+}
+
+.ino-alert__close-btn:hover {
+  color: var(--j-text);
+}

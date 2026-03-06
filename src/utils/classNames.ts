@@ -4,7 +4,7 @@ export type ClassValue =
   | boolean
   | null
   | undefined
-  | Record<string, boolean>
+  | Record<string, boolean | undefined>
   | ClassValue[]
 
 /**

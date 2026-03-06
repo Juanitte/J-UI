@@ -1,0 +1,48 @@
+/* ================================================================
+   Tooltip – BEM classes
+   Positioning (top, left, transform, opacity) stays inline
+   because it's calculated dynamically per-instance.
+   ================================================================ */
+
+/* --- Block (trigger wrapper) --- */
+.ino-tooltip {
+  display: inline-flex;
+}
+
+/* --- Popup --- */
+.ino-tooltip__popup {
+  position: fixed;
+  z-index: 9999;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: var(--j-shadowMd);
+  pointer-events: none;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+/* Default (non-colorful) look */
+.ino-tooltip__popup--default {
+  background-color: var(--j-bg-muted);
+  color: var(--j-text);
+  border: 1px solid var(--j-border);
+}
+
+/* Colorful variant — colors set inline via style */
+.ino-tooltip__popup--colorful {
+  border: none;
+}
+
+/* No-transition modifier (applied on first frame) */
+.ino-tooltip__popup--no-transition {
+  transition: none;
+}
+
+/* --- Arrow --- */
+.ino-tooltip__arrow {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+}

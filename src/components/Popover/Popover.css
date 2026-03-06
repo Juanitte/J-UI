@@ -1,0 +1,57 @@
+/* ================================================================
+   Popover – BEM classes
+   Positioning (top, left, transform, opacity) stays inline.
+   ================================================================ */
+
+/* --- Block (trigger wrapper) --- */
+.ino-popover {
+  display: inline-flex;
+}
+
+/* --- Popup container (positioned) --- */
+.ino-popover__popup-container {
+  position: fixed;
+  z-index: 9999;
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.ino-popover__popup-container--no-transition {
+  transition: none;
+}
+
+/* --- Card --- */
+.ino-popover__card {
+  background-color: var(--j-bg);
+  border: 1px solid var(--j-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadowLg);
+  min-width: 12rem;
+  max-width: 20rem;
+}
+
+/* --- Title --- */
+.ino-popover__title {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--j-text);
+}
+
+.ino-popover__title--bordered {
+  border-bottom: 1px solid var(--j-border);
+}
+
+/* --- Content --- */
+.ino-popover__content {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--j-text);
+}
+
+/* --- Arrow --- */
+.ino-popover__arrow {
+  position: absolute;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--j-bg);
+}

@@ -1,0 +1,54 @@
+/* ================================================================
+   Space – BEM classes
+   Gap values are dynamic (set via inline style).
+   ================================================================ */
+
+/* --- Block --- */
+.ino-space {
+  display: inline-flex;
+}
+
+.ino-space--horizontal {
+  flex-direction: row;
+}
+
+.ino-space--vertical {
+  flex-direction: column;
+}
+
+.ino-space--wrap {
+  flex-wrap: wrap;
+}
+
+.ino-space--nowrap {
+  flex-wrap: nowrap;
+}
+
+/* --- Alignment --- */
+.ino-space--align-start { align-items: flex-start; }
+.ino-space--align-end { align-items: flex-end; }
+.ino-space--align-center { align-items: center; }
+.ino-space--align-baseline { align-items: baseline; }
+
+/* --- Elements --- */
+.ino-space__separator {
+  display: inline-flex;
+  align-self: center;
+}
+
+/* --- Space.Compact --- */
+.ino-space-compact {
+  display: inline-flex;
+}
+
+.ino-space-compact--block {
+  display: flex;
+}
+
+.ino-space-compact--horizontal {
+  flex-direction: row;
+}
+
+.ino-space-compact--vertical {
+  flex-direction: column;
+}

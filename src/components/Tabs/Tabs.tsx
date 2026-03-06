@@ -9,7 +9,8 @@ import {
 } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Tabs.css'
 
 // ============================================================================
 // Types
@@ -344,7 +345,6 @@ export function Tabs({
       updateOverflow()
     })
     ro.observe(list)
-    // Also observe each tab
     tabRefs.current.forEach((el) => ro.observe(el))
 
     return () => ro.disconnect()
@@ -421,108 +421,30 @@ export function Tabs({
     }
   }
 
-  // ---- Styles ----
-
-  // Root
-  const rootDirection: CSSProperties['flexDirection'] =
-    tabPosition === 'bottom'
-      ? 'column-reverse'
-      : tabPosition === 'right'
-        ? 'row-reverse'
-        : tabPosition === 'left'
-          ? 'row'
-          : 'column'
-
-  const rootStyle = mergeSemanticStyle(
-    {
-      display: 'flex',
-      flexDirection: rootDirection,
-      width: '100%',
-      minWidth: 0,
-    },
-    styles?.root,
-    style,
-  )
-
-  // Tab bar
-  const tabBarBorder: CSSProperties = isCard
-    ? {}
+  // ---- Tab bar border class ----
+  const barBorderClass = isCard
+    ? undefined
     : tabPosition === 'top'
-      ? { borderBottom: `1px solid ${tokens.colorBorder}` }
+      ? 'ino-tabs__bar--border-bottom'
       : tabPosition === 'bottom'
-        ? { borderTop: `1px solid ${tokens.colorBorder}` }
+        ? 'ino-tabs__bar--border-top'
         : tabPosition === 'left'
-          ? { borderRight: `1px solid ${tokens.colorBorder}` }
-          : { borderLeft: `1px solid ${tokens.colorBorder}` }
+          ? 'ino-tabs__bar--border-right'
+          : 'ino-tabs__bar--border-left'
 
-  const tabBarBaseStyle: CSSProperties = {
-    display: 'flex',
-    flexDirection: isVertical ? 'column' : 'row',
-    alignItems: isVertical ? 'stretch' : 'center',
-    position: 'relative',
-    flexShrink: 0,
-    ...tabBarBorder,
-    ...tabBarStyle,
-  }
-
-  const mergedTabBarStyle = mergeSemanticStyle(
-    tabBarBaseStyle,
-    styles?.tabBar,
-  )
-
-  // Nav wrap: plain block element sized by flex from tabBar, clips overflow
-  const navWrapStyle: CSSProperties = {
-    flex: 1,
-    minWidth: 0,
-    minHeight: 0,
-    overflow: 'hidden',
-    position: 'relative',
-  }
-
-  // Nav list: block-level flex container — width comes from block layout (= navWrap width)
-  const navListStyle: CSSProperties = {
-    display: 'flex',
-    flexDirection: isVertical ? 'column' : 'row',
-    position: 'relative',
-    overflowX: isVertical ? 'hidden' : 'auto',
-    overflowY: isVertical ? 'auto' : 'hidden',
-    scrollbarWidth: 'none',
-    justifyContent: centered && !showScrollArrows ? 'center' : undefined,
-  }
-
-  // Scroll arrow button
-  const arrowBtnStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: isVertical ? '100%' : '2rem',
-    height: isVertical ? '2rem' : '100%',
-    border: 'none',
-    background: 'none',
-    color: tokens.colorTextMuted,
-    cursor: 'pointer',
-    flexShrink: 0,
-    padding: 0,
-  }
-
-  // Content
-  const contentBaseStyle: CSSProperties = {
-    flex: 1,
-    ...(isCard
-      ? {
-          border: `1px solid ${tokens.colorBorder}`,
-          ...(tabPosition === 'top'
-            ? { borderTop: 'none', borderRadius: '0 0 0.5rem 0.5rem' }
-            : tabPosition === 'bottom'
-              ? { borderBottom: 'none', borderRadius: '0.5rem 0.5rem 0 0' }
-              : tabPosition === 'left'
-                ? { borderLeft: 'none', borderRadius: '0 0.5rem 0.5rem 0' }
-                : { borderRight: 'none', borderRadius: '0.5rem 0 0 0.5rem' }),
-        }
-      : {}),
-  }
-
-  const mergedContentStyle = mergeSemanticStyle(contentBaseStyle, styles?.content)
+  // ---- Content ----
+  const contentStyle: CSSProperties = isCard
+    ? {
+        border: `1px solid ${tokens.colorBorder}`,
+        ...(tabPosition === 'top'
+          ? { borderTop: 'none', borderRadius: '0 0 0.5rem 0.5rem' }
+          : tabPosition === 'bottom'
+            ? { borderBottom: 'none', borderRadius: '0.5rem 0.5rem 0 0' }
+            : tabPosition === 'left'
+              ? { borderLeft: 'none', borderRadius: '0 0.5rem 0.5rem 0' }
+              : { borderRight: 'none', borderRadius: '0.5rem 0 0 0.5rem' }),
+      }
+    : {}
 
   // ---- Tab style builder ----
   const getTabStyle = (item: TabItem, isActive: boolean): CSSProperties => {
@@ -531,9 +453,6 @@ export function Tabs({
     const isHovered = hoveredKey === item.key && !item.disabled && !isActive
 
     const base: CSSProperties = {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
       padding,
       fontSize: sizeConfig.fontSize,
       cursor: item.disabled ? 'not-allowed' : 'pointer',
@@ -547,13 +466,6 @@ export function Tabs({
               : tokens.colorPrimary
             : tokens.colorText,
       fontWeight: isActive ? 600 : 400,
-      opacity: item.disabled ? 0.5 : 1,
-      whiteSpace: 'nowrap',
-      outline: 'none',
-      transition: 'color 0.2s, background-color 0.2s',
-      flexShrink: 0,
-      position: 'relative',
-      userSelect: 'none',
       ...(isVertical
         ? { marginBottom: gutter }
         : { marginRight: gutter }),
@@ -589,40 +501,6 @@ export function Tabs({
     return base
   }
 
-  // ---- Close button style ----
-  const closeBtnStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: '0.25rem',
-    padding: '0.125rem',
-    border: 'none',
-    background: 'none',
-    color: tokens.colorTextMuted,
-    cursor: 'pointer',
-    borderRadius: '0.25rem',
-    transition: 'color 0.2s, background-color 0.2s',
-    lineHeight: 0,
-  }
-
-  // ---- Add button style ----
-  const addBtnStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: sizeConfig.cardHeight,
-    height: sizeConfig.cardHeight,
-    border: `1px dashed ${tokens.colorBorder}`,
-    borderRadius: '0.5rem',
-    background: 'none',
-    color: tokens.colorTextMuted,
-    cursor: 'pointer',
-    flexShrink: 0,
-    marginLeft: isVertical ? 0 : '0.25rem',
-    marginTop: isVertical ? '0.25rem' : 0,
-    transition: 'color 0.2s, border-color 0.2s',
-  }
-
   // ---- Render active content ----
   const renderContent = () => {
     return items.map((item) => {
@@ -634,24 +512,20 @@ export function Tabs({
 
       if (!shouldRender) return null
 
-      const paneStyle: CSSProperties = {
-        ...(isActive ? {} : { display: 'none' }),
-        padding: '1rem',
-      }
-
-      if (tabPaneAnimated && isActive) {
-        // Simple fade-in
-        Object.assign(paneStyle, {
-          animation: 'j-tabs-fadein 0.3s ease',
-        })
-      }
-
       return (
         <div
           key={item.key}
           role="tabpanel"
           aria-hidden={!isActive}
-          style={paneStyle}
+          className={cx(
+            'ino-tabs__pane',
+            { 'ino-tabs__pane--hidden': !isActive },
+          )}
+          style={
+            tabPaneAnimated && isActive
+              ? { animation: 'j-tabs-fadein 0.3s ease' }
+              : undefined
+          }
         >
           {item.children}
         </div>
@@ -671,22 +545,22 @@ export function Tabs({
   // ---- Render ----
   return (
     <div
-      style={rootStyle}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      className={cx('ino-tabs', `ino-tabs--${tabPosition}`, className, classNames?.root)}
+      style={{ ...styles?.root, ...style }}
     >
-      {/* Keyframe animation for tab pane fade-in */}
-      <style>{`
-        @keyframes j-tabs-fadein {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-      `}</style>
-
       {/* Tab bar */}
-      <div style={mergedTabBarStyle} className={classNames?.tabBar}>
+      <div
+        className={cx(
+          'ino-tabs__bar',
+          isVertical ? 'ino-tabs__bar--vertical' : 'ino-tabs__bar--horizontal',
+          barBorderClass,
+          classNames?.tabBar,
+        )}
+        style={{ ...tabBarStyle, ...styles?.tabBar }}
+      >
         {/* Extra left */}
         {extraLeft && (
-          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+          <div className="ino-tabs__extra">
             {extraLeft}
           </div>
         )}
@@ -694,8 +568,11 @@ export function Tabs({
         {/* Scroll arrow start */}
         {showScrollArrows && (
           <button
+            className={cx(
+              'ino-tabs__scroll-arrow',
+              isVertical ? 'ino-tabs__scroll-arrow--v' : 'ino-tabs__scroll-arrow--h',
+            )}
             style={{
-              ...arrowBtnStyle,
               opacity: canScrollStart ? 1 : 0.3,
               pointerEvents: canScrollStart ? 'auto' : 'none',
             }}
@@ -708,10 +585,14 @@ export function Tabs({
         )}
 
         {/* Nav wrap */}
-        <div ref={navWrapRef} style={navWrapStyle}>
+        <div ref={navWrapRef} className="ino-tabs__nav-wrap">
           <div
             ref={navListRef}
-            style={navListStyle}
+            className={cx(
+              'ino-tabs__nav-list',
+              isVertical ? 'ino-tabs__nav-list--vertical' : 'ino-tabs__nav-list--horizontal',
+              { 'ino-tabs__nav-list--centered': centered && !showScrollArrows },
+            )}
             role="tablist"
           >
             {items.map((item) => {
@@ -726,8 +607,12 @@ export function Tabs({
                   aria-selected={isActive}
                   aria-disabled={item.disabled}
                   tabIndex={isActive ? 0 : -1}
+                  className={cx(
+                    'ino-tabs__tab',
+                    { 'ino-tabs__tab--disabled': item.disabled },
+                    classNames?.tab,
+                  )}
                   style={{ ...tabStyle, ...styles?.tab }}
-                  className={classNames?.tab}
                   onClick={(e) => handleClick(item, e)}
                   onMouseEnter={() => {
                     if (!item.disabled) setHoveredKey(item.key)
@@ -737,25 +622,15 @@ export function Tabs({
                   }}
                 >
                   {item.icon && (
-                    <span style={{ display: 'inline-flex', lineHeight: 0 }}>
+                    <span className="ino-tabs__tab-icon">
                       {item.icon}
                     </span>
                   )}
                   {item.label && <span>{item.label}</span>}
                   {isEditable && item.closable !== false && (
                     <button
-                      style={closeBtnStyle}
+                      className="ino-tabs__close-btn"
                       onClick={(e) => handleClose(item, e)}
-                      onMouseEnter={(e) => {
-                        const el = e.currentTarget as HTMLElement
-                        el.style.backgroundColor = tokens.colorBgMuted
-                        el.style.color = tokens.colorText
-                      }}
-                      onMouseLeave={(e) => {
-                        const el = e.currentTarget as HTMLElement
-                        el.style.backgroundColor = 'transparent'
-                        el.style.color = tokens.colorTextMuted
-                      }}
                       tabIndex={-1}
                       aria-label={`Close ${item.label ?? item.key}`}
                     >
@@ -779,8 +654,11 @@ export function Tabs({
         {/* Scroll arrow end */}
         {showScrollArrows && (
           <button
+            className={cx(
+              'ino-tabs__scroll-arrow',
+              isVertical ? 'ino-tabs__scroll-arrow--v' : 'ino-tabs__scroll-arrow--h',
+            )}
             style={{
-              ...arrowBtnStyle,
               opacity: canScrollEnd ? 1 : 0.3,
               pointerEvents: canScrollEnd ? 'auto' : 'none',
             }}
@@ -794,7 +672,7 @@ export function Tabs({
 
         {/* Extra right */}
         {extraRight && (
-          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+          <div className="ino-tabs__extra">
             {extraRight}
           </div>
         )}
@@ -802,18 +680,14 @@ export function Tabs({
         {/* Add button (editable-card) */}
         {isEditable && !hideAdd && (
           <button
-            style={addBtnStyle}
+            className="ino-tabs__add-btn"
+            style={{
+              width: sizeConfig.cardHeight,
+              height: sizeConfig.cardHeight,
+              marginLeft: isVertical ? 0 : '0.25rem',
+              marginTop: isVertical ? '0.25rem' : 0,
+            }}
             onClick={handleAdd}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement
-              el.style.color = tokens.colorPrimary
-              el.style.borderColor = tokens.colorPrimary
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement
-              el.style.color = tokens.colorTextMuted
-              el.style.borderColor = tokens.colorBorder
-            }}
             tabIndex={-1}
             aria-label="Add tab"
           >
@@ -823,7 +697,10 @@ export function Tabs({
       </div>
 
       {/* Content */}
-      <div style={mergedContentStyle} className={classNames?.content}>
+      <div
+        className={cx('ino-tabs__content', classNames?.content)}
+        style={{ ...contentStyle, ...styles?.content }}
+      >
         {renderContent()}
       </div>
     </div>

@@ -1,0 +1,95 @@
+/* ================================================================
+   PopAlert – BEM classes
+   Positions (container placement) and animation transforms stay
+   inline since they are fully dynamic per-instance.
+   Colors are dynamic (type + theme) so stay inline.
+   ================================================================ */
+
+/* --- Container (portal-level positioning) --- */
+.ino-pop-alert__container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  padding: 0 1rem;
+}
+
+/* --- Item wrapper (animation) --- */
+.ino-pop-alert__item {
+  overflow: hidden;
+  border-radius: 0.5rem;
+  pointer-events: all;
+  transition: max-height 0.3s ease, opacity 0.3s ease, transform 0.3s ease, margin 0.3s ease;
+}
+
+/* --- Card --- */
+.ino-pop-alert__card {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  box-shadow: var(--j-shadowMd);
+  line-height: 1.5;
+  color: var(--j-text);
+  overflow: hidden;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* --- Icon --- */
+.ino-pop-alert__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+}
+
+/* --- Content wrapper --- */
+.ino-pop-alert__content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Content --- */
+.ino-pop-alert__content {
+  display: block;
+}
+
+/* --- Description --- */
+.ino-pop-alert__description {
+  display: block;
+  color: var(--j-text-muted);
+  font-size: 0.8125em;
+  margin-top: 0.125rem;
+}
+
+/* --- Close button --- */
+.ino-pop-alert__close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--j-text-subtle);
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+  transition: color 0.15s;
+  margin-left: 0.25rem;
+}
+
+.ino-pop-alert__close-btn:hover {
+  color: var(--j-text);
+}
+
+/* --- Progress bar --- */
+.ino-pop-alert__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  opacity: 0.6;
+  border-radius: 0;
+  transform-origin: left;
+}

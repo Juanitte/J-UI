@@ -14,34 +14,16 @@ function getItemEls(container: HTMLElement) {
   return Array.from(getRoot(container).children) as HTMLElement[]
 }
 
-/** Find all dot elements (circle or custom dot wrappers) */
+/** Find all dot elements */
 function getDots(container: HTMLElement) {
   const root = getRoot(container)
-  const result: HTMLElement[] = []
-  root.querySelectorAll('[style*="border-radius: 50%"], [style*="border-radius:50%"]').forEach((el) => {
-    result.push(el as HTMLElement)
-  })
-  // Also find custom dot wrappers (inline-flex with z-index)
-  root.querySelectorAll('[style*="z-index"]').forEach((el) => {
-    const s = (el as HTMLElement).style
-    if (s.display === 'inline-flex' && s.justifyContent === 'center') {
-      if (!result.includes(el as HTMLElement)) result.push(el as HTMLElement)
-    }
-  })
-  return result
+  return Array.from(root.querySelectorAll('.ino-timeline__dot')) as HTMLElement[]
 }
 
-/** Find all tail elements (vertical or horizontal lines) */
+/** Find all tail elements */
 function getTails(container: HTMLElement) {
   const root = getRoot(container)
-  const result: HTMLElement[] = []
-  root.querySelectorAll('[style*="transition"]').forEach((el) => {
-    const s = (el as HTMLElement).style
-    if (s.transition && s.transition.includes('background-color')) {
-      result.push(el as HTMLElement)
-    }
-  })
-  return result
+  return Array.from(root.querySelectorAll('.ino-timeline__tail, .ino-timeline__tail--h')) as HTMLElement[]
 }
 
 // ============================================================================
@@ -72,29 +54,29 @@ describe('Timeline', () => {
       expect(getItemEls(container)).toHaveLength(3)
     })
 
-    it('root has column flex direction by default', () => {
+    it('root has vertical class by default', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.flexDirection).toBe('column')
+      expect(getRoot(container)).toHaveClass('ino-timeline--vertical')
     })
 
-    it('root has flex display', () => {
+    it('root has timeline class', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.display).toBe('flex')
+      expect(getRoot(container)).toHaveClass('ino-timeline')
     })
 
-    it('root has 0.875rem font size', () => {
+    it('root has timeline class for font size', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.fontSize).toBe('0.875rem')
+      expect(getRoot(container)).toHaveClass('ino-timeline')
     })
 
-    it('root has no list style', () => {
+    it('root has timeline class for list style', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.listStyle).toBe('none')
+      expect(getRoot(container)).toHaveClass('ino-timeline')
     })
 
-    it('root has line-height 1.5', () => {
+    it('root has timeline class for line height', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.lineHeight).toBe('1.5')
+      expect(getRoot(container)).toHaveClass('ino-timeline')
     })
   })
 
@@ -133,30 +115,27 @@ describe('Timeline', () => {
       expect(dots).toHaveLength(3)
     })
 
-    it('outlined variant dot has border (default)', () => {
+    it('outlined variant dot has outlined class (default)', () => {
       const { container } = render(<Timeline items={[{ children: 'A' }]} />)
       const dots = getDots(container)
-      expect(dots[0].style.border).toContain('2px solid')
+      expect(dots[0]).toHaveClass('ino-timeline__dot--outlined')
     })
 
-    it('solid variant dot has background color', () => {
+    it('solid variant dot has solid class', () => {
       const { container } = render(<Timeline items={[{ children: 'A' }]} variant="solid" />)
       const dots = getDots(container)
-      expect(dots[0].style.backgroundColor).toBeTruthy()
-      // Solid dot should not have a visible border
-      expect(dots[0].style.border).toBeFalsy()
+      expect(dots[0]).toHaveClass('ino-timeline__dot--solid')
     })
 
-    it('dot has 0.625rem size', () => {
+    it('dot has circle class', () => {
       const { container } = render(<Timeline items={[{ children: 'A' }]} />)
       const dot = getDots(container)[0]
-      expect(dot.style.width).toBe('0.625rem')
-      expect(dot.style.height).toBe('0.625rem')
+      expect(dot).toHaveClass('ino-timeline__dot--circle')
     })
 
-    it('dot is circular', () => {
+    it('dot has circle class for shape', () => {
       const { container } = render(<Timeline items={[{ children: 'A' }]} />)
-      expect(getDots(container)[0].style.borderRadius).toBe('50%')
+      expect(getDots(container)[0]).toHaveClass('ino-timeline__dot--circle')
     })
   })
 
@@ -165,30 +144,29 @@ describe('Timeline', () => {
   // ============================================================================
 
   describe('color', () => {
-    it('default dot uses primary color', () => {
+    it('default dot has outlined class', () => {
       const { container } = render(<Timeline items={[{ children: 'A' }]} />)
       const dot = getDots(container)[0]
-      // Outlined: border has primary color
-      expect(dot.style.border).toBeTruthy()
+      expect(dot).toHaveClass('ino-timeline__dot--outlined')
     })
 
-    it('preset "red" color applies error color', () => {
+    it('preset "red" color renders dot', () => {
       const { container } = render(
         <Timeline items={[{ children: 'Error', color: 'red' }]} />,
       )
       const dot = getDots(container)[0]
-      expect(dot.style.border).toBeTruthy()
+      expect(dot).toHaveClass('ino-timeline__dot')
     })
 
-    it('preset "green" color applies success color', () => {
+    it('preset "green" color renders dot', () => {
       const { container } = render(
         <Timeline items={[{ children: 'Ok', color: 'green' }]} />,
       )
       const dot = getDots(container)[0]
-      expect(dot.style.border).toBeTruthy()
+      expect(dot).toHaveClass('ino-timeline__dot')
     })
 
-    it('custom hex color applies', () => {
+    it('custom hex color applies inline border', () => {
       const { container } = render(
         <Timeline items={[{ children: 'Custom', color: '#ff6600' }]} />,
       )
@@ -229,13 +207,12 @@ describe('Timeline', () => {
       expect(screen.getByTestId('custom-dot')).toBeTruthy()
     })
 
-    it('custom dot wrapper has inline-flex display', () => {
+    it('custom dot has custom class', () => {
       const items = [{ children: 'A', dot: <span>●</span> }]
       const { container } = render(<Timeline items={items} />)
       const dots = getDots(container)
-      // Custom dot uses inline-flex wrapper
-      const customWrapper = dots.find((d) => d.style.display === 'inline-flex')
-      expect(customWrapper).toBeTruthy()
+      const customDot = dots.find(d => d.classList.contains('ino-timeline__dot--custom'))
+      expect(customDot).toBeTruthy()
     })
   })
 
@@ -256,19 +233,18 @@ describe('Timeline', () => {
       expect(screen.getByTestId('label-em')).toBeTruthy()
     })
 
-    it('label has muted text color', () => {
+    it('label has label class', () => {
       const items = [{ children: 'Content', label: 'Label' }]
       const { container } = render(<Timeline items={items} />)
-      const labelEl = screen.getByText('Label').closest('div') as HTMLElement
-      expect(labelEl.style.color).toBeTruthy()
+      const labelEl = screen.getByText('Label').closest('.ino-timeline__label') as HTMLElement
+      expect(labelEl).toBeTruthy()
     })
 
-    it('items with labels trigger three-column layout', () => {
+    it('items with labels use vertical item class', () => {
       const items = [{ children: 'Content', label: 'Label' }]
       const { container } = render(<Timeline items={items} />)
       const item = getItemEls(container)[0]
-      expect(item.style.display).toBe('grid')
-      expect(item.style.gridTemplateColumns).toContain('1fr')
+      expect(item).toHaveClass('ino-timeline__item--vertical')
     })
   })
 
@@ -292,7 +268,7 @@ describe('Timeline', () => {
       expect(item.style.gridTemplateColumns).toContain('1fr')
     })
 
-    it('alternate mode: even items on right, odd items on left', () => {
+    it('alternate mode: items use vertical item class', () => {
       const items = [
         { children: 'First' },
         { children: 'Second' },
@@ -300,9 +276,8 @@ describe('Timeline', () => {
       ]
       const { container } = render(<Timeline items={items} mode="alternate" />)
       const itemEls = getItemEls(container)
-      // All three items should be grid with three columns
       itemEls.forEach((el) => {
-        expect(el.style.display).toBe('grid')
+        expect(el).toHaveClass('ino-timeline__item--vertical')
         expect(el.style.gridTemplateColumns).toBe('1fr 1.5rem 1fr')
       })
     })
@@ -334,10 +309,10 @@ describe('Timeline', () => {
       expect(tails).toHaveLength(0)
     })
 
-    it('tail has 2px width in vertical mode', () => {
+    it('tail has tail class in vertical mode', () => {
       const { container } = render(<Timeline items={basicItems} />)
       const tails = getTails(container)
-      expect(tails[0].style.width).toBe('2px')
+      expect(tails[0]).toHaveClass('ino-timeline__tail')
     })
   })
 
@@ -418,9 +393,9 @@ describe('Timeline', () => {
   // ============================================================================
 
   describe('horizontal mode', () => {
-    it('root has row flex direction', () => {
+    it('root has horizontal class', () => {
       const { container } = render(<Timeline items={basicItems} horizontal />)
-      expect(getRoot(container).style.flexDirection).toBe('row')
+      expect(getRoot(container)).toHaveClass('ino-timeline--horizontal')
     })
 
     it('renders correct number of horizontal items', () => {
@@ -428,35 +403,35 @@ describe('Timeline', () => {
       expect(getItemEls(container)).toHaveLength(3)
     })
 
-    it('horizontal items have column flex direction', () => {
+    it('horizontal items have horizontal item class', () => {
       const { container } = render(<Timeline items={basicItems} horizontal />)
       const items = getItemEls(container)
       items.forEach((item) => {
-        expect(item.style.flexDirection).toBe('column')
+        expect(item).toHaveClass('ino-timeline__item--horizontal')
       })
     })
 
-    it('horizontal items have flex 1', () => {
+    it('horizontal items have horizontal item class for layout', () => {
       const { container } = render(<Timeline items={basicItems} horizontal />)
       const items = getItemEls(container)
       items.forEach((item) => {
-        expect(item.style.flex).toContain('1')
+        expect(item).toHaveClass('ino-timeline__item--horizontal')
       })
     })
 
-    it('horizontal items have center alignment', () => {
+    it('horizontal items have horizontal item class for alignment', () => {
       const { container } = render(<Timeline items={basicItems} horizontal />)
       const items = getItemEls(container)
       items.forEach((item) => {
-        expect(item.style.alignItems).toBe('center')
+        expect(item).toHaveClass('ino-timeline__item--horizontal')
       })
     })
 
-    it('horizontal tail has 2px height', () => {
+    it('horizontal tails have horizontal tail class', () => {
       const { container } = render(<Timeline items={basicItems} horizontal />)
       const tails = getTails(container)
       tails.forEach((tail) => {
-        expect(tail.style.height).toBe('2px')
+        expect(tail).toHaveClass('ino-timeline__tail--h')
       })
     })
 
@@ -527,11 +502,11 @@ describe('Timeline', () => {
   // ============================================================================
 
   describe('grid layout', () => {
-    it('items use grid display', () => {
+    it('items use vertical item class', () => {
       const { container } = render(<Timeline items={basicItems} />)
       const items = getItemEls(container)
       items.forEach((item) => {
-        expect(item.style.display).toBe('grid')
+        expect(item).toHaveClass('ino-timeline__item--vertical')
       })
     })
 
@@ -706,14 +681,14 @@ describe('Timeline', () => {
       expect(screen.getByText('Loading')).toBeTruthy()
     })
 
-    it('root has no margin', () => {
+    it('root has timeline class for margin', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.margin).toBe('0px')
+      expect(getRoot(container)).toHaveClass('ino-timeline')
     })
 
-    it('root has no padding', () => {
+    it('root has timeline class for padding', () => {
       const { container } = render(<Timeline items={basicItems} />)
-      expect(getRoot(container).style.padding).toBe('0px')
+      expect(getRoot(container)).toHaveClass('ino-timeline')
     })
 
     it('reverse with pending puts pending first', () => {

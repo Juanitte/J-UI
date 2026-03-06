@@ -1,0 +1,41 @@
+/* ================================================================
+   Grid – BEM classes
+   Row and Col base styles. Dynamic values (gutter, span widths,
+   offsets, push/pull) stay inline.
+   ================================================================ */
+
+/* --- Row --- */
+.ino-row {
+  display: flex;
+}
+
+.ino-row--wrap {
+  flex-flow: row wrap;
+}
+
+.ino-row--nowrap {
+  flex-flow: row nowrap;
+}
+
+/* --- Row align --- */
+.ino-row--align-top { align-items: flex-start; }
+.ino-row--align-middle { align-items: center; }
+.ino-row--align-bottom { align-items: flex-end; }
+.ino-row--align-stretch { align-items: stretch; }
+
+/* --- Row justify --- */
+.ino-row--justify-start { justify-content: flex-start; }
+.ino-row--justify-end { justify-content: flex-end; }
+.ino-row--justify-center { justify-content: center; }
+.ino-row--justify-space-around { justify-content: space-around; }
+.ino-row--justify-space-between { justify-content: space-between; }
+.ino-row--justify-space-evenly { justify-content: space-evenly; }
+
+/* --- Col --- */
+.ino-col {
+  box-sizing: border-box;
+}
+
+.ino-col--hidden {
+  display: none;
+}

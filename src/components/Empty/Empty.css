@@ -1,0 +1,39 @@
+/* ================================================================
+   Empty – BEM classes
+   ================================================================ */
+
+/* --- Block --- */
+.ino-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+/* --- Image container --- */
+.ino-empty__image {
+  line-height: 1;
+}
+
+.ino-empty__image--with-desc {
+  margin-bottom: 0.5rem;
+}
+
+.ino-empty__image--tumbleweed {
+  position: relative;
+  width: 100%;
+  min-height: 5rem;
+}
+
+/* --- Description --- */
+.ino-empty__description {
+  color: var(--j-text-subtle);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* --- Footer --- */
+.ino-empty__footer {
+  margin-top: 1rem;
+}

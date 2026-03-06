@@ -1,0 +1,108 @@
+/* ================================================================
+   Progress – BEM classes
+   Width percentages, stroke colors, and sizes stay inline
+   since they are fully dynamic.
+   ================================================================ */
+
+/* --- Line root --- */
+.ino-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ino-progress--full-width {
+  width: 100%;
+}
+
+/* --- Trail (background track) --- */
+.ino-progress__trail {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Stroke (filled bar) --- */
+.ino-progress__stroke {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* --- Active shimmer --- */
+.ino-progress__active-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: j-progress-active 2.4s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+
+/* --- Inner text (inside the bar) --- */
+.ino-progress__inner-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 0.375rem;
+}
+
+/* --- Success segment --- */
+.ino-progress__success-segment {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* --- Outer text --- */
+.ino-progress__text {
+  flex-shrink: 0;
+  color: var(--j-text);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  min-width: 2.5em;
+}
+
+.ino-progress__text--small {
+  font-size: 0.8125rem;
+}
+
+.ino-progress__text--default {
+  font-size: 0.875rem;
+}
+
+/* --- Steps container --- */
+.ino-progress__steps {
+  display: flex;
+  gap: 0.125rem;
+  flex: 1;
+}
+
+/* --- Step segment --- */
+.ino-progress__step {
+  flex: 1;
+  transition: background-color 0.3s ease;
+}
+
+/* --- Circle / Dashboard --- */
+.ino-progress--circle {
+  display: inline-flex;
+  position: relative;
+}
+
+.ino-progress__circle-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--j-text);
+  line-height: 1;
+}

@@ -9,7 +9,8 @@ import {
 import { tokens } from '../../theme/tokens'
 import { useThemeMode } from '../../theme'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Alert.css'
 
 // ============================================================================
 // Types
@@ -175,50 +176,44 @@ export function Alert({
 
   const iconSize = hasDescription ? 24 : 16
 
-  // ── Root style ──
-  const rootStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: hasDescription ? 'flex-start' : 'center',
-    padding: hasDescription ? '0.9375rem 1rem' : '0.5rem 0.75rem',
+  const rootClass = cx(
+    'ino-alert',
+    hasDescription ? 'ino-alert--with-description' : 'ino-alert--compact',
+    banner ? 'ino-alert--banner' : 'ino-alert--rounded',
+    { 'ino-alert--closing': closing },
+    className,
+    classNames?.root,
+  )
+
+  const rootDynamicStyle: CSSProperties = {
     backgroundColor: config.bg,
     ...(banner
-      ? { border: 'none', borderBottom: `1px solid ${config.border}`, borderRadius: 0 }
-      : { border: `1px solid ${config.border}`, borderRadius: '0.5rem' }
+      ? { borderBottom: `1px solid ${config.border}` }
+      : { border: `1px solid ${config.border}` }
     ),
-    gap: '0.5rem',
-    fontSize: '0.875rem',
-    lineHeight: 1.5,
-    color: tokens.colorText,
-    opacity: closing ? 0 : 1,
-    transition: 'opacity 0.25s ease',
+    ...styles?.root,
+    ...style,
   }
 
   return (
     <div
       ref={wrapperRef}
-      style={{
-        display: 'grid',
-        gridTemplateRows: closing ? '0fr' : '1fr',
-        transition: 'grid-template-rows 0.3s ease',
-      }}
+      className={cx('ino-alert__collapse', closing ? 'ino-alert__collapse--closing' : 'ino-alert__collapse--open')}
       onTransitionEnd={(e) => {
         if (e.target === wrapperRef.current) handleTransitionEnd()
       }}
     >
-    <div style={{ overflow: 'hidden' }}>
+    <div className="ino-alert__collapse-inner">
     <div
       role="alert"
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      className={rootClass}
+      style={rootDynamicStyle}
     >
       {/* Icon */}
       {resolvedShowIcon && (
         <span
-          className={classNames?.icon}
+          className={cx('ino-alert__icon', classNames?.icon)}
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            flexShrink: 0,
             color: config.icon,
             marginTop: hasDescription ? '0.125rem' : 0,
             ...styles?.icon,
@@ -230,32 +225,25 @@ export function Alert({
 
       {/* Content */}
       <div
-        className={classNames?.content}
-        style={{
-          flex: 1,
-          minWidth: 0,
-          ...styles?.content,
-        }}
+        className={cx('ino-alert__content', classNames?.content)}
+        style={styles?.content}
       >
         {title && (
           <div
-            className={classNames?.message}
-            style={{
-              fontWeight: hasDescription ? 600 : undefined,
-              fontSize: hasDescription ? '0.9375rem' : '0.875rem',
-              ...styles?.message,
-            }}
+            className={cx(
+              hasDescription ? 'ino-alert__message--with-description' : 'ino-alert__message--standalone',
+              classNames?.message,
+            )}
+            style={styles?.message}
           >
             {title}
           </div>
         )}
         {hasDescription && (
           <div
-            className={classNames?.description}
+            className={cx('ino-alert__description', classNames?.description)}
             style={{
               marginTop: title ? '0.25rem' : 0,
-              fontSize: '0.8125rem',
-              color: tokens.colorTextMuted,
               ...styles?.description,
             }}
           >
@@ -267,14 +255,8 @@ export function Alert({
       {/* Action */}
       {action && (
         <span
-          className={classNames?.action}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            flexShrink: 0,
-            marginLeft: '0.5rem',
-            ...styles?.action,
-          }}
+          className={cx('ino-alert__action', classNames?.action)}
+          style={styles?.action}
         >
           {action}
         </span>
@@ -285,27 +267,10 @@ export function Alert({
         <button
           type="button"
           onClick={handleClose}
-          className={classNames?.closeBtn}
+          className={cx('ino-alert__close-btn', classNames?.closeBtn)}
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0.125rem',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            color: tokens.colorTextSubtle,
-            flexShrink: 0,
-            borderRadius: '0.25rem',
-            transition: 'color 0.15s',
             marginLeft: action ? 0 : '0.5rem',
             ...styles?.closeBtn,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = tokens.colorText
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = tokens.colorTextSubtle
           }}
         >
           {closableConfig.closeIcon ?? <CloseIcon />}

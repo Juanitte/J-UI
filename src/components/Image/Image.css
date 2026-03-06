@@ -1,0 +1,194 @@
+/* ================================================================
+   Image – BEM classes
+   ================================================================ */
+
+.ino-image {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.ino-image__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s;
+}
+
+/* --- Placeholder --- */
+.ino-image__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--j-bgSubtle);
+}
+
+.ino-image__shimmer {
+  width: 100%;
+  height: 100%;
+  background-size: 200% 100%;
+  animation: j-image-shimmer 1.5s infinite;
+}
+
+/* --- Error state --- */
+.ino-image__error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: var(--j-bgSubtle);
+  color: var(--j-textSubtle);
+  font-size: 0.75rem;
+}
+
+/* --- Preview mask --- */
+.ino-image__mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  background-color: rgba(0,0,0,0.4);
+  color: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ino-image:hover .ino-image__mask {
+  opacity: 1;
+}
+
+/* --- Preview overlay --- */
+.ino-image-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  outline: none;
+  transition: opacity 0.2s ease;
+}
+
+.ino-image-preview__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.72);
+}
+
+.ino-image-preview__counter {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.875rem;
+  font-weight: 500;
+  user-select: none;
+}
+
+.ino-image-preview__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(0,0,0,0.35);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 0;
+  z-index: 2;
+}
+
+.ino-image-preview__close:hover {
+  background-color: rgba(0,0,0,0.55);
+}
+
+.ino-image-preview__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(0,0,0,0.35);
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 0;
+  z-index: 2;
+}
+
+.ino-image-preview__nav:hover {
+  background-color: rgba(0,0,0,0.55);
+}
+
+.ino-image-preview__nav--prev { left: 1rem; }
+.ino-image-preview__nav--next { right: 1rem; }
+
+.ino-image-preview__body {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.ino-image-preview__img {
+  max-width: 80vw;
+  max-height: 80vh;
+  object-fit: contain;
+  pointer-events: auto;
+  user-select: none;
+}
+
+/* --- Toolbar --- */
+.ino-image-preview__toolbar {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  background-color: rgba(0,0,0,0.45);
+  border-radius: 2rem;
+  padding: 0.25rem 0.5rem;
+  z-index: 2;
+}
+
+.ino-image-preview__toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  background: none;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: color 0.15s, background-color 0.15s;
+  padding: 0;
+}
+
+.ino-image-preview__toolbar-btn:hover {
+  background-color: rgba(255,255,255,0.12);
+}

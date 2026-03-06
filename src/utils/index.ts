@@ -23,3 +23,6 @@ export { useBreakpoint } from './hooks/useBreakpoint'
 // Semantic DOM (source of truth lives here)
 export { mergeSemanticClassName, mergeSemanticStyle } from './semanticDom'
 export type { SemanticClassNames, SemanticStyles } from './semanticDom'
+
+// Color bridge for CSS custom properties
+export { getColorVars } from './colorVars'

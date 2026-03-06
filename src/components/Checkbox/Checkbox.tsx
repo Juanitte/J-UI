@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, useCallback, createContext, useContext } from 'react'
 import type { ReactNode, CSSProperties, ChangeEvent } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -141,11 +140,10 @@ function CheckboxComponent({
   tabIndex,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: CheckboxProps) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const checkboxRef = useRef<HTMLSpanElement>(null)
   const mouseDownRef = useRef(false)
   const focusSourceRef = useRef<'mouse' | 'keyboard'>('keyboard')
   const groupContext = useContext(CheckboxGroupContext)
@@ -170,6 +168,8 @@ function CheckboxComponent({
   }
 
   const [isFocused, setIsFocused] = useState(false)
+
+  const isActive = mergedChecked || indeterminate
 
   // Set indeterminate on native input
   useEffect(() => {
@@ -203,99 +203,27 @@ function CheckboxComponent({
     }
   }
 
-  // Hover handlers — direct DOM style manipulation (Ino-UI pattern)
-  // When custom colors are set via styles.checkbox, use filter instead of overriding colors
-  const hasCustomColors = !!(styles?.checkbox && (
-    'backgroundColor' in styles.checkbox ||
-    'borderColor' in styles.checkbox ||
-    'border' in styles.checkbox
-  ))
-
-  const handleMouseEnter = () => {
-    if (mergedDisabled || !checkboxRef.current) return
-    if (hasCustomColors) {
-      checkboxRef.current.style.filter = 'brightness(1.15)'
-    } else if (mergedChecked || indeterminate) {
-      checkboxRef.current.style.backgroundColor = tokens.colorPrimaryHover
-      checkboxRef.current.style.borderColor = tokens.colorPrimaryHover
-    } else {
-      checkboxRef.current.style.borderColor = tokens.colorPrimary
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (mergedDisabled || !checkboxRef.current) return
-    if (hasCustomColors) {
-      checkboxRef.current.style.filter = ''
-    } else if (mergedChecked || indeterminate) {
-      checkboxRef.current.style.backgroundColor = tokens.colorPrimary
-      checkboxRef.current.style.borderColor = tokens.colorPrimary
-    } else {
-      checkboxRef.current.style.borderColor = tokens.colorBorder
-    }
-  }
-
-  // ---- Styles ----
-
-  const isActive = mergedChecked || indeterminate
-
-  const rootStyle: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    minHeight: '2.75rem',
-    cursor: mergedDisabled ? 'not-allowed' : 'pointer',
-    userSelect: 'none',
-    lineHeight: 1,
-    ...(mergedDisabled ? { opacity: 0.5 } : {}),
-  }
-
-  const checkboxBoxStyle: CSSProperties = {
-    position: 'relative',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '1rem',
-    height: '1rem',
-    borderRadius: '0.25rem',
-    border: `2px solid ${(isActive || isFocused) ? tokens.colorPrimary : tokens.colorBorder}`,
-    backgroundColor: isActive ? tokens.colorPrimary : 'transparent',
-    color: '#fff',
-    transition: 'border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease',
-    flexShrink: 0,
-    boxShadow: isFocused && !mergedDisabled && focusSourceRef.current === 'keyboard'
-      ? `0 0 0 2px ${tokens.colorPrimaryLight}`
-      : 'none',
-  }
-
-  const hiddenInputStyle: CSSProperties = {
-    position: 'absolute',
-    opacity: 0,
-    width: 0,
-    height: 0,
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden',
-  }
-
-  const labelStyle: CSSProperties = {
-    fontSize: '0.875rem',
-    lineHeight: '1.375rem',
-    color: mergedDisabled ? tokens.colorTextSubtle : tokens.colorText,
-  }
+  // ---- BEM classes ----
+  const rootClass = cx(
+    'ino-checkbox',
+    {
+      'ino-checkbox--active': isActive,
+      'ino-checkbox--disabled': mergedDisabled,
+      'ino-checkbox--focused': isFocused && focusSourceRef.current === 'keyboard',
+    },
+    className,
+    classNamesProp?.root,
+  )
 
   return (
     <label
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(rootStyle, styles?.root, style)}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
       onMouseDown={() => { mouseDownRef.current = true }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <span
-        ref={checkboxRef}
-        className={classNames?.checkbox}
-        style={mergeSemanticStyle(checkboxBoxStyle, styles?.checkbox)}
+        className={cx('ino-checkbox__box', classNamesProp?.checkbox)}
+        style={styles?.checkbox}
       >
         <input
           ref={inputRef}
@@ -312,18 +240,13 @@ function CheckboxComponent({
             setIsFocused(true)
           }}
           onBlur={() => setIsFocused(false)}
-          style={hiddenInputStyle}
+          className="ino-checkbox__input"
           value={value !== undefined ? String(value) : undefined}
         />
         {isActive && (
           <span
-            className={classNames?.indicator}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              ...styles?.indicator,
-            }}
+            className={cx('ino-checkbox__indicator', classNamesProp?.indicator)}
+            style={styles?.indicator}
           >
             {indeterminate ? <MinusIcon /> : <CheckIcon />}
           </span>
@@ -331,8 +254,8 @@ function CheckboxComponent({
       </span>
       {children !== undefined && children !== null && (
         <span
-          className={classNames?.label}
-          style={mergeSemanticStyle(labelStyle, styles?.label)}
+          className={cx('ino-checkbox__label', classNamesProp?.label)}
+          style={styles?.label}
         >
           {children}
         </span>
@@ -355,7 +278,7 @@ function CheckboxGroupComponent({
   children,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: CheckboxGroupProps) {
   const isControlled = controlledValue !== undefined
@@ -392,12 +315,8 @@ function CheckboxGroupComponent({
     <CheckboxGroupContext.Provider value={contextValue}>
       <div
         role="group"
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={mergeSemanticStyle(
-          { display: 'inline-flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' },
-          styles?.root,
-          style,
-        )}
+        className={cx('ino-checkbox-group', className, classNamesProp?.root)}
+        style={{ ...styles?.root, ...style }}
       >
         {normalizedOptions
           ? normalizedOptions.map(opt => (

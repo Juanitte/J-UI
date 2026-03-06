@@ -1,0 +1,195 @@
+/* ================================================================
+   Button – BEM classes
+   Colors use scoped CSS custom properties (--_base, --_hover, etc.)
+   set as inline style by the component based on the `color` prop.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  opacity: 1;
+  transition: all 0.15s ease;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* --- Sizes --- */
+.ino-btn--sm {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.ino-btn--md {
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.ino-btn--lg {
+  min-height: 3rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* --- Variant: primary --- */
+.ino-btn--primary {
+  background-color: var(--_base);
+  color: var(--_contrast);
+}
+
+.ino-btn--primary:hover:not(:disabled) {
+  background-color: var(--_hover);
+}
+
+.ino-btn--primary:focus-visible {
+  box-shadow: 0 0 0 3px var(--_200);
+}
+
+.ino-btn--primary:active:not(:disabled) {
+  background-color: var(--_dark);
+}
+
+/* --- Variant: secondary --- */
+.ino-btn--secondary {
+  background-color: var(--_light);
+  color: var(--_dark);
+}
+
+.ino-btn--secondary:hover:not(:disabled) {
+  background-color: var(--_200);
+}
+
+.ino-btn--secondary:focus-visible {
+  box-shadow: 0 0 0 3px var(--_200);
+}
+
+.ino-btn--secondary:active:not(:disabled) {
+  background-color: var(--_300);
+}
+
+/* --- Variant: outline --- */
+.ino-btn--outline {
+  background-color: transparent;
+  color: var(--_base);
+  border: 1px solid var(--_base);
+}
+
+.ino-btn--outline:hover:not(:disabled) {
+  background-color: var(--_light);
+}
+
+.ino-btn--outline:focus-visible {
+  box-shadow: 0 0 0 3px var(--_200);
+}
+
+.ino-btn--outline:active:not(:disabled) {
+  background-color: var(--_200);
+}
+
+/* --- Variant: dashed --- */
+.ino-btn--dashed {
+  background-color: transparent;
+  color: var(--_base);
+  border: 1px dashed var(--_base);
+}
+
+.ino-btn--dashed:hover:not(:disabled) {
+  background-color: var(--_light);
+}
+
+.ino-btn--dashed:focus-visible {
+  box-shadow: 0 0 0 3px var(--_200);
+}
+
+.ino-btn--dashed:active:not(:disabled) {
+  background-color: var(--_200);
+}
+
+/* --- Variant: ghost --- */
+.ino-btn--ghost {
+  background-color: transparent;
+  color: var(--_base);
+}
+
+.ino-btn--ghost:hover:not(:disabled) {
+  background-color: var(--_light);
+}
+
+.ino-btn--ghost:focus-visible {
+  box-shadow: 0 0 0 3px var(--_200);
+}
+
+.ino-btn--ghost:active:not(:disabled) {
+  background-color: var(--_200);
+}
+
+/* --- Variant: link --- */
+.ino-btn--link {
+  background-color: transparent;
+  color: var(--_base);
+  padding: 0;
+  min-height: auto;
+}
+
+.ino-btn--link:hover:not(:disabled) {
+  color: var(--_hover);
+}
+
+.ino-btn--link:focus-visible {
+  box-shadow: 0 0 0 3px var(--_200);
+}
+
+/* --- Gradient / custom background modifier --- */
+.ino-btn--gradient:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.ino-btn--gradient:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+/* --- State modifiers --- */
+.ino-btn:disabled,
+.ino-btn--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.ino-btn--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.ino-btn--block {
+  width: 100%;
+}
+
+.ino-btn--bordered {
+  border: 1px solid var(--_border);
+}
+
+/* --- Shadows --- */
+.ino-btn--shadow-sm { box-shadow: var(--j-shadowSm); }
+.ino-btn--shadow-md { box-shadow: var(--j-shadowMd); }
+.ino-btn--shadow-lg { box-shadow: var(--j-shadowLg); }
+
+/* --- Elements --- */
+.ino-btn__icon {
+  display: inline-flex;
+  font-size: 1.1em;
+}
+
+.ino-btn__spinner {
+  display: inline-flex;
+}

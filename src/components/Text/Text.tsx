@@ -1,8 +1,8 @@
 import { type ReactNode, type CSSProperties, useState } from 'react'
-import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { Tooltip } from '../Tooltip'
+import './Text.css'
 
 export type TextType = 'default' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
 export type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -10,9 +10,9 @@ export type TextWeight = 'thin' | 'light' | 'normal' | 'medium' | 'semibold' | '
 export type TextLineHeight = 'none' | 'tight' | 'snug' | 'normal' | 'relaxed' | 'loose'
 
 export interface EllipsisConfig {
-  /** Número de filas antes de truncar (default: 1) */
+  /** Numero de filas antes de truncar (default: 1) */
   rows?: number
-  /** Mostrar botón para expandir/colapsar */
+  /** Mostrar boton para expandir/colapsar */
   expandable?: boolean
   /** Callback cuando cambia el estado expandido */
   onExpand?: (expanded: boolean) => void
@@ -27,13 +27,13 @@ export interface TextProps {
   children: ReactNode
   /** Tipo/color del texto */
   type?: TextType
-  /** Tamaño del texto */
+  /** Tamano del texto */
   size?: TextSize
-  /** Texto deshabilitado (gris y sin interacción) */
+  /** Texto deshabilitado (gris y sin interaccion) */
   disabled?: boolean
   /** Resaltar texto con fondo amarillo */
   mark?: boolean
-  /** Estilo de código inline */
+  /** Estilo de codigo inline */
   code?: boolean
   /** Estilo de tecla de teclado */
   keyboard?: boolean
@@ -47,7 +47,7 @@ export interface TextProps {
   lineHeight?: TextLineHeight
   /** Texto en cursiva */
   italic?: boolean
-  /** Mostrar botón para copiar el texto */
+  /** Mostrar boton para copiar el texto */
   copyable?: boolean | { text?: string; onCopy?: () => void }
   /** Truncar texto con ellipsis (...) */
   ellipsis?: boolean | EllipsisConfig
@@ -78,50 +78,13 @@ export function Text({
   ellipsis = false,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: TextProps) {
   const [copied, setCopied] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
-  const sizeMap: Record<TextSize, string> = {
-    xs: '0.625rem',
-    sm: '0.8125rem',
-    md: '1rem',
-    lg: '1.5rem',
-    xl: '2.25rem',
-  }
-
-  const typeColorMap: Record<TextType, string> = {
-    default: tokens.colorText,
-    secondary: tokens.colorTextMuted,
-    success: tokens.colorSuccess,
-    warning: tokens.colorWarning,
-    error: tokens.colorError,
-    info: tokens.colorInfo,
-  }
-
-  const weightMap: Record<TextWeight, number> = {
-    thin: 100,
-    light: 300,
-    normal: 400,
-    medium: 500,
-    semibold: 600,
-    bold: 700,
-    extrabold: 800,
-    black: 900,
-  }
-
-  const lineHeightMap: Record<TextLineHeight, number> = {
-    none: 1,
-    tight: 1.25,
-    snug: 1.375,
-    normal: 1.5,
-    relaxed: 1.625,
-    loose: 2,
-  }
-
-  // Configuración de ellipsis
+  // Configuracion de ellipsis
   const ellipsisConfig: EllipsisConfig | null = ellipsis
     ? typeof ellipsis === 'object'
       ? ellipsis
@@ -158,176 +121,90 @@ export function Text({
     ellipsisConfig?.onExpand?.(newExpanded)
   }
 
-  // Estilos de ellipsis
-  const getEllipsisStyles = (): React.CSSProperties => {
-    if (!ellipsisConfig || expanded) return {}
-
-    if (rows === 1) {
-      return {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        display: 'inline-block',
-        maxWidth: '100%',
-        verticalAlign: 'bottom',
-      }
-    }
-
-    // Multi-line ellipsis
-    return {
-      overflow: 'hidden',
-      display: '-webkit-box',
-      WebkitLineClamp: rows,
-      WebkitBoxOrient: 'vertical',
-    }
-  }
-
-  const baseStyles = mergeSemanticStyle(
+  // Build BEM root class
+  const rootClass = cx(
+    `ino-text--${size}`,
+    disabled ? 'ino-text--disabled' : `ino-text--${type}`,
+    weight ? `ino-text--weight-${weight}` : undefined,
+    lineHeight ? `ino-text--lh-${lineHeight}` : undefined,
     {
-      fontSize: sizeMap[size],
-      color: disabled ? tokens.colorTextSubtle : typeColorMap[type],
-      cursor: disabled ? 'not-allowed' : undefined,
-      opacity: disabled ? 0.6 : 1,
-      fontWeight: weight ? weightMap[weight] : undefined,
-      lineHeight: lineHeight ? lineHeightMap[lineHeight] : undefined,
-      fontStyle: italic ? 'italic' : undefined,
-      textDecoration: underline ? 'underline' : del ? 'line-through' : undefined,
-      ...getEllipsisStyles(),
+      'ino-text--italic': italic,
+      'ino-text--underline': underline,
+      'ino-text--delete': del,
     },
-    styles?.root,
-    style,
+    className,
+    classNamesProp?.root,
   )
-
-  const rootClassName = mergeSemanticClassName(className, classNames?.root)
 
   // Renderizar el contenido con las modificaciones
   let content: ReactNode = children
 
-  // Aplicar mark (highlight)
   if (mark) {
     content = (
-      <mark
-        style={{
-          backgroundColor: tokens.colorWarning200,
-          color: tokens.colorWarning900,
-          padding: '0 0.125rem',
-          borderRadius: '0.125rem',
-        }}
-      >
+      <mark className="ino-text__mark">
         {content}
       </mark>
     )
   }
 
-  // Aplicar code
   if (code) {
     content = (
-      <code
-        style={{
-          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-          fontSize: '0.9em',
-          backgroundColor: tokens.colorBgMuted,
-          border: `1px solid ${tokens.colorBorder}`,
-          borderRadius: '0.25rem',
-          padding: '0.125rem 0.375rem',
-        }}
-      >
+      <code className="ino-text__code">
         {content}
       </code>
     )
   }
 
-  // Aplicar keyboard
   if (keyboard) {
     content = (
-      <kbd
-        style={{
-          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-          fontSize: '0.9em',
-          backgroundColor: tokens.colorBgMuted,
-          border: `1px solid ${tokens.colorBorder}`,
-          borderBottom: `2px solid ${tokens.colorBorder}`,
-          borderRadius: '0.25rem',
-          padding: '0.125rem 0.375rem',
-          boxShadow: `inset 0 -1px 0 ${tokens.colorBorder}`,
-        }}
-      >
+      <kbd className="ino-text__kbd">
         {content}
       </kbd>
     )
   }
 
-  // Botón de copiar
+  // Boton de copiar
   const copyButton = copyable && (
     <Tooltip content={copied ? 'Copiado!' : 'Copiar'} delay={100}>
       <button
         onClick={handleCopy}
         disabled={disabled}
-        className={classNames?.copyButton}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginLeft: '0.25rem',
-          padding: '0.125rem',
-          border: 'none',
-          background: 'none',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          color: copied ? tokens.colorSuccess : tokens.colorTextMuted,
-          opacity: disabled ? 0.5 : 1,
-          transition: 'color 0.2s',
-          verticalAlign: 'middle',
-          ...styles?.copyButton,
-        }}
+        className={cx(
+          'ino-text__copy-btn',
+          { 'ino-text__copy-btn--copied': copied },
+          classNamesProp?.copyButton,
+        )}
+        style={styles?.copyButton}
       >
         {copied ? <CheckIcon size={14} /> : <CopyIcon size={14} />}
       </button>
     </Tooltip>
   )
 
-  // Botón de expandir/colapsar
+  // Boton de expandir/colapsar
   const expandButton = isExpandable && (
     <button
       onClick={handleToggleExpand}
-      className={classNames?.expandButton}
-      style={{
-        display: 'inline',
-        marginLeft: '0.25rem',
-        padding: 0,
-        border: 'none',
-        background: 'none',
-        cursor: 'pointer',
-        color: tokens.colorPrimary,
-        fontSize: 'inherit',
-        fontFamily: 'inherit',
-        ...styles?.expandButton,
-      }}
+      className={cx('ino-text__expand-btn', classNamesProp?.expandButton)}
+      style={styles?.expandButton}
     >
-      {expanded ? 'menos' : 'más'}
+      {expanded ? 'menos' : 'mas'}
     </button>
   )
 
-  // Separar estilos base de estilos de ellipsis para poder anidar correctamente
-  const textStyles: React.CSSProperties = {
-    fontSize: sizeMap[size],
-    color: disabled ? tokens.colorTextSubtle : typeColorMap[type],
-    cursor: disabled ? 'not-allowed' : undefined,
-    opacity: disabled ? 0.6 : 1,
-    fontWeight: weight ? weightMap[weight] : undefined,
-    lineHeight: lineHeight ? lineHeightMap[lineHeight] : undefined,
-    fontStyle: italic ? 'italic' : undefined,
-    textDecoration: underline ? 'underline' : del ? 'line-through' : undefined,
-  }
-
   // Si tiene ellipsis expandible, necesitamos estructura especial
   if (isExpandable) {
-    const ellipsisOnlyStyles = getEllipsisStyles()
-
     if (rows > 1) {
-      // Multi-línea: wrapper div con texto truncado + botón afuera
+      // Multi-linea: wrapper div con texto truncado + boton afuera
+      const ellipsisClass = !expanded ? 'ino-text--ellipsis-multi' : undefined
+      const ellipsisStyle: CSSProperties = !expanded ? { WebkitLineClamp: rows } : {}
+
       return (
-        <div style={mergeSemanticStyle(textStyles, styles?.root, style)} className={rootClassName}>
-          <div style={{ ...ellipsisOnlyStyles, ...styles?.content }} className={classNames?.content}>
+        <div className={rootClass} style={{ ...styles?.root, ...style }}>
+          <div
+            className={cx(ellipsisClass, classNamesProp?.content)}
+            style={{ ...ellipsisStyle, ...styles?.content }}
+          >
             {content}
           </div>
           {expandButton}
@@ -336,10 +213,18 @@ export function Text({
       )
     }
 
-    // Una línea: wrapper span con texto truncado inline + botón afuera
+    // Una linea: wrapper span con texto truncado inline + boton afuera
+    const innerEllipsisClass = !expanded ? 'ino-text--ellipsis-1' : undefined
+
     return (
-      <span style={mergeSemanticStyle({ ...textStyles, display: 'inline-flex', alignItems: 'baseline', maxWidth: '100%' }, styles?.root, style)} className={rootClassName}>
-        <span style={{ ...ellipsisOnlyStyles, flex: '0 1 auto', minWidth: 0, ...styles?.content }} className={classNames?.content}>
+      <span
+        className={cx('ino-text--expandable-single', rootClass)}
+        style={{ ...styles?.root, ...style }}
+      >
+        <span
+          className={cx('ino-text__content--expandable-single', innerEllipsisClass, classNamesProp?.content)}
+          style={styles?.content}
+        >
           {content}
         </span>
         {expandButton}
@@ -348,12 +233,15 @@ export function Text({
     )
   }
 
-  // Para ellipsis multi-línea sin expandable, usamos un div
+  // Para ellipsis multi-linea sin expandable, usamos un div
   if (ellipsisConfig && rows > 1) {
     return (
-      <div style={baseStyles} className={rootClassName}>
-        {classNames?.content || styles?.content ? (
-          <span className={classNames?.content} style={styles?.content}>{content}</span>
+      <div
+        className={cx('ino-text--ellipsis-multi', rootClass)}
+        style={{ WebkitLineClamp: rows, ...styles?.root, ...style }}
+      >
+        {classNamesProp?.content || styles?.content ? (
+          <span className={classNamesProp?.content} style={styles?.content}>{content}</span>
         ) : (
           content
         )}
@@ -362,10 +250,16 @@ export function Text({
     )
   }
 
+  // Ellipsis single line (non-expandable)
+  const ellipsisSingleClass = ellipsisConfig && rows === 1 ? 'ino-text--ellipsis-1' : undefined
+
   return (
-    <span style={baseStyles} className={rootClassName}>
-      {classNames?.content || styles?.content ? (
-        <span className={classNames?.content} style={styles?.content}>{content}</span>
+    <span
+      className={cx(ellipsisSingleClass, rootClass)}
+      style={{ ...styles?.root, ...style }}
+    >
+      {classNamesProp?.content || styles?.content ? (
+        <span className={classNamesProp?.content} style={styles?.content}>{content}</span>
       ) : (
         content
       )}

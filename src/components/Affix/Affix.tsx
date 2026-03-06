@@ -1,6 +1,6 @@
 import { type ReactNode, type CSSProperties, useRef, useState, useEffect, useCallback } from 'react'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -140,32 +140,36 @@ export function Affix({
     }
   }, [update, target])
 
+  // Dynamic: wrapper height placeholder, content position values
+  const wrapperDynamicStyle: CSSProperties = {
+    ...(fixedState ? { height: fixedState.height } : {}),
+    ...styles?.root,
+    ...style,
+  }
+
+  const contentDynamicStyle: CSSProperties = fixedState
+    ? {
+        top: fixedState.top,
+        bottom: fixedState.bottom,
+        left: fixedState.left,
+        width: fixedState.width,
+        ...styles?.affix,
+      }
+    : { ...styles?.affix }
+
   return (
     <div
       ref={wrapperRef}
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(
-        fixedState ? { height: fixedState.height } : {},
-        styles?.root,
-        style,
-      )}
+      className={cx(className, classNames?.root)}
+      style={wrapperDynamicStyle}
     >
       <div
         ref={contentRef}
-        className={classNames?.affix}
-        style={mergeSemanticStyle(
-          fixedState
-            ? {
-                position: 'fixed',
-                top: fixedState.top,
-                bottom: fixedState.bottom,
-                left: fixedState.left,
-                width: fixedState.width,
-                zIndex: 10,
-              }
-            : {},
-          styles?.affix,
+        className={cx(
+          { 'ino-affix__content--fixed': !!fixedState },
+          classNames?.affix,
         )}
+        style={contentDynamicStyle}
       >
         {children}
       </div>

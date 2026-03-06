@@ -1,0 +1,221 @@
+/* ================================================================
+   Radio – BEM classes
+   Uses fixed primary/neutral tokens (no per-instance color prop).
+   ================================================================ */
+
+/* --- Block (label wrapper) --- */
+.ino-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+
+.ino-radio--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- Radio circle --- */
+.ino-radio__circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--j-border);
+  background-color: transparent;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Checked */
+.ino-radio--checked .ino-radio__circle {
+  border-color: var(--j-primary);
+  background-color: var(--j-primary);
+}
+
+/* Focus ring (keyboard) */
+.ino-radio--focused .ino-radio__circle {
+  border-color: var(--j-primary);
+}
+
+.ino-radio--focused:not(.ino-radio--disabled) .ino-radio__circle {
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+/* Hover: unchecked */
+.ino-radio:not(.ino-radio--disabled):not(.ino-radio--checked):hover .ino-radio__circle {
+  border-color: var(--j-primary);
+}
+
+/* Hover: checked */
+.ino-radio--checked:not(.ino-radio--disabled):hover .ino-radio__circle {
+  background-color: var(--j-primary-hover);
+  border-color: var(--j-primary-hover);
+}
+
+/* --- Hidden input --- */
+.ino-radio__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* --- Indicator dot --- */
+.ino-radio__indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+/* --- Label --- */
+.ino-radio__label {
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+  color: var(--j-text);
+}
+
+.ino-radio--disabled .ino-radio__label {
+  color: var(--j-textSubtle);
+}
+
+/* --- Group --- */
+.ino-radio-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ino-radio-group--default {
+  gap: 0.5rem;
+}
+
+.ino-radio-group--button {
+  gap: 0;
+}
+
+/* ================================================================
+   Radio.Button – BEM classes
+   ================================================================ */
+
+.ino-radio-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  line-height: 1;
+  border: 1px solid var(--j-border);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  background-color: var(--j-bg);
+  color: var(--j-text);
+}
+
+.ino-radio-btn--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* --- Sizes --- */
+.ino-radio-btn--sm {
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+}
+
+.ino-radio-btn--md {
+  height: 2rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.ino-radio-btn--lg {
+  height: 2.5rem;
+  padding: 0 1rem;
+  font-size: 1rem;
+}
+
+/* --- Border radius positions --- */
+.ino-radio-btn--first { border-radius: 0.375rem 0 0 0.375rem; }
+.ino-radio-btn--last  { border-radius: 0 0.375rem 0.375rem 0; }
+.ino-radio-btn--middle { border-radius: 0; }
+.ino-radio-btn--only  { border-radius: 0.375rem; }
+
+.ino-radio-btn--sm.ino-radio-btn--first { border-radius: 0.25rem 0 0 0.25rem; }
+.ino-radio-btn--sm.ino-radio-btn--last  { border-radius: 0 0.25rem 0.25rem 0; }
+.ino-radio-btn--sm.ino-radio-btn--only  { border-radius: 0.25rem; }
+
+.ino-radio-btn--lg.ino-radio-btn--first { border-radius: 0.5rem 0 0 0.5rem; }
+.ino-radio-btn--lg.ino-radio-btn--last  { border-radius: 0 0.5rem 0.5rem 0; }
+.ino-radio-btn--lg.ino-radio-btn--only  { border-radius: 0.5rem; }
+
+/* Collapse double borders */
+.ino-radio-btn--collapse {
+  margin-left: -1px;
+}
+
+/* --- Checked state: outline style --- */
+.ino-radio-btn--checked.ino-radio-btn--outline {
+  border-color: var(--j-primary);
+  color: var(--j-primary);
+  background-color: var(--j-bg);
+}
+
+/* --- Checked state: solid style --- */
+.ino-radio-btn--checked.ino-radio-btn--solid {
+  border-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+  background-color: var(--j-primary);
+}
+
+/* --- Focus ring (keyboard) --- */
+.ino-radio-btn--focused:not(.ino-radio-btn--disabled) {
+  border-color: var(--j-primary);
+  color: var(--j-primary);
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+/* Z-index for checked/focused to show border over neighbors */
+.ino-radio-btn--checked,
+.ino-radio-btn--focused {
+  z-index: 1;
+}
+
+/* --- Hover: unchecked --- */
+.ino-radio-btn:not(.ino-radio-btn--disabled):not(.ino-radio-btn--checked):hover {
+  color: var(--j-primary);
+  border-color: var(--j-primary);
+}
+
+/* --- Hover: checked outline --- */
+.ino-radio-btn--checked.ino-radio-btn--outline:not(.ino-radio-btn--disabled):hover {
+  color: var(--j-primary-hover);
+  border-color: var(--j-primary-hover);
+}
+
+/* --- Hover: checked solid --- */
+.ino-radio-btn--checked.ino-radio-btn--solid:not(.ino-radio-btn--disabled):hover {
+  background-color: var(--j-primary-hover);
+}
+
+/* --- Button label --- */
+.ino-radio-btn__label {
+  white-space: nowrap;
+}

@@ -1,0 +1,21 @@
+/* ================================================================
+   Waterfall – BEM classes
+   Dynamic values (column width, gutter) stay inline.
+   ================================================================ */
+
+/* --- Block --- */
+.ino-waterfall {
+  display: flex;
+  flex-direction: row;
+}
+
+/* --- Column --- */
+.ino-waterfall__column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Item --- */
+.ino-waterfall__item {
+  box-sizing: border-box;
+}

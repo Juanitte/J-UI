@@ -57,14 +57,14 @@ describe('Badge', () => {
 
   it('renders small count indicator', () => {
     const { container } = render(<Badge count={5} size="small"><span>child</span></Badge>)
-    const sup = container.querySelector('sup') as HTMLElement
-    expect(sup.style.height).toBe('1rem')
+    const indicator = container.querySelector('.ino-badge__indicator') as HTMLElement
+    expect(indicator).toHaveClass('ino-badge__indicator--small')
   })
 
   it('renders default count indicator', () => {
     const { container } = render(<Badge count={5} size="default"><span>child</span></Badge>)
-    const sup = container.querySelector('sup') as HTMLElement
-    expect(sup.style.height).toBe('1.25rem')
+    const indicator = container.querySelector('.ino-badge__indicator') as HTMLElement
+    expect(indicator).toHaveClass('ino-badge__indicator--default')
   })
 
   // ─── Custom color ─────────────────────────────────────────────────────────────
@@ -95,8 +95,7 @@ describe('Badge', () => {
     statuses.forEach((status) => {
       const { container } = render(<Badge status={status} text={status} />)
       const root = container.firstChild as HTMLElement
-      expect(root.style.display).toBe('inline-flex')
-      expect(root.style.alignItems).toBe('center')
+      expect(root).toHaveClass('ino-badge--status')
     })
   })
 
@@ -105,13 +104,8 @@ describe('Badge', () => {
     // The status dot span contains a child animation span
     const dots = container.querySelectorAll('span')
     // root > dot wrapper > animation span + text span
-    let hasAnimation = false
-    dots.forEach((span) => {
-      if (span.style.animation.includes('j-badge-processing')) {
-        hasAnimation = true
-      }
-    })
-    expect(hasAnimation).toBe(true)
+    const pulseEl = container.querySelector('.ino-badge__status-dot-pulse')
+    expect(pulseEl).not.toBeNull()
   })
 
   // ─── Standalone mode ──────────────────────────────────────────────────────────
@@ -178,13 +172,9 @@ describe('Badge', () => {
           <div>Card</div>
         </Badge.Ribbon>,
       )
-      // The ribbon div is positioned with right: 0
-      const divs = container.querySelectorAll('div')
-      let hasRight = false
-      divs.forEach((div) => {
-        if (div.style.right === '0px') hasRight = true
-      })
-      expect(hasRight).toBe(true)
+      // The ribbon div is positioned via BEM class
+      const ribbon = container.querySelector('.ino-badge-ribbon')
+      expect(ribbon).toHaveClass('ino-badge-ribbon--end')
     })
 
     it('renders ribbon on the start when placement=start', () => {
@@ -193,12 +183,8 @@ describe('Badge', () => {
           <div>Card</div>
         </Badge.Ribbon>,
       )
-      const divs = container.querySelectorAll('div')
-      let hasLeft = false
-      divs.forEach((div) => {
-        if (div.style.left === '0px') hasLeft = true
-      })
-      expect(hasLeft).toBe(true)
+      const ribbon = container.querySelector('.ino-badge-ribbon')
+      expect(ribbon).toHaveClass('ino-badge-ribbon--start')
     })
 
     it('applies custom color to ribbon', () => {
@@ -230,13 +216,8 @@ describe('Badge', () => {
           <div>Card</div>
         </Badge.Ribbon>,
       )
-      const divs = container.querySelectorAll('div')
-      let corner: HTMLElement | null = null
-      divs.forEach((div) => {
-        if (div.style.filter === 'brightness(0.75)') corner = div
-      })
+      const corner = container.querySelector('.ino-badge-ribbon__corner')
       expect(corner).not.toBeNull()
-      expect(corner!.style.filter).toBe('brightness(0.75)')
     })
 
     it('resolves preset color name in ribbon', () => {

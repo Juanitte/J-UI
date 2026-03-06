@@ -1,4 +1,5 @@
 import { createContext, useContext, type ReactNode, type CSSProperties } from 'react'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -165,28 +166,16 @@ export function Row({
 
   const [horizontalGutter, verticalGutter] = getGutter()
 
-  const alignMap: Record<RowAlign, string> = {
-    top: 'flex-start',
-    middle: 'center',
-    bottom: 'flex-end',
-    stretch: 'stretch',
-  }
+  const rootClass = cx(
+    'ino-row',
+    wrap ? 'ino-row--wrap' : 'ino-row--nowrap',
+    `ino-row--align-${align}`,
+    `ino-row--justify-${justify}`,
+    className,
+  )
 
-  const justifyMap: Record<RowJustify, string> = {
-    start: 'flex-start',
-    end: 'flex-end',
-    center: 'center',
-    'space-around': 'space-around',
-    'space-between': 'space-between',
-    'space-evenly': 'space-evenly',
-  }
-
-  const rowStyles: CSSProperties = {
-    display: 'flex',
-    flexFlow: wrap ? 'row wrap' : 'row nowrap',
-    alignItems: alignMap[align],
-    justifyContent: justifyMap[justify],
-    // Margen negativo para compensar el padding de las columnas
+  // Dynamic: gutter-derived margins and row gap
+  const rowDynamicStyle: CSSProperties = {
     marginLeft: horizontalGutter ? -(horizontalGutter / 2) : undefined,
     marginRight: horizontalGutter ? -(horizontalGutter / 2) : undefined,
     rowGap: verticalGutter || undefined,
@@ -195,7 +184,7 @@ export function Row({
 
   return (
     <RowContext.Provider value={{ gutter: [horizontalGutter, verticalGutter] }}>
-      <div style={rowStyles} className={className}>
+      <div className={rootClass} style={rowDynamicStyle}>
         {children}
       </div>
     </RowContext.Provider>
@@ -283,27 +272,28 @@ export function Col({
   }
 
   const width = getWidth()
+  const isHidden = width === 'none'
 
-  const colStyles: CSSProperties = {
-    boxSizing: 'border-box',
-    // Gutter como padding
+  const colClass = cx(
+    'ino-col',
+    { 'ino-col--hidden': isHidden },
+    className,
+  )
+
+  // Dynamic: gutter padding, width, offset, order, position
+  const colDynamicStyle: CSSProperties = {
     paddingLeft: gutter[0] ? gutter[0] / 2 : undefined,
     paddingRight: gutter[0] ? gutter[0] / 2 : undefined,
-    // Width
-    flex: activeFlex ?? (width ? `0 0 ${width}` : undefined),
-    maxWidth: width === 'none' ? undefined : width,
-    display: width === 'none' ? 'none' : undefined,
-    // Offset
+    flex: activeFlex ?? (width && !isHidden ? `0 0 ${width}` : undefined),
+    maxWidth: isHidden ? undefined : width,
     marginLeft: getOffset(),
-    // Order
     order: activeOrder,
-    // Push/Pull
     ...getPosition(),
     ...style,
   }
 
   return (
-    <div style={colStyles} className={className}>
+    <div className={colClass} style={colDynamicStyle}>
       {children}
     </div>
   )

@@ -10,7 +10,8 @@ import {
 import { createPortal } from 'react-dom'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Popover.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -441,47 +442,20 @@ export function Popover({
 
   // ─── Styles ────────────────────────────────────────────
 
-  const rootStyle = mergeSemanticStyle(
-    { display: 'inline-flex' },
-    styles?.root,
-    style,
+  const rootClass = cx('ino-popover', className, classNames?.root)
+  const rootStyle: CSSProperties = { ...styles?.root, ...style }
+
+  const popupContainerClass = cx(
+    'ino-popover__popup-container',
+    { 'ino-popover__popup-container--no-transition': noTransitionRef.current },
   )
 
   const popupContainerStyle: CSSProperties = {
-    position: 'fixed',
-    zIndex: 9999,
     top: coords.top,
     left: coords.left,
     opacity: isAnimating ? 1 : 0,
     transform: getTransform(resolvedPlacement, isAnimating),
-    transition: noTransitionRef.current ? 'none' : 'opacity 0.15s ease-out, transform 0.15s ease-out',
     pointerEvents: isAnimating ? 'auto' : 'none',
-  }
-
-  const cardStyle: CSSProperties = {
-    backgroundColor: tokens.colorBg,
-    border: `1px solid ${tokens.colorBorder}`,
-    borderRadius: '0.5rem',
-    boxShadow: tokens.shadowLg,
-    minWidth: '12rem',
-    maxWidth: '20rem',
-    ...styles?.popup,
-  }
-
-  const titleStyle: CSSProperties = {
-    padding: '0.5rem 0.75rem',
-    fontWeight: 600,
-    fontSize: '0.875rem',
-    color: tokens.colorText,
-    borderBottom: resolvedContent ? `1px solid ${tokens.colorBorder}` : undefined,
-    ...styles?.title,
-  }
-
-  const contentStyle: CSSProperties = {
-    padding: '0.5rem 0.75rem',
-    fontSize: '0.875rem',
-    color: tokens.colorText,
-    ...styles?.content,
   }
 
   const arrowComputedStyle: CSSProperties = {
@@ -495,23 +469,31 @@ export function Popover({
     ? createPortal(
         <div
           ref={popupRef}
+          className={popupContainerClass}
           style={popupContainerStyle}
           onMouseEnter={handlePopupMouseEnter}
           onMouseLeave={handlePopupMouseLeave}
         >
-          <div style={cardStyle} className={classNames?.popup}>
+          <div className={cx('ino-popover__card', classNames?.popup)} style={styles?.popup}>
             {resolvedTitle != null && (
-              <div style={titleStyle} className={classNames?.title}>
+              <div
+                className={cx(
+                  'ino-popover__title',
+                  { 'ino-popover__title--bordered': resolvedContent != null },
+                  classNames?.title,
+                )}
+                style={styles?.title}
+              >
                 {resolvedTitle}
               </div>
             )}
             {resolvedContent != null && (
-              <div style={contentStyle} className={classNames?.content}>
+              <div className={cx('ino-popover__content', classNames?.content)} style={styles?.content}>
                 {resolvedContent}
               </div>
             )}
           </div>
-          {arrow && <div style={arrowComputedStyle} className={classNames?.arrow} />}
+          {arrow && <div style={arrowComputedStyle} className={cx('ino-popover__arrow', classNames?.arrow)} />}
         </div>,
         document.body,
       )
@@ -521,7 +503,7 @@ export function Popover({
     <div
       ref={triggerRef}
       style={rootStyle}
-      className={mergeSemanticClassName(className, classNames?.root)}
+      className={rootClass}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}

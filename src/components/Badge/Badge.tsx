@@ -1,8 +1,9 @@
 import type { ReactNode, CSSProperties } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { Tooltip } from '../Tooltip'
+import './Badge.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -81,23 +82,6 @@ function resolveColor(color: string): string {
   return PRESET_COLORS[color] ?? color
 }
 
-// ─── Processing Animation ───────────────────────────────────────────────────────
-
-const PROCESSING_KEYFRAMES = `
-@keyframes j-badge-processing {
-  0% { transform: scale(0.8); opacity: 0.6; }
-  100% { transform: scale(2.4); opacity: 0; }
-}`
-
-let stylesInjected = false
-function injectBadgeStyles() {
-  if (stylesInjected || typeof document === 'undefined') return
-  const style = document.createElement('style')
-  style.textContent = PROCESSING_KEYFRAMES
-  document.head.appendChild(style)
-  stylesInjected = true
-}
-
 // ─── Badge Component ────────────────────────────────────────────────────────────
 
 function BadgeComponent({
@@ -114,11 +98,9 @@ function BadgeComponent({
   title,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: BadgeProps) {
-  injectBadgeStyles()
-
   const isSmall = size === 'small'
   const hasChildren = children !== undefined && children !== null && children !== ''
   const hasStatus = status !== undefined
@@ -153,55 +135,22 @@ function BadgeComponent({
 
     return (
       <span
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={mergeSemanticStyle(
-          {
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            lineHeight: 1,
-          },
-          styles?.root,
-          style,
-        )}
+        className={cx('ino-badge--status', className, classNamesProp?.root)}
+        style={{ ...styles?.root, ...style }}
       >
         <span
-          style={mergeSemanticStyle(
-            {
-              position: 'relative',
-              display: 'inline-block',
-              width: '0.375rem',
-              height: '0.375rem',
-              borderRadius: '50%',
-              backgroundColor: resolvedColor as string,
-            },
-            styles?.indicator,
-          )}
-          className={classNames?.indicator}
+          className={cx('ino-badge__status-dot', classNamesProp?.indicator)}
+          style={{ backgroundColor: resolvedColor as string, ...styles?.indicator }}
         >
           {status === 'processing' && (
             <span
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                backgroundColor: resolvedColor as string,
-                animation: 'j-badge-processing 1.2s ease-in-out infinite',
-              }}
+              className="ino-badge__status-dot-pulse"
+              style={{ backgroundColor: resolvedColor as string }}
             />
           )}
         </span>
         {text != null && (
-          <span
-            style={{
-              color: tokens.colorText,
-              fontSize: '0.875rem',
-              lineHeight: 1.5,
-            }}
-          >
+          <span className="ino-badge__status-text">
             {text}
           </span>
         )}
@@ -220,44 +169,23 @@ function BadgeComponent({
     ? `translate(50%, -50%) translate(${offsetRight}px, ${offsetTop}px)`
     : undefined
 
-  const indicatorBaseStyle: CSSProperties = dot
-    ? {
-        ...(hasChildren
-          ? { position: 'absolute', top: 0, right: 0, transform: baseTransform, zIndex: 1 }
-          : {}),
-        display: 'inline-block',
-        width: isSmall ? '0.375rem' : '0.5rem',
-        height: isSmall ? '0.375rem' : '0.5rem',
-        borderRadius: '50%',
-        backgroundColor: resolvedColor as string,
-        ...(hasChildren
-          ? { boxShadow: `0 0 0 1px ${tokens.colorBg}` }
-          : {}),
-      }
-    : {
-        ...(hasChildren
-          ? { position: 'absolute', top: 0, right: 0, transform: baseTransform, zIndex: 1 }
-          : {}),
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minWidth: isSmall ? '1rem' : '1.25rem',
-        height: isSmall ? '1rem' : '1.25rem',
-        padding: '0 0.375rem',
-        borderRadius: '0.625rem',
-        backgroundColor: resolvedColor as string,
-        color: '#fff',
-        fontSize: isSmall ? '0.625rem' : '0.75rem',
-        fontWeight: 600,
-        fontFamily: 'tabular-nums',
-        lineHeight: 1,
-        whiteSpace: 'nowrap',
-        ...(hasChildren
-          ? { boxShadow: `0 0 0 1px ${tokens.colorBg}` }
-          : {}),
-      }
+  const supClass = cx(
+    {
+      'ino-badge__sup': hasChildren,
+      'ino-badge__sup--with-children': hasChildren,
+    },
+    classNamesProp?.indicator,
+  )
 
-  const indicatorStyle = mergeSemanticStyle(indicatorBaseStyle, styles?.indicator)
+  const indicatorClass = dot
+    ? cx('ino-badge__dot', isSmall ? 'ino-badge__dot--small' : 'ino-badge__dot--default')
+    : cx('ino-badge__indicator', isSmall ? 'ino-badge__indicator--small' : 'ino-badge__indicator--default')
+
+  const indicatorDynamic: CSSProperties = {
+    backgroundColor: resolvedColor as string,
+    ...(hasChildren ? { transform: baseTransform } : {}),
+    ...styles?.indicator,
+  }
 
   // ─── Standalone count/dot (no children, no status) ──────────────────
 
@@ -265,15 +193,11 @@ function BadgeComponent({
     if (!showIndicator) return null
     return (
       <span
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={mergeSemanticStyle(
-          { display: 'inline-flex' },
-          styles?.root,
-          style,
-        )}
+        className={cx('ino-badge--standalone', className, classNamesProp?.root)}
+        style={{ ...styles?.root, ...style }}
       >
         <Tooltip content={resolvedTitle} disabled={!resolvedTitle}>
-          <sup className={classNames?.indicator} style={indicatorStyle}>
+          <sup className={cx(indicatorClass, supClass)} style={indicatorDynamic}>
             {displayCount}
           </sup>
         </Tooltip>
@@ -285,22 +209,13 @@ function BadgeComponent({
 
   return (
     <span
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={mergeSemanticStyle(
-        {
-          position: 'relative',
-          display: 'inline-flex',
-          verticalAlign: 'middle',
-          lineHeight: 1,
-        },
-        styles?.root,
-        style,
-      )}
+      className={cx('ino-badge', className, classNamesProp?.root)}
+      style={{ ...styles?.root, ...style }}
     >
       {children}
       {showIndicator && (
         <Tooltip content={resolvedTitle} disabled={!resolvedTitle}>
-          <sup className={classNames?.indicator} style={indicatorStyle}>
+          <sup className={cx(indicatorClass, supClass)} style={indicatorDynamic}>
             {displayCount}
           </sup>
         </Tooltip>
@@ -318,62 +233,35 @@ function BadgeRibbon({
   placement = 'end',
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: BadgeRibbonProps) {
   const isEnd = placement === 'end'
   const resolvedColor = resolveColor(color)
 
-  const wrapperStyle = mergeSemanticStyle(
-    { position: 'relative' as const },
-    styles?.wrapper,
-    style,
-  )
-
-  const ribbonStyle = mergeSemanticStyle(
-    {
-      position: 'absolute' as const,
-      top: '0.5rem',
-      ...(isEnd ? { right: '-0.5rem' } : { left: '-0.5rem' }),
-      padding: '0 0.5rem',
-      height: '1.375rem',
-      lineHeight: '1.375rem',
-      backgroundColor: resolvedColor,
-      color: '#fff',
-      fontSize: '0.875rem',
-      borderRadius: isEnd
-        ? '0.25rem 0.25rem 0 0.25rem'
-        : '0.25rem 0.25rem 0.25rem 0',
-      whiteSpace: 'nowrap' as const,
-      zIndex: 1,
-    },
-    styles?.ribbon,
-  )
-
-  const contentStyle = mergeSemanticStyle({}, styles?.content)
-
-  const cornerStyle = mergeSemanticStyle(
-    {
-      position: 'absolute' as const,
-      top: '100%',
-      ...(isEnd ? { right: 0 } : { left: 0 }),
-      width: '0.5rem',
-      height: '0.375rem',
-      backgroundColor: resolvedColor,
-      clipPath: isEnd
-        ? 'polygon(0 0, 100% 0, 0 100%)'
-        : 'polygon(0 0, 100% 0, 100% 100%)',
-      filter: 'brightness(0.75)',
-    },
-    styles?.corner,
-  )
-
   return (
-    <div className={mergeSemanticClassName(className, classNames?.wrapper)} style={wrapperStyle}>
+    <div
+      className={cx('ino-badge-ribbon-wrapper', className, classNamesProp?.wrapper)}
+      style={{ ...styles?.wrapper, ...style }}
+    >
       {children}
-      <div className={classNames?.ribbon} style={ribbonStyle}>
-        <span className={classNames?.content} style={contentStyle}>{text}</span>
-        <div className={classNames?.corner} style={cornerStyle} />
+      <div
+        className={cx(
+          'ino-badge-ribbon',
+          isEnd ? 'ino-badge-ribbon--end' : 'ino-badge-ribbon--start',
+          classNamesProp?.ribbon,
+        )}
+        style={{ backgroundColor: resolvedColor, ...styles?.ribbon }}
+      >
+        <span className={classNamesProp?.content} style={styles?.content}>{text}</span>
+        <div
+          className={cx(
+            'ino-badge-ribbon__corner',
+            isEnd ? 'ino-badge-ribbon__corner--end' : 'ino-badge-ribbon__corner--start',
+            classNamesProp?.corner,
+          )}
+          style={{ backgroundColor: resolvedColor, ...styles?.corner }}
+        />
       </div>
     </div>
   )

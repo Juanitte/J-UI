@@ -12,40 +12,30 @@ function getRoot(container: HTMLElement) {
 
 function getTitle(container: HTMLElement) {
   const root = getRoot(container)
-  return root.firstElementChild?.textContent === undefined
-    ? null
-    : (Array.from(root.children).find(
-        (el) => (el as HTMLElement).style.marginBottom === '0.25rem',
-      ) as HTMLElement | undefined) ?? null
+  return root.querySelector('.ino-statistic__title') as HTMLElement | null
 }
 
 function getContent(container: HTMLElement) {
   const root = getRoot(container)
-  return (Array.from(root.children).find(
-    (el) => (el as HTMLElement).style.fontWeight === '600',
-  ) as HTMLElement | undefined) ?? null
+  return root.querySelector('.ino-statistic__content') as HTMLElement | null
 }
 
 function getPrefix(container: HTMLElement) {
   const content = getContent(container)
   if (!content) return null
-  return (Array.from(content.children).find(
-    (el) => (el as HTMLElement).style.marginRight === '0.25rem',
-  ) as HTMLElement | undefined) ?? null
+  return content.querySelector('.ino-statistic__prefix') as HTMLElement | null
 }
 
 function getSuffix(container: HTMLElement) {
   const content = getContent(container)
   if (!content) return null
-  return (Array.from(content.children).find(
-    (el) => (el as HTMLElement).style.marginLeft === '0.25rem',
-  ) as HTMLElement | undefined) ?? null
+  return content.querySelector('.ino-statistic__suffix') as HTMLElement | null
 }
 
 function getLoadingPlaceholder(container: HTMLElement) {
   const content = getContent(container)
   if (!content) return null
-  return content.querySelector('span[style*="animation"]') as HTMLElement | null
+  return content.querySelector('.ino-statistic__loading') as HTMLElement | null
 }
 
 // ============================================================================
@@ -185,14 +175,14 @@ describe('Statistic', () => {
       const { container } = render(<Statistic value={100} prefix="$" />)
       const prefix = getPrefix(container)
       expect(prefix).toBeTruthy()
-      expect(prefix!.style.marginRight).toBe('0.25rem')
+      expect(prefix).toHaveClass('ino-statistic__prefix')
     })
 
     it('suffix has left margin', () => {
       const { container } = render(<Statistic value={100} suffix="%" />)
       const suffix = getSuffix(container)
       expect(suffix).toBeTruthy()
-      expect(suffix!.style.marginLeft).toBe('0.25rem')
+      expect(suffix).toHaveClass('ino-statistic__suffix')
     })
 
     it('no prefix element when not provided', () => {
@@ -268,16 +258,16 @@ describe('Statistic', () => {
       expect(getContent(container)!.textContent).not.toContain('12,345')
     })
 
-    it('loading placeholder has animation', () => {
+    it('loading placeholder has animation class', () => {
       const { container } = render(<Statistic value={100} loading />)
       const placeholder = getLoadingPlaceholder(container)!
-      expect(placeholder.style.animation).toContain('j-statistic-loading')
+      expect(placeholder).toHaveClass('ino-statistic__loading')
     })
 
-    it('loading placeholder has border radius', () => {
+    it('loading placeholder has loading class', () => {
       const { container } = render(<Statistic value={100} loading />)
       const placeholder = getLoadingPlaceholder(container)!
-      expect(placeholder.style.borderRadius).toBe('0.25rem')
+      expect(placeholder).toHaveClass('ino-statistic__loading')
     })
 
     it('shows value when not loading', () => {
@@ -291,19 +281,19 @@ describe('Statistic', () => {
   // ============================================================================
 
   describe('title styling', () => {
-    it('title has bottom margin', () => {
+    it('title has title class', () => {
       const { container } = render(<Statistic title="Test" value={0} />)
-      expect(getTitle(container)!.style.marginBottom).toBe('0.25rem')
+      expect(getTitle(container)).toHaveClass('ino-statistic__title')
     })
 
-    it('title has muted font size', () => {
+    it('title has title class for font size', () => {
       const { container } = render(<Statistic title="Test" value={0} />)
-      expect(getTitle(container)!.style.fontSize).toBe('0.875rem')
+      expect(getTitle(container)).toHaveClass('ino-statistic__title')
     })
 
-    it('title has line height 1.6', () => {
+    it('title has title class for line height', () => {
       const { container } = render(<Statistic title="Test" value={0} />)
-      expect(getTitle(container)!.style.lineHeight).toBe('1.6')
+      expect(getTitle(container)).toHaveClass('ino-statistic__title')
     })
   })
 
@@ -312,24 +302,24 @@ describe('Statistic', () => {
   // ============================================================================
 
   describe('content styling', () => {
-    it('content has 1.5rem font size', () => {
+    it('content has content class', () => {
       const { container } = render(<Statistic value={0} />)
-      expect(getContent(container)!.style.fontSize).toBe('1.5rem')
+      expect(getContent(container)).toHaveClass('ino-statistic__content')
     })
 
-    it('content has font-weight 600', () => {
+    it('content has content class for font-weight', () => {
       const { container } = render(<Statistic value={0} />)
-      expect(getContent(container)!.style.fontWeight).toBe('600')
+      expect(getContent(container)).toHaveClass('ino-statistic__content')
     })
 
-    it('content has tabular-nums', () => {
+    it('content has content class for tabular-nums', () => {
       const { container } = render(<Statistic value={0} />)
-      expect(getContent(container)!.style.fontVariantNumeric).toBe('tabular-nums')
+      expect(getContent(container)).toHaveClass('ino-statistic__content')
     })
 
-    it('content has line height 1.4', () => {
+    it('content has content class for line height', () => {
       const { container } = render(<Statistic value={0} />)
-      expect(getContent(container)!.style.lineHeight).toBe('1.4')
+      expect(getContent(container)).toHaveClass('ino-statistic__content')
     })
   })
 
@@ -459,16 +449,16 @@ describe('Statistic', () => {
       expect(screen.getByTestId('em-title')).toBeTruthy()
     })
 
-    it('prefix and suffix with inline-flex display', () => {
+    it('prefix and suffix have proper classes', () => {
       const { container } = render(<Statistic value={0} prefix="$" suffix="%" />)
-      expect(getPrefix(container)!.style.display).toBe('inline-flex')
-      expect(getSuffix(container)!.style.display).toBe('inline-flex')
+      expect(getPrefix(container)).toHaveClass('ino-statistic__prefix')
+      expect(getSuffix(container)).toHaveClass('ino-statistic__suffix')
     })
 
-    it('prefix and suffix have center alignment', () => {
+    it('prefix and suffix have proper classes for alignment', () => {
       const { container } = render(<Statistic value={0} prefix="$" suffix="%" />)
-      expect(getPrefix(container)!.style.alignItems).toBe('center')
-      expect(getSuffix(container)!.style.alignItems).toBe('center')
+      expect(getPrefix(container)).toHaveClass('ino-statistic__prefix')
+      expect(getSuffix(container)).toHaveClass('ino-statistic__suffix')
     })
 
     it('small number does not get group separators', () => {
@@ -518,10 +508,10 @@ describe('Statistic.Countdown', () => {
       expect(getContent(container)!.textContent).toContain('01:01:01')
     })
 
-    it('renders content section with font-weight 600', () => {
+    it('renders content section with content class', () => {
       vi.setSystemTime(new Date(0))
       const { container } = render(<Statistic.Countdown value={5000} />)
-      expect(getContent(container)!.style.fontWeight).toBe('600')
+      expect(getContent(container)).toHaveClass('ino-statistic__content')
     })
   })
 

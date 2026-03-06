@@ -1,0 +1,140 @@
+/* ================================================================
+   Form – BEM classes
+   Validation colors use status-based modifiers.
+   Dynamic values (variant, disabled injection) stay in TSX.
+   ================================================================ */
+
+/* --- Form root (inline layout) --- */
+.ino-form--inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* --- Form.Item root --- */
+.ino-form-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.ino-form-item--inline {
+  margin-bottom: 0;
+}
+
+.ino-form-item--horizontal {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+/* --- Label --- */
+.ino-form-item__label {
+  font-size: 0.875rem;
+  line-height: 2rem;
+  color: var(--j-colorText);
+}
+
+.ino-form-item__label--horizontal {
+  display: flex;
+  align-items: baseline;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  padding-right: 0.75rem;
+  box-sizing: border-box;
+  max-width: 50%;
+}
+
+.ino-form-item__label--vertical {
+  margin-bottom: 0.25rem;
+}
+
+/* --- Label text truncation/wrap --- */
+.ino-form-item__label-text--truncate {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ino-form-item__label-text--wrap {
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* --- Required mark --- */
+.ino-form-item__required-mark {
+  color: var(--j-colorError);
+}
+
+.ino-form-item__optional-mark {
+  color: var(--j-colorTextMuted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.ino-form-item__mark-spacer--prefix {
+  flex-shrink: 0;
+}
+
+.ino-form-item__mark-spacer--suffix-horizontal {
+  flex-shrink: 0;
+}
+
+.ino-form-item__mark-spacer--suffix-vertical {
+  margin-left: 0.25rem;
+}
+
+.ino-form-item__mark-spacer--prefix-vertical {
+  margin-right: 0.25rem;
+}
+
+/* --- Control --- */
+.ino-form-item__control {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Feedback row --- */
+.ino-form-item__feedback-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ino-form-item__feedback-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Help text --- */
+.ino-form-item__help {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  margin-top: 0.25rem;
+  transition: color 0.2s ease;
+  color: var(--j-colorTextMuted);
+}
+
+.ino-form-item__help--error {
+  color: var(--j-colorError);
+}
+
+.ino-form-item__help--warning {
+  color: var(--j-colorWarning);
+}
+
+/* --- Extra text --- */
+.ino-form-item__extra {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--j-colorTextMuted);
+  margin-top: 0.25rem;
+}
+
+/* --- ErrorList --- */
+.ino-form-error-list {
+  color: var(--j-colorError);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}

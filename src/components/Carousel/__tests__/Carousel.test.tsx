@@ -143,12 +143,12 @@ describe('Carousel', () => {
 
     it('root has overflow hidden', () => {
       const { container } = renderCarousel()
-      expect(getRoot(container).style.overflow).toBe('hidden')
+      expect(getRoot(container)).toHaveClass('ino-carousel')
     })
 
     it('root uses flex layout', () => {
       const { container } = renderCarousel()
-      expect(getRoot(container).style.display).toBe('flex')
+      expect(getRoot(container)).toHaveClass('ino-carousel')
     })
   })
 
@@ -381,9 +381,9 @@ describe('Carousel', () => {
     it('first slide has position relative, others absolute', () => {
       const { container } = renderCarousel({ effect: 'fade' })
       const slides = getSlides(container)
-      expect(slides[0].style.position).toBe('relative')
-      expect(slides[1].style.position).toBe('absolute')
-      expect(slides[2].style.position).toBe('absolute')
+      expect(slides[0]).toHaveClass('ino-carousel__slide--fade-first')
+      expect(slides[1]).toHaveClass('ino-carousel__slide--fade-other')
+      expect(slides[2]).toHaveClass('ino-carousel__slide--fade-other')
     })
 
     it('slide transition includes opacity', () => {
@@ -726,24 +726,24 @@ describe('Carousel', () => {
 
     it('root flexDirection is row for vertical mode', () => {
       const { container } = renderCarousel({ dotPlacement: 'left' })
-      expect(getRoot(container).style.flexDirection).toBe('row')
+      expect(getRoot(container)).toHaveClass('ino-carousel--row-reverse')
     })
 
     it('root flexDirection is column for horizontal mode', () => {
       const { container } = renderCarousel({ dotPlacement: 'bottom' })
-      expect(getRoot(container).style.flexDirection).toBe('column')
+      expect(getRoot(container)).toHaveClass('ino-carousel--row')
     })
 
     it('dots use column direction in vertical mode', () => {
       renderCarousel({ dotPlacement: 'left' })
       const dotsContainer = getDots()[0]?.parentElement as HTMLElement
-      expect(dotsContainer.style.flexDirection).toBe('column')
+      expect(dotsContainer).toHaveClass('ino-carousel__dots--v')
     })
 
     it('dots use row direction in horizontal mode', () => {
       renderCarousel({ dotPlacement: 'bottom' })
       const dotsContainer = getDots()[0]?.parentElement as HTMLElement
-      expect(dotsContainer.style.flexDirection).toBe('row')
+      expect(dotsContainer).toHaveClass('ino-carousel__dots--h')
     })
 
     it('dots placed before viewport when dotPlacement=left', () => {
@@ -801,25 +801,24 @@ describe('Carousel', () => {
     })
 
     it('injects keyframe style element', () => {
-      const { container } = renderCarousel({ autoplay: true, dotProgress: true })
-      const root = getRoot(container)
-      const styleEl = root.querySelector('style')
-      expect(styleEl).toBeTruthy()
-      expect(styleEl!.textContent).toContain('j-carousel-fill-h')
+      renderCarousel({ autoplay: true, dotProgress: true })
+      const activeDot = getDots()[0]
+      const progressBar = activeDot.querySelector('div') as HTMLElement
+      expect(progressBar).toHaveClass('ino-carousel__dot-progress')
     })
 
     it('uses vertical fill animation when dotPlacement is left/right', () => {
       renderCarousel({ autoplay: true, dotProgress: true, dotPlacement: 'left' })
       const activeDot = getDots()[0]
       const progressBar = activeDot.querySelector('div') as HTMLElement
-      expect(progressBar.style.animationName).toBe('j-carousel-fill-v')
+      expect(progressBar).toHaveClass('ino-carousel__dot-progress--v')
     })
 
     it('uses horizontal fill animation when dotPlacement is top/bottom', () => {
       renderCarousel({ autoplay: true, dotProgress: true, dotPlacement: 'bottom' })
       const activeDot = getDots()[0]
       const progressBar = activeDot.querySelector('div') as HTMLElement
-      expect(progressBar.style.animationName).toBe('j-carousel-fill-h')
+      expect(progressBar).toHaveClass('ino-carousel__dot-progress--h')
     })
   })
 

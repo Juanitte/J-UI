@@ -87,7 +87,7 @@ describe('Affix', () => {
 
     it('content div has position fixed', () => {
       const { container } = render(<Affix offsetTop={50} />)
-      expect(getContentDiv(container).style.position).toBe('fixed')
+      expect(getContentDiv(container)).toHaveClass('ino-affix__content--fixed')
     })
 
     it('content div top equals containerTop + offsetTop', () => {
@@ -98,7 +98,7 @@ describe('Affix', () => {
 
     it('content div has zIndex 10', () => {
       const { container } = render(<Affix offsetTop={50} />)
-      expect(getContentDiv(container).style.zIndex).toBe('10')
+      expect(getContentDiv(container)).toHaveClass('ino-affix__content--fixed')
     })
 
     it('wrapper height equals wrapperRect.height', () => {
@@ -120,7 +120,7 @@ describe('Affix', () => {
     it('default offsetTop=0 affixes when wrapperRect.top equals 0', () => {
       mockElementRect({ top: 0, bottom: 40, height: 40 })
       const { container } = render(<Affix />)
-      expect(getContentDiv(container).style.position).toBe('fixed')
+      expect(getContentDiv(container)).toHaveClass('ino-affix__content--fixed')
     })
   })
 
@@ -134,7 +134,7 @@ describe('Affix', () => {
 
     it('content div has position fixed', () => {
       const { container } = render(<Affix offsetBottom={50} />)
-      expect(getContentDiv(container).style.position).toBe('fixed')
+      expect(getContentDiv(container)).toHaveClass('ino-affix__content--fixed')
     })
 
     it('content div bottom equals offsetBottom when target is window', () => {
@@ -145,7 +145,7 @@ describe('Affix', () => {
 
     it('content div has zIndex 10', () => {
       const { container } = render(<Affix offsetBottom={50} />)
-      expect(getContentDiv(container).style.zIndex).toBe('10')
+      expect(getContentDiv(container)).toHaveClass('ino-affix__content--fixed')
     })
 
     it('offsetTop takes priority over offsetBottom when both are set', () => {

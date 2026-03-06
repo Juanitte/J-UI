@@ -1,7 +1,8 @@
 import type { ReactNode, CSSProperties } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Divider.css'
 
 export type DividerType = 'horizontal' | 'vertical'
 export type DividerOrientation = 'left' | 'center' | 'right'
@@ -25,17 +26,17 @@ export type DividerStyles = SemanticStyles<DividerSemanticSlot>
 export interface DividerProps {
   /** Tipo de divider */
   type?: DividerType
-  /** Línea discontinua (dashed) */
+  /** Linea discontinua (dashed) */
   dashed?: boolean
-  /** Posición del texto (solo para horizontal) */
+  /** Posicion del texto (solo para horizontal) */
   orientation?: DividerOrientation
-  /** Margen entre el texto y la línea más cercana (en px o porcentaje) */
+  /** Margen entre el texto y la linea mas cercana (en px o porcentaje) */
   orientationMargin?: number | string
-  /** Texto sin estilo especial (más pequeño y sin negrita) */
+  /** Texto sin estilo especial (mas pequeno y sin negrita) */
   plain?: boolean
   /** Color del divider */
   color?: DividerColor
-  /** Grosor de la línea ('thin' | 'normal' | 'medium' | 'thick' o número en px) */
+  /** Grosor de la linea ('thin' | 'normal' | 'medium' | 'thick' o numero en px) */
   thickness?: DividerThickness
   /** Texto dentro del divider */
   children?: ReactNode
@@ -67,7 +68,7 @@ export function Divider({
   children,
   className,
   style,
-  classNames,
+  classNames: classNamesProp,
   styles,
 }: DividerProps) {
   const borderStyle = dashed ? 'dashed' : 'solid'
@@ -77,42 +78,35 @@ export function Divider({
 
   // Divider vertical
   if (type === 'vertical') {
-    const verticalStyle = mergeSemanticStyle(
-      {
-        display: 'inline-block',
-        height: '0.9em',
-        margin: '0 0.5rem',
-        verticalAlign: 'middle',
-        borderTop: 0,
-        borderInlineStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
-      },
-      styles?.root,
-      style,
+    return (
+      <span
+        className={cx('ino-divider', 'ino-divider--vertical', className, classNamesProp?.root)}
+        style={{
+          borderInlineStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
+          ...styles?.root,
+          ...style,
+        }}
+        role="separator"
+      />
     )
-
-    return <span style={verticalStyle} className={mergeSemanticClassName(className, classNames?.root)} role="separator" />
   }
 
   // Divider horizontal sin texto
   if (!children) {
-    const horizontalStyle = mergeSemanticStyle(
-      {
-        display: 'flex',
-        clear: 'both',
-        width: '100%',
-        minWidth: '100%',
-        margin: '1.5rem 0',
-        borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
-      },
-      styles?.root,
-      style,
+    return (
+      <div
+        className={cx('ino-divider', className, classNamesProp?.root)}
+        style={{
+          borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
+          ...styles?.root,
+          ...style,
+        }}
+        role="separator"
+      />
     )
-
-    return <div style={horizontalStyle} className={mergeSemanticClassName(className, classNames?.root)} role="separator" />
   }
 
   // Divider horizontal con texto
-  // Calcular el ancho de las líneas según orientation
   const getLineWidths = (): { before: string; after: string } => {
     const margin = orientationMargin !== undefined
       ? typeof orientationMargin === 'number'
@@ -122,38 +116,16 @@ export function Divider({
 
     switch (orientation) {
       case 'left':
-        return {
-          before: margin || '5%',
-          after: '95%',
-        }
+        return { before: margin || '5%', after: '95%' }
       case 'right':
-        return {
-          before: '95%',
-          after: margin || '5%',
-        }
+        return { before: '95%', after: margin || '5%' }
       case 'center':
       default:
-        return {
-          before: '50%',
-          after: '50%',
-        }
+        return { before: '50%', after: '50%' }
     }
   }
 
   const lineWidths = getLineWidths()
-
-  const containerStyle = mergeSemanticStyle(
-    {
-      display: 'flex',
-      alignItems: 'center',
-      clear: 'both',
-      width: '100%',
-      minWidth: '100%',
-      margin: '1.5rem 0',
-    },
-    styles?.root,
-    style,
-  )
 
   const lineBaseStyle: CSSProperties = {
     borderBlockStart: `${lineWidth}px ${borderStyle} ${borderColor}`,
@@ -171,7 +143,7 @@ export function Divider({
     width: lineWidths.after,
   }
 
-  // Si hay orientationMargin personalizado, ajustar el cálculo
+  // Si hay orientationMargin personalizado, ajustar el calculo
   if (orientationMargin !== undefined && orientation !== 'center') {
     if (orientation === 'left') {
       beforeLineStyles.width = typeof orientationMargin === 'number'
@@ -189,13 +161,11 @@ export function Divider({
       afterLineStyles.flexGrow = 0
     }
   } else if (orientation === 'center') {
-    // Para center, ambas líneas crecen igual
     beforeLineStyles.flexGrow = 1
     afterLineStyles.flexGrow = 1
     beforeLineStyles.width = 'auto'
     afterLineStyles.width = 'auto'
   } else {
-    // Para left/right sin margin personalizado
     if (orientation === 'left') {
       afterLineStyles.flexGrow = 1
       afterLineStyles.width = 'auto'
@@ -205,21 +175,30 @@ export function Divider({
     }
   }
 
-  const textStyle: CSSProperties = {
-    display: 'inline-block',
-    padding: '0 1rem',
-    fontSize: plain ? '0.875rem' : '1rem',
-    fontWeight: plain ? 400 : 500,
-    color: colors.text,
-    whiteSpace: 'nowrap',
-    ...styles?.text,
-  }
-
   return (
-    <div style={containerStyle} className={mergeSemanticClassName(className, classNames?.root)} role="separator">
-      <span style={{ ...beforeLineStyles, ...styles?.line }} className={classNames?.line} />
-      <span style={textStyle} className={classNames?.text}>{children}</span>
-      <span style={{ ...afterLineStyles, ...styles?.line }} className={classNames?.line} />
+    <div
+      className={cx('ino-divider', 'ino-divider--with-text', className, classNamesProp?.root)}
+      style={{ ...styles?.root, ...style }}
+      role="separator"
+    >
+      <span
+        className={cx('ino-divider__line', classNamesProp?.line)}
+        style={{ ...beforeLineStyles, ...styles?.line }}
+      />
+      <span
+        className={cx(
+          'ino-divider__text',
+          plain ? 'ino-divider__text--plain' : 'ino-divider__text--styled',
+          classNamesProp?.text,
+        )}
+        style={{ color: colors.text, ...styles?.text }}
+      >
+        {children}
+      </span>
+      <span
+        className={cx('ino-divider__line', classNamesProp?.line)}
+        style={{ ...afterLineStyles, ...styles?.line }}
+      />
     </div>
   )
 }

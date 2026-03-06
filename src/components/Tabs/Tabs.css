@@ -1,0 +1,179 @@
+/* ================================================================
+   Tabs – BEM classes
+   ================================================================ */
+
+/* --- Block --- */
+.ino-tabs {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+.ino-tabs--top { flex-direction: column; }
+.ino-tabs--bottom { flex-direction: column-reverse; }
+.ino-tabs--left { flex-direction: row; }
+.ino-tabs--right { flex-direction: row-reverse; }
+
+/* --- Tab bar --- */
+.ino-tabs__bar {
+  display: flex;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ino-tabs__bar--horizontal {
+  flex-direction: row;
+  align-items: center;
+}
+
+.ino-tabs__bar--vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* --- Bar borders (line type only) --- */
+.ino-tabs__bar--border-bottom { border-bottom: 1px solid var(--j-border); }
+.ino-tabs__bar--border-top { border-top: 1px solid var(--j-border); }
+.ino-tabs__bar--border-right { border-right: 1px solid var(--j-border); }
+.ino-tabs__bar--border-left { border-left: 1px solid var(--j-border); }
+
+/* --- Nav wrap --- */
+.ino-tabs__nav-wrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* --- Nav list --- */
+.ino-tabs__nav-list {
+  display: flex;
+  position: relative;
+  scrollbar-width: none;
+}
+
+.ino-tabs__nav-list::-webkit-scrollbar { display: none; }
+
+.ino-tabs__nav-list--horizontal {
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.ino-tabs__nav-list--vertical {
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.ino-tabs__nav-list--centered {
+  justify-content: center;
+}
+
+/* --- Tab --- */
+.ino-tabs__tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  outline: none;
+  transition: color 0.2s, background-color 0.2s;
+  flex-shrink: 0;
+  position: relative;
+  user-select: none;
+}
+
+.ino-tabs__tab--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ino-tabs__tab-icon {
+  display: inline-flex;
+  line-height: 0;
+}
+
+/* --- Scroll arrows --- */
+.ino-tabs__scroll-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--j-textMuted);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.ino-tabs__scroll-arrow--h {
+  width: 2rem;
+  height: 100%;
+}
+
+.ino-tabs__scroll-arrow--v {
+  width: 100%;
+  height: 2rem;
+}
+
+/* --- Close button --- */
+.ino-tabs__close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25rem;
+  padding: 0.125rem;
+  border: none;
+  background: none;
+  color: var(--j-textMuted);
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: color 0.2s, background-color 0.2s;
+  line-height: 0;
+}
+
+.ino-tabs__close-btn:hover {
+  background-color: var(--j-bgMuted);
+  color: var(--j-text);
+}
+
+/* --- Add button --- */
+.ino-tabs__add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--j-border);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--j-textMuted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ino-tabs__add-btn:hover {
+  color: var(--j-primary);
+  border-color: var(--j-primary);
+}
+
+/* --- Extra content --- */
+.ino-tabs__extra {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* --- Content --- */
+.ino-tabs__content {
+  flex: 1;
+}
+
+/* --- Tab pane --- */
+.ino-tabs__pane {
+  padding: 1rem;
+}
+
+.ino-tabs__pane--hidden {
+  display: none;
+}

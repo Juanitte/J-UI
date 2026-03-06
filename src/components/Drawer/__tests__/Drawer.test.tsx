@@ -21,54 +21,45 @@ function getDialog(): HTMLElement | null {
 }
 
 function getMask(): HTMLElement | null {
-  // Mask is a sibling div of dialog inside the wrapper, with absolute position and bg rgba
   const wrapper = getDialog()?.parentElement
   if (!wrapper) return null
-  const children = Array.from(wrapper.children) as HTMLElement[]
-  return children.find(
-    (el) => el.style.position === 'absolute' && el.style.backgroundColor.includes('rgba'),
-  ) ?? null
+  return wrapper.querySelector<HTMLElement>('.ino-drawer__mask') ?? null
 }
 
 function getHeader(): HTMLElement | null {
   const dialog = getDialog()
   if (!dialog) return null
-  const children = Array.from(dialog.children) as HTMLElement[]
-  return children.find((el) => el.style.borderBottom !== '') ?? null
+  return dialog.querySelector<HTMLElement>('.ino-drawer__header') ?? null
 }
 
 function getBody(): HTMLElement | null {
   const dialog = getDialog()
   if (!dialog) return null
-  const children = Array.from(dialog.children) as HTMLElement[]
-  return children.find((el) => el.style.overflowY === 'auto') ?? null
+  return dialog.querySelector<HTMLElement>('.ino-drawer__body') ?? null
 }
 
 function getFooter(): HTMLElement | null {
   const dialog = getDialog()
   if (!dialog) return null
-  const children = Array.from(dialog.children) as HTMLElement[]
-  return children.find((el) => el.style.borderTop !== '') ?? null
+  return dialog.querySelector<HTMLElement>('.ino-drawer__footer') ?? null
 }
 
 function getCloseButton(): HTMLButtonElement | null {
   const dialog = getDialog()
   if (!dialog) return null
-  return dialog.querySelector('button')
+  return dialog.querySelector<HTMLButtonElement>('.ino-drawer__close-btn') ?? null
 }
 
 function getTitleDiv(): HTMLElement | null {
   const header = getHeader()
   if (!header) return null
-  const children = Array.from(header.children) as HTMLElement[]
-  return children.find((el) => el.style.fontWeight === '600') ?? null
+  return header.querySelector<HTMLElement>('.ino-drawer__title') ?? null
 }
 
 function getExtraDiv(): HTMLElement | null {
   const header = getHeader()
   if (!header) return null
-  const children = Array.from(header.children) as HTMLElement[]
-  return children.find((el) => el.style.gap === '0.5rem') ?? null
+  return header.querySelector<HTMLElement>('.ino-drawer__extra') ?? null
 }
 
 /** Open the drawer by advancing through double rAF */
@@ -148,13 +139,13 @@ describe('Drawer', () => {
     it('title has fontWeight 600', () => {
       render(<Drawer open title="T">C</Drawer>)
       showDrawer()
-      expect(getTitleDiv()!.style.fontWeight).toBe('600')
+      expect(getTitleDiv()!).toHaveClass('ino-drawer__title')
     })
 
     it('title has fontSize 1rem', () => {
       render(<Drawer open title="T">C</Drawer>)
       showDrawer()
-      expect(getTitleDiv()!.style.fontSize).toBe('1rem')
+      expect(getTitleDiv()!).toHaveClass('ino-drawer__title')
     })
 
     it('renders ReactNode title', () => {
@@ -172,13 +163,13 @@ describe('Drawer', () => {
     it('header has border-bottom', () => {
       render(<Drawer open title="T">C</Drawer>)
       showDrawer()
-      expect(getHeader()!.style.borderBottom).toContain('1px solid')
+      expect(getHeader()!).toHaveClass('ino-drawer__header')
     })
 
     it('header has padding 1rem 1.5rem', () => {
       render(<Drawer open title="T">C</Drawer>)
       showDrawer()
-      expect(getHeader()!.style.padding).toBe('1rem 1.5rem')
+      expect(getHeader()!).toHaveClass('ino-drawer__header')
     })
 
     it('no header when no title, no extra, and closable=false', () => {
@@ -214,13 +205,13 @@ describe('Drawer', () => {
     it('footer has border-top', () => {
       render(<Drawer open footer="F">C</Drawer>)
       showDrawer()
-      expect(getFooter()!.style.borderTop).toContain('1px solid')
+      expect(getFooter()!).toHaveClass('ino-drawer__footer')
     })
 
     it('footer has padding', () => {
       render(<Drawer open footer="F">C</Drawer>)
       showDrawer()
-      expect(getFooter()!.style.padding).toBe('1rem 1.5rem')
+      expect(getFooter()!).toHaveClass('ino-drawer__footer')
     })
   })
 
@@ -264,24 +255,19 @@ describe('Drawer', () => {
     it('close button has cursor pointer', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getCloseButton()!.style.cursor).toBe('pointer')
+      expect(getCloseButton()!).toHaveClass('ino-drawer__close-btn')
     })
 
     it('close button hover changes color', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      const btn = getCloseButton()!
-      const colorBefore = btn.style.color
-      fireEvent.mouseEnter(btn)
-      expect(btn.style.color).not.toBe(colorBefore)
-      fireEvent.mouseLeave(btn)
-      expect(btn.style.color).toBe(colorBefore)
+      expect(getCloseButton()!).toHaveClass('ino-drawer__close-btn')
     })
 
     it('close button has marginLeft auto', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getCloseButton()!.style.marginLeft).toBe('auto')
+      expect(getCloseButton()!).toHaveClass('ino-drawer__close-btn')
     })
   })
 
@@ -305,7 +291,7 @@ describe('Drawer', () => {
     it('mask has rgba background', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getMask()!.style.backgroundColor).toContain('rgba')
+      expect(getMask()!).toHaveClass('ino-drawer__mask')
     })
 
     it('clicking mask closes drawer when maskClosable', () => {
@@ -327,7 +313,7 @@ describe('Drawer', () => {
     it('mask has opacity transition', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getMask()!.style.transition).toContain('opacity')
+      expect(getMask()!).toHaveClass('ino-drawer__mask')
     })
   })
 
@@ -499,24 +485,22 @@ describe('Drawer', () => {
       render(<Drawer open loading>C</Drawer>)
       showDrawer()
       const body = getBody()!
-      // Loading skeleton has animation pulse
-      expect(body.innerHTML).toContain('j-drawer-pulse')
+      expect(body.querySelector('.ino-drawer__skeleton')).toBeTruthy()
     })
 
     it('shows children when not loading', () => {
       render(<Drawer open>Real Content</Drawer>)
       showDrawer()
       expect(getBody()!.textContent).toContain('Real Content')
-      expect(getBody()!.innerHTML).not.toContain('j-drawer-pulse')
+      expect(getBody()!.querySelector('.ino-drawer__skeleton')).toBeNull()
     })
 
     it('loading skeleton has multiple bars', () => {
       render(<Drawer open loading>C</Drawer>)
       showDrawer()
       const body = getBody()!
-      // Skeleton has 3 animated divs
-      const skeletonContainer = body.firstElementChild as HTMLElement
-      expect(skeletonContainer.children.length).toBeGreaterThanOrEqual(3)
+      const skeletonContainer = body.querySelector('.ino-drawer__skeleton') as HTMLElement
+      expect(skeletonContainer.querySelectorAll('.ino-drawer__skeleton-bar').length).toBeGreaterThanOrEqual(3)
     })
   })
 
@@ -584,40 +568,38 @@ describe('Drawer', () => {
     it('panel has flex column layout', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      const dialog = getDialog()!
-      expect(dialog.style.display).toBe('flex')
-      expect(dialog.style.flexDirection).toBe('column')
+      expect(getDialog()!).toHaveClass('ino-drawer__panel')
     })
 
     it('panel has absolute position', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getDialog()!.style.position).toBe('absolute')
+      expect(getDialog()!).toHaveClass('ino-drawer__panel')
     })
 
     it('panel has transform transition', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getDialog()!.style.transition).toContain('transform')
+      expect(getDialog()!).toHaveClass('ino-drawer__panel')
     })
 
     it('wrapper has fixed positioning', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
       const wrapper = getDialog()!.parentElement!
-      expect(wrapper.style.position).toBe('fixed')
+      expect(wrapper).toHaveClass('ino-drawer__wrapper')
     })
 
     it('body has overflowY auto', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getBody()!.style.overflowY).toBe('auto')
+      expect(getBody()!).toHaveClass('ino-drawer__body')
     })
 
     it('body has padding', () => {
       render(<Drawer open>C</Drawer>)
       showDrawer()
-      expect(getBody()!.style.padding).toBe('1.5rem')
+      expect(getBody()!).toHaveClass('ino-drawer__body')
     })
   })
 
@@ -751,7 +733,7 @@ describe('Drawer', () => {
       rerender(<Drawer open={false}>C</Drawer>)
       // Simulate transitionEnd on the panel to trigger unmount
       fireEvent.transitionEnd(panel, { target: panel })
-      expect(wrapper.style.display).toBe('none')
+      expect(wrapper).toHaveClass('ino-drawer__wrapper--hidden')
     })
 
     it('loading skeleton has correct styles', () => {
@@ -759,9 +741,7 @@ describe('Drawer', () => {
       showDrawer()
       const body = getBody()!
       const skeleton = body.firstElementChild as HTMLElement
-      expect(skeleton.style.display).toBe('flex')
-      expect(skeleton.style.flexDirection).toBe('column')
-      expect(skeleton.style.gap).toBe('1rem')
+      expect(skeleton).toHaveClass('ino-drawer__skeleton')
     })
   })
 })

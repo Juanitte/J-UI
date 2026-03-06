@@ -9,13 +9,12 @@ import {
   Children,
   isValidElement,
 } from 'react'
-import { tokens } from '../../theme/tokens'
-import {
-  type SemanticClassNames,
-  type SemanticStyles,
-  mergeSemanticClassName,
-  mergeSemanticStyle,
+import type {
+  SemanticClassNames,
+  SemanticStyles,
 } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Collapse.css'
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -71,10 +70,10 @@ export interface CollapseProps {
 
 // ─── Size config ────────────────────────────────────────────────────────────────
 
-const SIZE_CONFIG: Record<CollapseSize, { headerPadding: string; contentPadding: string; fontSize: string }> = {
-  small:  { headerPadding: '0.375rem 0.75rem',  contentPadding: '0.75rem',  fontSize: '0.8125rem' },
-  middle: { headerPadding: '0.75rem 1rem',      contentPadding: '1rem',     fontSize: '0.875rem'  },
-  large:  { headerPadding: '1rem 1.25rem',       contentPadding: '1.25rem',  fontSize: '1rem'      },
+const SIZE_ABBR: Record<CollapseSize, string> = {
+  small: 'sm',
+  middle: 'md',
+  large: 'lg',
 }
 
 // ─── Default expand icon ────────────────────────────────────────────────────────
@@ -134,12 +133,10 @@ function InternalPanel({
 }: InternalPanelProps) {
   const contentWrapperRef = useRef<HTMLDivElement>(null)
   const contentBodyRef = useRef<HTMLDivElement>(null)
-  const headerRef = useRef<HTMLDivElement>(null)
-  const arrowRef = useRef<HTMLSpanElement>(null)
   const [hasEverExpanded, setHasEverExpanded] = useState(isActive || forceRender)
   const animatingRef = useRef(false)
   const mountedRef = useRef(false)
-  const sizeConf = SIZE_CONFIG[size]
+  const sizeAbbr = SIZE_ABBR[size]
 
   // Track whether the panel has ever been expanded (for lazy rendering)
   useEffect(() => {
@@ -147,13 +144,10 @@ function InternalPanel({
   }, [isActive, hasEverExpanded])
 
   // ── Animation ──
-  // useLayoutEffect prevents flash: runs before paint so we can set maxHeight: 0
-  // before the browser renders the content at full height
   useLayoutEffect(() => {
     const wrapper = contentWrapperRef.current
     if (!wrapper) return
 
-    // On mount: just set correct initial state without animation
     if (!mountedRef.current) {
       mountedRef.current = true
       if (isActive) {
@@ -167,7 +161,6 @@ function InternalPanel({
     }
 
     if (isActive) {
-      // Expanding
       animatingRef.current = true
       const body = contentBodyRef.current
       if (body) {
@@ -175,20 +168,17 @@ function InternalPanel({
         wrapper.style.transition = 'none'
         wrapper.style.maxHeight = '0px'
         wrapper.style.opacity = '0'
-        // Force reflow
         void wrapper.offsetHeight
         wrapper.style.transition = 'max-height 300ms ease, opacity 200ms ease'
         wrapper.style.maxHeight = h + 'px'
         wrapper.style.opacity = '1'
       }
     } else {
-      // Collapsing
       const body = contentBodyRef.current
       if (body) {
         const h = body.scrollHeight
         wrapper.style.transition = 'none'
         wrapper.style.maxHeight = h + 'px'
-        // Force reflow
         void wrapper.offsetHeight
         wrapper.style.transition = 'max-height 300ms ease, opacity 200ms ease'
         wrapper.style.maxHeight = '0px'
@@ -202,7 +192,6 @@ function InternalPanel({
     const wrapper = contentWrapperRef.current
     if (!wrapper) return
     if (isActive) {
-      // After expanding, set to none so dynamic content works
       wrapper.style.maxHeight = 'none'
     }
     animatingRef.current = false
@@ -225,95 +214,47 @@ function InternalPanel({
     }
   }, [isDisabled, isIconOnly, onToggle, panelKey])
 
-  // ── Ref-based hover on header ──
-  const handleHeaderEnter = useCallback(() => {
-    if (isDisabled || !headerRef.current) return
-    if (ghost) {
-      headerRef.current.style.backgroundColor = tokens.colorBgSubtle
-    } else {
-      headerRef.current.style.filter = 'brightness(0.97)'
-    }
-  }, [isDisabled, ghost])
-
-  const handleHeaderLeave = useCallback(() => {
-    if (!headerRef.current) return
-    if (ghost) {
-      headerRef.current.style.backgroundColor = ''
-    } else {
-      headerRef.current.style.filter = ''
-    }
-  }, [ghost])
-
   // ── Arrow icon ──
   const arrowNode = showArrow ? (
     <span
-      ref={arrowRef}
       onClick={isIconOnly ? handleIconClick : undefined}
-      className={classNames?.arrow}
-      style={mergeSemanticStyle(
+      className={cx(
+        'ino-collapse__arrow',
         {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-          width: '1.25rem',
-          height: '1.25rem',
-          color: isDisabled ? tokens.colorTextSubtle : tokens.colorTextMuted,
-          transform: isActive ? 'rotate(90deg)' : 'rotate(0deg)',
-          transition: 'transform 200ms ease',
-          cursor: isIconOnly && !isDisabled ? 'pointer' : 'inherit',
+          'ino-collapse__arrow--active': isActive,
+          'ino-collapse__arrow--disabled': isDisabled,
+          'ino-collapse__arrow--enabled': !isDisabled,
+          'ino-collapse__arrow--icon-clickable': isIconOnly && !isDisabled,
         },
-        styles?.arrow,
+        classNames?.arrow,
       )}
+      style={styles?.arrow}
     >
       {expandIcon ? expandIcon({ isActive }) : <ChevronRightIcon />}
     </span>
   ) : null
 
-  // ── Header style ──
-  const headerCursor = isDisabled
-    ? 'not-allowed'
-    : isIconOnly
-      ? 'default'
-      : 'pointer'
-
-  const headerStyle = mergeSemanticStyle(
+  // ── Header class ──
+  const headerClass = cx(
+    'ino-collapse__header',
+    `ino-collapse__header--${sizeAbbr}`,
+    ghost ? 'ino-collapse__header--ghost' : 'ino-collapse__header--default',
     {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      padding: sizeConf.headerPadding,
-      fontSize: sizeConf.fontSize,
-      fontWeight: 600,
-      color: isDisabled ? tokens.colorTextSubtle : tokens.colorText,
-      backgroundColor: ghost ? 'transparent' : tokens.colorBgSubtle,
-      cursor: headerCursor,
-      userSelect: 'none' as const,
-      borderTop: isFirst ? 'none' : `1px solid ${tokens.colorBorder}`,
-      transition: 'filter 0.15s ease, background-color 0.15s ease',
+      'ino-collapse__header--disabled': isDisabled,
+      'ino-collapse__header--clickable': !isDisabled && !isIconOnly,
+      'ino-collapse__header--icon-only': isIconOnly && !isDisabled,
+      'ino-collapse__header--not-first': !isFirst,
     },
-    styles?.header,
+    classNames?.header,
   )
 
-  // ── Content style ──
+  // ── Content wrapper style ──
   const contentWrapperStyle: CSSProperties = {
-    overflow: 'hidden',
     maxHeight: isActive ? undefined : 0,
     opacity: isActive ? 1 : 0,
   }
 
-  const contentBodyStyle = mergeSemanticStyle(
-    {
-      padding: sizeConf.contentPadding,
-      fontSize: sizeConf.fontSize,
-      color: tokens.colorText,
-      borderTop: `1px solid ${tokens.colorBorder}`,
-    },
-    styles?.content,
-  )
-
   // Determine whether to render content
-  // Include isActive so content is in the DOM when the animation layout effect runs
   const shouldRender = isActive || hasEverExpanded || forceRender
   const shouldDestroy = destroyOnHidden && !isActive && !animatingRef.current
 
@@ -321,27 +262,36 @@ function InternalPanel({
     <div className={panelClassName} style={panelStyle}>
       {/* Header */}
       <div
-        ref={headerRef}
         onClick={handleHeaderClick}
-        onMouseEnter={handleHeaderEnter}
-        onMouseLeave={handleHeaderLeave}
-        className={classNames?.header}
-        style={headerStyle}
+        className={headerClass}
+        style={{
+          color: isDisabled ? undefined : 'var(--j-text)',
+          ...styles?.header,
+        }}
       >
         {expandIconPlacement === 'start' && arrowNode}
-        <span style={{ flex: 1, minWidth: 0 }}>{label}</span>
-        {extra && <span style={{ flexShrink: 0, marginLeft: 'auto' }}>{extra}</span>}
+        <span className="ino-collapse__label">{label}</span>
+        {extra && <span className="ino-collapse__extra">{extra}</span>}
         {expandIconPlacement === 'end' && arrowNode}
       </div>
 
       {/* Content */}
       <div
         ref={contentWrapperRef}
+        className="ino-collapse__content-wrapper"
         style={contentWrapperStyle}
         onTransitionEnd={handleTransitionEnd}
       >
         {shouldRender && !shouldDestroy && (
-          <div ref={contentBodyRef} className={classNames?.content} style={contentBodyStyle}>
+          <div
+            ref={contentBodyRef}
+            className={cx(
+              'ino-collapse__content',
+              `ino-collapse__content--${sizeAbbr}`,
+              classNames?.content,
+            )}
+            style={styles?.content}
+          >
             {children}
           </div>
         )}
@@ -353,8 +303,6 @@ function InternalPanel({
 // ─── Collapse.Panel compound component (thin wrapper) ───────────────────────────
 
 function CollapsePanelCompound(_props: CollapsePanelProps & { children?: ReactNode }) {
-  // This component is never rendered directly — its props are extracted
-  // by the parent Collapse component to build the panel list.
   return null
 }
 
@@ -428,22 +376,22 @@ function CollapseComponent({
     onChange?.(accordion ? (newKeys[0] ?? '') : newKeys)
   }, [accordion, activeKeys, isControlled, onChange])
 
-  // ── Root style ──
-  const rootStyle = mergeSemanticStyle(
-    {
-      border: ghost ? 'none' : bordered ? `1px solid ${tokens.colorBorder}` : 'none',
-      borderRadius: ghost ? 0 : '0.5rem',
-      overflow: 'hidden',
-      backgroundColor: ghost ? 'transparent' : tokens.colorBg,
-    },
-    styles?.root,
-    style,
+  // ── Root class ──
+  const rootClass = cx(
+    'ino-collapse',
+    ghost
+      ? 'ino-collapse--ghost'
+      : bordered
+        ? 'ino-collapse--bordered'
+        : 'ino-collapse--borderless',
+    className,
+    classNames?.root,
   )
 
   return (
     <div
-      className={mergeSemanticClassName(className, classNames?.root)}
-      style={rootStyle}
+      className={rootClass}
+      style={{ ...styles?.root, ...style }}
     >
       {panels.map((panel, index) => (
         <InternalPanel

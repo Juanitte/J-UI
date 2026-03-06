@@ -1,0 +1,10 @@
+/* ================================================================
+   Affix – BEM classes
+   Position values (top, left, width) are dynamic and stay inline.
+   ================================================================ */
+
+/* --- Affix content (fixed state) --- */
+.ino-affix__content--fixed {
+  position: fixed;
+  z-index: 10;
+}

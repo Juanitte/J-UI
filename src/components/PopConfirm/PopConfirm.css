@@ -1,0 +1,88 @@
+/* ================================================================
+   PopConfirm – BEM classes
+   Wraps Popover; styles are for the confirm content panel.
+   ================================================================ */
+
+/* --- Content wrapper --- */
+.ino-pop-confirm {
+  padding: 0.75rem;
+}
+
+/* --- Message row --- */
+.ino-pop-confirm__message {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* --- Icon --- */
+.ino-pop-confirm__icon {
+  color: var(--j-warning);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  display: inline-flex;
+}
+
+/* --- Title --- */
+.ino-pop-confirm__title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--j-text);
+}
+
+/* --- Description --- */
+.ino-pop-confirm__description {
+  font-size: 0.8125rem;
+  color: var(--j-text-muted);
+  margin-top: 0.25rem;
+}
+
+/* --- Button row --- */
+.ino-pop-confirm__buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* --- Button base --- */
+.ino-pop-confirm__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: filter 0.15s, border-color 0.15s, opacity 0.15s;
+  line-height: 1.5;
+}
+
+/* Cancel button */
+.ino-pop-confirm__btn--cancel {
+  background-color: var(--j-bg);
+  color: var(--j-text);
+  border: 1px solid var(--j-border);
+}
+
+.ino-pop-confirm__btn--cancel:hover {
+  border-color: var(--j-border-hover);
+}
+
+/* OK button */
+.ino-pop-confirm__btn--ok {
+  background-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+  border: 1px solid var(--j-primary);
+}
+
+.ino-pop-confirm__btn--ok:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.ino-pop-confirm__btn--ok:disabled,
+.ino-pop-confirm__btn--loading {
+  opacity: 0.7;
+  pointer-events: none;
+}

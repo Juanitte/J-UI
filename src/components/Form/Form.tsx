@@ -5,7 +5,8 @@ import {
 } from 'react'
 import { tokens } from '../../theme/tokens'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticStyle, mergeSemanticClassName } from '../../utils/semanticDom'
+import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 import { useConfig } from '../ConfigProvider'
 import type { FormLocale } from '../ConfigProvider'
 
@@ -987,13 +988,15 @@ function FormComponent({
     validateTrigger,
   }), [formInstance, layout, variant, size, colon, labelAlign, labelWrap, requiredMark, disabled, validateTrigger])
 
-  const rootBaseStyle: CSSProperties = {
-    ...(layout === 'inline' ? {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '1rem',
-      alignItems: 'flex-start',
-    } : {}),
+  const rootClass = cx(
+    { 'ino-form--inline': layout === 'inline' },
+    className,
+    classNames?.root,
+  )
+
+  const rootDynamicStyle: CSSProperties = {
+    ...styles?.root,
+    ...style,
   }
 
   return (
@@ -1001,8 +1004,8 @@ function FormComponent({
       <form
         name={name}
         onSubmit={handleSubmit}
-        className={mergeSemanticClassName(className, classNames?.root)}
-        style={mergeSemanticStyle(rootBaseStyle, styles?.root, style)}
+        className={rootClass}
+        style={rootDynamicStyle}
       >
         {children}
       </form>

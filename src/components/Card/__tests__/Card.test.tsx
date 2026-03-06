@@ -20,19 +20,16 @@ function getRoot(container: HTMLElement) {
 }
 
 function getHeader(container: HTMLElement) {
-  // Header is the first child with borderBottom that contains title/extra/tabs
   const root = getRoot(container)
-  return root.querySelector('[style*="border-bottom"]') as HTMLElement | null
+  return root.querySelector('.ino-card__header') as HTMLElement | null
 }
 
 function getBody(container: HTMLElement) {
-  // Body is the div with padding (the main content area)
-  // It's after header (if present) and before actions
   const root = getRoot(container)
+  // Body is any direct child div that is not header, cover, or actions
   const children = Array.from(root.children) as HTMLElement[]
-  // Body is the element that has the card body padding and is not header/cover/actions
   return children.find(
-    (el) => el.tagName === 'DIV' && !el.style.borderBottom?.includes('1px solid') && !el.style.overflow?.includes('hidden') && el.tagName !== 'UL',
+    (el) => el.tagName === 'DIV' && !el.classList.contains('ino-card__header') && !el.classList.contains('ino-card__cover') && el.tagName !== 'UL',
   ) || children[children.length - 1] as HTMLElement
 }
 
@@ -60,14 +57,14 @@ describe('Card – Basic rendering', () => {
     expect(screen.getByText('Hello Card')).toBeInTheDocument()
   })
 
-  it('has border-radius 0.5rem', () => {
+  it('has card class', () => {
     const { container } = render(<Card>Content</Card>)
-    expect(getRoot(container).style.borderRadius).toBe('0.5rem')
+    expect(getRoot(container)).toHaveClass('ino-card')
   })
 
-  it('has overflow hidden', () => {
+  it('has card class for overflow', () => {
     const { container } = render(<Card>Content</Card>)
-    expect(getRoot(container).style.overflow).toBe('hidden')
+    expect(getRoot(container)).toHaveClass('ino-card')
   })
 
   it('does not show header when no title/extra/tabList', () => {
@@ -101,19 +98,18 @@ describe('Card – Title & Extra', () => {
     expect(getHeader(container)).toBeTruthy()
   })
 
-  it('title has fontWeight 600', () => {
+  it('title has title class', () => {
     const { container } = render(<Card title="Title">Content</Card>)
-    const title = container.querySelector('[style*="font-weight: 600"]')
+    const title = container.querySelector('.ino-card__title')
     expect(title).toBeTruthy()
     expect(title!.textContent).toBe('Title')
   })
 
-  it('title and extra are in a flex row with space-between', () => {
+  it('title and extra are in a title row', () => {
     const { container } = render(<Card title="Title" extra="Extra">Content</Card>)
     const header = getHeader(container)!
-    const row = header.firstElementChild as HTMLElement
-    expect(row.style.display).toBe('flex')
-    expect(row.style.justifyContent).toBe('space-between')
+    const row = header.querySelector('.ino-card__title-row')
+    expect(row).toBeTruthy()
   })
 })
 
@@ -122,15 +118,14 @@ describe('Card – Title & Extra', () => {
 // ============================================================================
 
 describe('Card – Variant', () => {
-  it('outlined variant (default) has border', () => {
+  it('outlined variant (default) has outlined class', () => {
     const { container } = render(<Card>Content</Card>)
-    expect(getRoot(container).style.border).toContain('1px solid')
+    expect(getRoot(container)).toHaveClass('ino-card--outlined')
   })
 
-  it('borderless variant has no border', () => {
+  it('borderless variant has borderless class', () => {
     const { container } = render(<Card variant="borderless">Content</Card>)
-    // jsdom serializes border:'none' differently, just check it doesn't have 1px solid
-    expect(getRoot(container).style.border).not.toContain('1px solid')
+    expect(getRoot(container)).toHaveClass('ino-card--borderless')
   })
 })
 
@@ -155,16 +150,16 @@ describe('Card – Size', () => {
     expect(body).toBeTruthy()
   })
 
-  it('small size has smaller title font (0.875rem)', () => {
+  it('small size has sm title class', () => {
     const { container } = render(<Card size="small" title="Title">Content</Card>)
-    const titleEl = container.querySelector('[style*="font-size: 0.875rem"]')
+    const titleEl = container.querySelector('.ino-card__title--sm')
     expect(titleEl).toBeTruthy()
     expect(titleEl!.textContent).toBe('Title')
   })
 
-  it('default size has 1rem title font', () => {
+  it('default size has default title class', () => {
     const { container } = render(<Card size="default" title="Title">Content</Card>)
-    const titleEl = container.querySelector('[style*="font-size: 1rem"]')
+    const titleEl = container.querySelector('.ino-card__title--default')
     expect(titleEl).toBeTruthy()
     expect(titleEl!.textContent).toBe('Title')
   })
@@ -175,10 +170,10 @@ describe('Card – Size', () => {
 // ============================================================================
 
 describe('Card – type="inner"', () => {
-  it('inner card header has subtle background', () => {
+  it('inner card header has inner class', () => {
     const { container } = render(<Card type="inner" title="Inner">Content</Card>)
     const header = getHeader(container)!
-    expect(header.style.backgroundColor).toBeTruthy()
+    expect(header).toHaveClass('ino-card__header--inner')
   })
 })
 
@@ -199,18 +194,17 @@ describe('Card – Cover', () => {
     )
     const root = getRoot(container)
     const first = root.children[0] as HTMLElement
-    // Cover wrapper has overflow: hidden
-    expect(first.style.overflow).toBe('hidden')
+    expect(first).toHaveClass('ino-card__cover')
     expect(first.querySelector('img')).toBeTruthy()
   })
 
-  it('cover wrapper has overflow hidden', () => {
+  it('cover wrapper has cover class', () => {
     const { container } = render(
       <Card cover={<img src="cover.png" alt="Cover" />}>Content</Card>,
     )
     const root = getRoot(container)
     const coverWrapper = root.children[0] as HTMLElement
-    expect(coverWrapper.style.overflow).toBe('hidden')
+    expect(coverWrapper).toHaveClass('ino-card__cover')
   })
 })
 
@@ -238,36 +232,36 @@ describe('Card – Actions', () => {
     expect(getActionItems(container).length).toBe(2)
   })
 
-  it('actions have border-top', () => {
+  it('actions have actions class', () => {
     const actions = [<span key="a">Edit</span>]
     const { container } = render(<Card actions={actions}>Content</Card>)
     const ul = getActions(container)!
-    expect(ul.style.borderTop).toContain('1px solid')
+    expect(ul).toHaveClass('ino-card__actions')
   })
 
-  it('action items are evenly distributed (flex: 1)', () => {
+  it('action items have action class', () => {
     const actions = [<span key="a">Edit</span>, <span key="b">Delete</span>]
     const { container } = render(<Card actions={actions}>Content</Card>)
     const items = getActionItems(container)
     items.forEach((item) => {
-      expect(item.style.flex).toContain('1')
+      expect(item).toHaveClass('ino-card__action')
     })
   })
 
-  it('action items have cursor pointer', () => {
+  it('action items have action class', () => {
     const actions = [<span key="a">Edit</span>]
     const { container } = render(<Card actions={actions}>Content</Card>)
     const items = getActionItems(container)
-    expect(items[0].style.cursor).toBe('pointer')
+    expect(items[0]).toHaveClass('ino-card__action')
   })
 
-  it('separator between actions (borderRight except last)', () => {
+  it('separator between actions uses bordered class except last', () => {
     const actions = [<span key="a">A</span>, <span key="b">B</span>, <span key="c">C</span>]
     const { container } = render(<Card actions={actions}>Content</Card>)
     const items = getActionItems(container)
-    expect(items[0].style.borderRight).toContain('1px solid')
-    expect(items[1].style.borderRight).toContain('1px solid')
-    expect(items[2].style.borderRight).not.toContain('1px solid')
+    expect(items[0]).toHaveClass('ino-card__action--bordered')
+    expect(items[1]).toHaveClass('ino-card__action--bordered')
+    expect(items[2]).not.toHaveClass('ino-card__action--bordered')
   })
 
   it('does not render actions section when actions is empty', () => {
@@ -310,17 +304,14 @@ describe('Card – Loading', () => {
 // ============================================================================
 
 describe('Card – Hoverable', () => {
-  it('has transition on root', () => {
+  it('has hoverable class on root', () => {
     const { container } = render(<Card hoverable>Content</Card>)
-    expect(getRoot(container).style.transition).toContain('box-shadow')
+    expect(getRoot(container)).toHaveClass('ino-card--hoverable')
   })
 
-  it('applies hover effect on mouseEnter', () => {
+  it('has hoverable class when hoverable', () => {
     const { container } = render(<Card hoverable>Content</Card>)
-    const root = getRoot(container)
-    fireEvent.mouseEnter(root)
-    expect(root.style.boxShadow).toBeTruthy()
-    expect(root.style.transform).toContain('translateY')
+    expect(getRoot(container)).toHaveClass('ino-card--hoverable')
   })
 
   it('removes hover effect on mouseLeave', () => {
@@ -423,22 +414,21 @@ describe('Card.Meta', () => {
     expect(screen.getByText('Some description')).toBeInTheDocument()
   })
 
-  it('has flex layout with gap', () => {
+  it('has meta class', () => {
     const { container } = render(<Card.Meta avatar={<span>A</span>} title="T" />)
     const root = container.firstElementChild as HTMLElement
-    expect(root.style.display).toBe('flex')
-    expect(root.style.gap).toBe('1rem')
+    expect(root).toHaveClass('ino-card-meta')
   })
 
-  it('title has fontWeight 600', () => {
+  it('title has meta title class', () => {
     const { container } = render(<Card.Meta title="Title" />)
-    const title = container.querySelector('[style*="font-weight: 600"]')
+    const title = container.querySelector('.ino-card-meta__title')
     expect(title?.textContent).toBe('Title')
   })
 
-  it('description has smaller font (0.875rem)', () => {
+  it('description has meta description class', () => {
     const { container } = render(<Card.Meta description="Desc" />)
-    const desc = container.querySelector('[style*="font-size: 0.875rem"]')
+    const desc = container.querySelector('.ino-card-meta__description')
     expect(desc?.textContent).toBe('Desc')
   })
 
@@ -463,52 +453,46 @@ describe('Card.Grid', () => {
     expect(screen.getByText('Grid Item')).toBeInTheDocument()
   })
 
-  it('has 33.33% width', () => {
+  it('has grid class', () => {
     const { container } = render(<Card.Grid>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    expect(root.style.width).toBe('33.33%')
+    expect(root).toHaveClass('ino-card-grid')
   })
 
-  it('has border-right and border-bottom', () => {
+  it('has grid class for borders', () => {
     const { container } = render(<Card.Grid>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    expect(root.style.borderRight).toContain('1px solid')
-    expect(root.style.borderBottom).toContain('1px solid')
+    expect(root).toHaveClass('ino-card-grid')
   })
 
-  it('has cursor pointer when hoverable (default)', () => {
+  it('has hoverable class when hoverable (default)', () => {
     const { container } = render(<Card.Grid>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    expect(root.style.cursor).toBe('pointer')
+    expect(root).toHaveClass('ino-card-grid--hoverable')
   })
 
-  it('has no cursor when hoverable=false', () => {
+  it('has no hoverable class when hoverable=false', () => {
     const { container } = render(<Card.Grid hoverable={false}>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    expect(root.style.cursor).toBe('')
+    expect(root).not.toHaveClass('ino-card-grid--hoverable')
   })
 
-  it('applies hover shadow on mouseEnter', () => {
+  it('has hoverable class on grid', () => {
     const { container } = render(<Card.Grid>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    fireEvent.mouseEnter(root)
-    expect(root.style.boxShadow).toBeTruthy()
-    expect(root.style.zIndex).toBe('1')
+    expect(root).toHaveClass('ino-card-grid--hoverable')
   })
 
-  it('removes hover shadow on mouseLeave', () => {
+  it('has grid class for hover effects', () => {
     const { container } = render(<Card.Grid>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    fireEvent.mouseEnter(root)
-    fireEvent.mouseLeave(root)
-    expect(root.style.boxShadow).toBe('')
+    expect(root).toHaveClass('ino-card-grid')
   })
 
-  it('does not hover when hoverable=false', () => {
+  it('does not have hoverable class when hoverable=false', () => {
     const { container } = render(<Card.Grid hoverable={false}>Item</Card.Grid>)
     const root = container.firstElementChild as HTMLElement
-    fireEvent.mouseEnter(root)
-    expect(root.style.boxShadow).toBe('')
+    expect(root).not.toHaveClass('ino-card-grid--hoverable')
   })
 
   it('applies className', () => {
@@ -527,21 +511,19 @@ describe('Card.Grid', () => {
 // ============================================================================
 
 describe('Card – Grid layout detection', () => {
-  it('removes body padding when children contain Card.Grid', () => {
+  it('applies grid body class when children contain Card.Grid', () => {
     const { container } = render(
       <Card>
         <Card.Grid>A</Card.Grid>
         <Card.Grid>B</Card.Grid>
       </Card>,
     )
-    // Body should have padding: 0 and flex-wrap
     const root = getRoot(container)
-    const body = root.querySelector('[style*="flex-wrap"]') as HTMLElement
+    const body = root.querySelector('.ino-card__body--grid') as HTMLElement
     expect(body).toBeTruthy()
-    expect(body.style.padding).toBe('0px')
   })
 
-  it('uses flex-wrap for grid children', () => {
+  it('uses grid body class for grid children', () => {
     const { container } = render(
       <Card>
         <Card.Grid>A</Card.Grid>
@@ -549,8 +531,8 @@ describe('Card – Grid layout detection', () => {
       </Card>,
     )
     const root = getRoot(container)
-    const body = root.querySelector('[style*="flex-wrap"]') as HTMLElement
-    expect(body.style.display).toBe('flex')
+    const body = root.querySelector('.ino-card__body--grid') as HTMLElement
+    expect(body).toBeTruthy()
   })
 })
 

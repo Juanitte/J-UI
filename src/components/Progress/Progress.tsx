@@ -6,6 +6,8 @@ import {
 import { tokens } from '../../theme/tokens'
 import { Tooltip } from '../Tooltip'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
+import './Progress.css'
 
 // ============================================================================
 // Types
@@ -178,24 +180,6 @@ function CloseIcon({ color }: { color: string }) {
 }
 
 // ============================================================================
-// Active Animation
-// ============================================================================
-
-let stylesInjected = false
-function injectStyles() {
-  if (stylesInjected || typeof document === 'undefined') return
-  const style = document.createElement('style')
-  style.textContent = `
-@keyframes j-progress-active {
-  0% { transform: translateX(-100%); opacity: 0.1; }
-  20% { opacity: 0.5; }
-  100% { transform: translateX(0); opacity: 0; }
-}`
-  document.head.appendChild(style)
-  stylesInjected = true
-}
-
-// ============================================================================
 // SVG Gradient ID
 // ============================================================================
 
@@ -258,8 +242,6 @@ export function Progress({
   classNames,
   styles,
 }: ProgressProps) {
-  injectStyles()
-
   const clampedPercent = Math.max(0, Math.min(100, percent))
   const resolvedStatus = resolveStatus(status, clampedPercent)
   const isCircleType = type === 'circle' || type === 'dashboard'
@@ -415,60 +397,36 @@ function LineProgress({
   const barElement = (
     <div style={{ flex: lineWidth ? undefined : 1, width: lineWidth, minWidth: 0 }}>
       <div
-        className={classNames?.trail}
+        className={cx('ino-progress__trail', classNames?.trail)}
         style={{
-          position: 'relative',
           height: strokeWidth,
           borderRadius,
           backgroundColor: trailColor || tokens.colorBgMuted,
-          overflow: 'hidden',
           ...styles?.trail,
         }}
       >
         {/* Main stroke */}
         <div
-          className={classNames?.stroke}
+          className={cx('ino-progress__stroke', classNames?.stroke)}
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
             width: `${percent}%`,
             borderRadius,
             background: bg,
-            transition: 'width 0.3s ease',
             ...styles?.stroke,
           }}
         >
           {/* Active shimmer */}
           {resolvedStatus === 'active' && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius,
-                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)',
-                animation: 'j-progress-active 2.4s cubic-bezier(0.23, 1, 0.32, 1) infinite',
-              }}
-            />
+            <div className="ino-progress__active-shimmer" style={{ borderRadius }} />
           )}
 
           {/* Inner text */}
           {isInner && infoContent != null && (
             <span
-              className={classNames?.text}
+              className={cx('ino-progress__inner-text', classNames?.text)}
               style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'flex',
-                alignItems: 'center',
                 justifyContent: innerJustify,
-                padding: '0 0.375rem',
                 fontSize: Math.max(strokeWidth * 0.7, 10),
-                color: '#fff',
-                lineHeight: 1,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
                 ...styles?.text,
               }}
             >
@@ -480,15 +438,11 @@ function LineProgress({
         {/* Success segment */}
         {success?.percent != null && success.percent > 0 && (
           <div
+            className="ino-progress__success-segment"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              height: '100%',
               width: `${Math.min(100, success.percent)}%`,
               borderRadius,
               backgroundColor: success.strokeColor || tokens.colorSuccess,
-              transition: 'width 0.3s ease',
             }}
           />
         )}
@@ -500,17 +454,8 @@ function LineProgress({
   const outerInfo = !isInner && infoContent != null
     ? (
       <span
-        className={classNames?.text}
-        style={{
-          flexShrink: 0,
-          fontSize: sizePreset === 'small' ? '0.8125rem' : '0.875rem',
-          color: tokens.colorText,
-          lineHeight: 1,
-          display: 'inline-flex',
-          alignItems: 'center',
-          minWidth: '2.5em',
-          ...styles?.text,
-        }}
+        className={cx('ino-progress__text', `ino-progress__text--${sizePreset}`, classNames?.text)}
+        style={styles?.text}
       >
         {infoContent}
       </span>
@@ -519,15 +464,8 @@ function LineProgress({
 
   return (
     <div
-      className={className}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        width: lineWidth ? undefined : '100%',
-        ...style,
-        ...styles?.root,
-      }}
+      className={cx('ino-progress', { 'ino-progress--full-width': !lineWidth }, className)}
+      style={{ ...style, ...styles?.root }}
     >
       {posAlign === 'start' && outerInfo}
       {barElement}
@@ -576,19 +514,12 @@ function StepsProgress({
 
   return (
     <div
-      className={className}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        width: '100%',
-        ...style,
-        ...styles?.root,
-      }}
+      className={cx('ino-progress', 'ino-progress--full-width', className)}
+      style={{ ...style, ...styles?.root }}
     >
       <div
-        className={classNames?.trail}
-        style={{ display: 'flex', gap: '0.125rem', flex: 1, ...styles?.trail }}
+        className={cx('ino-progress__steps', classNames?.trail)}
+        style={styles?.trail}
       >
         {Array.from({ length: steps }, (_, i) => {
           const isFilled = i < filledCount
@@ -599,13 +530,11 @@ function StepsProgress({
           return (
             <div
               key={i}
-              className={isFilled ? classNames?.stroke : undefined}
+              className={cx('ino-progress__step', isFilled ? classNames?.stroke : undefined)}
               style={{
-                flex: 1,
                 height: strokeWidth,
                 borderRadius,
                 backgroundColor: bgColor,
-                transition: 'background-color 0.3s ease',
                 ...(isFilled ? styles?.stroke : undefined),
               }}
             />
@@ -615,17 +544,8 @@ function StepsProgress({
 
       {infoContent != null && (
         <span
-          className={classNames?.text}
-          style={{
-            flexShrink: 0,
-            fontSize: sizePreset === 'small' ? '0.8125rem' : '0.875rem',
-            color: tokens.colorText,
-            lineHeight: 1,
-            display: 'inline-flex',
-            alignItems: 'center',
-            minWidth: '2.5em',
-            ...styles?.text,
-          }}
+          className={cx('ino-progress__text', `ino-progress__text--${sizePreset}`, classNames?.text)}
+          style={styles?.text}
         >
           {infoContent}
         </span>
@@ -725,13 +645,8 @@ function CircleProgress({
 
   const circleElement = (
     <div
-      className={className}
-      style={{
-        display: 'inline-flex',
-        position: 'relative',
-        ...style,
-        ...styles?.root,
-      }}
+      className={cx('ino-progress--circle', className)}
+      style={{ ...style, ...styles?.root }}
     >
       <svg
         viewBox={`0 0 ${circleWidth} ${circleWidth}`}
@@ -797,18 +712,11 @@ function CircleProgress({
       {/* Centered info */}
       {showInnerInfo && (
         <span
-          className={classNames?.text}
+          className={cx('ino-progress__circle-text', classNames?.text)}
           style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             fontSize: resolvedStatus === 'success' || resolvedStatus === 'exception'
               ? iconFontSize
               : fontSize,
-            color: tokens.colorText,
-            lineHeight: 1,
             ...styles?.text,
           }}
         >

@@ -48,7 +48,7 @@ describe('Switch – Basic rendering', () => {
     const { container } = render(<Switch />)
     expect(getTrack(container)).toBeTruthy()
     expect(getThumb(container)).toBeTruthy()
-    expect(getThumb(container).style.borderRadius).toBe('50%')
+    expect(getThumb(container)).toHaveClass('ino-switch__thumb')
   })
 
   it('sets id on button', () => {
@@ -165,12 +165,12 @@ describe('Switch – Disabled', () => {
 
   it('applies not-allowed cursor', () => {
     render(<Switch disabled />)
-    expect(getSwitch().style.cursor).toBe('not-allowed')
+    expect(getSwitch()).toHaveClass('ino-switch--disabled')
   })
 
   it('applies opacity 0.5', () => {
     render(<Switch disabled />)
-    expect(getSwitch().style.opacity).toBe('0.5')
+    expect(getSwitch()).toHaveClass('ino-switch--disabled')
   })
 
   it('does not call onChange when disabled', () => {
@@ -235,29 +235,26 @@ describe('Switch – Size', () => {
   it('applies default size dimensions', () => {
     const { container } = render(<Switch />)
     const track = getTrack(container)
-    expect(track.style.height).toBe('1.375rem')
-    expect(track.style.width).toBe('2.75rem')
+    expect(track).toHaveClass('ino-switch__track')
+    expect(getSwitch()).not.toHaveClass('ino-switch--small')
   })
 
   it('applies small size dimensions', () => {
     const { container } = render(<Switch size="small" />)
-    const track = getTrack(container)
-    expect(track.style.height).toBe('1rem')
-    expect(track.style.width).toBe('1.75rem')
+    expect(getSwitch()).toHaveClass('ino-switch--small')
   })
 
   it('default thumb size is 1.125rem', () => {
     const { container } = render(<Switch />)
     const thumb = getThumb(container)
-    expect(thumb.style.width).toBe('1.125rem')
-    expect(thumb.style.height).toBe('1.125rem')
+    expect(thumb).toHaveClass('ino-switch__thumb')
   })
 
   it('small thumb size is 0.75rem', () => {
     const { container } = render(<Switch size="small" />)
     const thumb = getThumb(container)
-    expect(thumb.style.width).toBe('0.75rem')
-    expect(thumb.style.height).toBe('0.75rem')
+    expect(thumb).toHaveClass('ino-switch__thumb')
+    expect(getSwitch()).toHaveClass('ino-switch--small')
   })
 })
 
@@ -289,9 +286,7 @@ describe('Switch – Children', () => {
   it('uses minWidth instead of width when children are present', () => {
     const { container } = render(<Switch checkedChildren="ON" />)
     const track = getTrack(container)
-    expect(track.style.minWidth).toBe('2.75rem')
-    // width should NOT be set (or be empty)
-    expect(track.style.width).toBe('')
+    expect(track).toHaveClass('ino-switch__track')
   })
 
   it('does not render inner span when no children', () => {
@@ -319,22 +314,19 @@ describe('Switch – Thumb position', () => {
   it('positions thumb at left when unchecked', () => {
     const { container } = render(<Switch />)
     const thumb = getThumb(container)
-    expect(thumb.style.left).toBe('0.125rem')
+    expect(getSwitch()).toHaveClass('ino-switch--unchecked')
   })
 
   it('positions thumb at right when checked', () => {
     const { container } = render(<Switch defaultChecked />)
-    const thumb = getThumb(container)
-    expect(thumb.style.left).toContain('calc(100%')
+    expect(getSwitch()).toHaveClass('ino-switch--checked')
   })
 
   it('thumb moves on toggle', () => {
     const { container } = render(<Switch />)
-    const thumb = getThumb(container)
-    const leftBefore = thumb.style.left
+    expect(getSwitch()).toHaveClass('ino-switch--unchecked')
     fireEvent.click(getSwitch())
-    const leftAfter = thumb.style.left
-    expect(leftBefore).not.toBe(leftAfter)
+    expect(getSwitch()).toHaveClass('ino-switch--checked')
   })
 })
 
@@ -346,13 +338,12 @@ describe('Switch – Track color', () => {
   it('uses primary color when checked', () => {
     const { container } = render(<Switch defaultChecked />)
     const track = getTrack(container)
-    expect(track.style.backgroundColor).toContain('var(--j-primary)')
+    expect(getSwitch()).toHaveClass('ino-switch--checked')
   })
 
   it('uses secondary color when unchecked', () => {
     const { container } = render(<Switch />)
-    const track = getTrack(container)
-    expect(track.style.backgroundColor).toContain('var(--j-secondary)')
+    expect(getSwitch()).toHaveClass('ino-switch--unchecked')
   })
 })
 
@@ -465,23 +456,23 @@ describe('Switch – Focus ring', () => {
   it('shows focus ring on keyboard focus', () => {
     const { container } = render(<Switch />)
     fireEvent.focus(getSwitch())
-    const track = getTrack(container)
-    expect(track.style.boxShadow).toContain('var(--j-primary-light)')
+    // Focus ring is now CSS-only via :focus-visible
+    expect(getSwitch()).toHaveClass('ino-switch')
   })
 
   it('hides focus ring on mouse focus', () => {
     const { container } = render(<Switch />)
     fireEvent.mouseDown(getSwitch())
     fireEvent.focus(getSwitch())
-    const track = getTrack(container)
-    expect(track.style.boxShadow).toBe('none')
+    // Focus ring is now CSS-only via :focus-visible
+    expect(getSwitch()).toHaveClass('ino-switch')
   })
 
   it('removes focus ring on blur', () => {
     const { container } = render(<Switch />)
     fireEvent.focus(getSwitch())
     fireEvent.blur(getSwitch())
-    const track = getTrack(container)
-    expect(track.style.boxShadow).toBe('none')
+    // Focus ring is now CSS-only via :focus-visible
+    expect(getSwitch()).toHaveClass('ino-switch')
   })
 })

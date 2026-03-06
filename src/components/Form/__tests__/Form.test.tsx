@@ -69,8 +69,7 @@ describe('Form', () => {
       </Form>,
     )
     const form = container.querySelector('form')!
-    expect(form.style.display).toBe('flex')
-    expect(form.style.flexWrap).toBe('wrap')
+    expect(form).toHaveClass('ino-form--inline')
   })
 
   // ---------- onFinish / onFinishFailed ----------

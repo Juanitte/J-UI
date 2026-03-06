@@ -10,7 +10,7 @@ import {
   type Key,
 } from 'react'
 import type { SemanticClassNames, SemanticStyles } from '../../utils/semanticDom'
-import { mergeSemanticClassName, mergeSemanticStyle } from '../../utils/semanticDom'
+import { classNames as cx } from '../../utils/classNames'
 
 // ============================================================================
 // Types
@@ -192,17 +192,17 @@ function WaterfallItemComponent({
     assignedColumn: column,
   })
 
-  const itemStyles: CSSProperties = {
+  // Dynamic: gutter padding, width, margin
+  const itemDynamicStyle: CSSProperties = {
     width: columnWidth,
     marginBottom: verticalGutter,
-    boxSizing: 'border-box',
     paddingLeft: horizontalGutter / 2,
     paddingRight: horizontalGutter / 2,
     ...itemStyle,
   }
 
   return (
-    <div ref={itemRef} style={itemStyles} className={itemClassName}>
+    <div ref={itemRef} className={cx('ino-waterfall__item', itemClassName)} style={itemDynamicStyle}>
       {content}
     </div>
   )
@@ -321,28 +321,24 @@ function WaterfallInner<T = unknown>(
     }
   }, [layoutInfo, onLayoutChange])
 
-  const containerStyle = mergeSemanticStyle(
-    {
-      display: 'flex',
-      flexDirection: 'row',
-      marginLeft: horizontalGutter ? -(horizontalGutter / 2) : undefined,
-      marginRight: horizontalGutter ? -(horizontalGutter / 2) : undefined,
-    },
-    styles?.root,
-    style,
-  )
+  // Dynamic: gutter-derived margins
+  const containerDynamicStyle: CSSProperties = {
+    marginLeft: horizontalGutter ? -(horizontalGutter / 2) : undefined,
+    marginRight: horizontalGutter ? -(horizontalGutter / 2) : undefined,
+    ...styles?.root,
+    ...style,
+  }
 
-  const columnStyle: CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
+  // Dynamic: column width
+  const columnDynamicStyle: CSSProperties = {
     width: columnWidth,
     ...styles?.column,
   }
 
   return (
-    <div ref={containerRef} style={containerStyle} className={mergeSemanticClassName(className, classNames?.root)}>
+    <div ref={containerRef} className={cx('ino-waterfall', className, classNames?.root)} style={containerDynamicStyle}>
       {columnItems.map((colItems, colIndex) => (
-        <div key={colIndex} style={columnStyle} className={classNames?.column}>
+        <div key={colIndex} className={cx('ino-waterfall__column', classNames?.column)} style={columnDynamicStyle}>
           {colItems.map((item) => (
             <WaterfallItemComponent
               key={item.key}

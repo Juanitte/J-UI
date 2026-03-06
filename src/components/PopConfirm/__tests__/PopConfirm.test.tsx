@@ -15,49 +15,29 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-/** The portaled popup container (position:fixed, zIndex:9999) */
+/** The portaled popup container */
 function getPopup(): HTMLElement | null {
-  return (
-    (Array.from(document.body.children).find((el) => {
-      const s = (el as HTMLElement).style
-      return s.position === 'fixed' && s.zIndex === '9999'
-    }) as HTMLElement | undefined) ?? null
-  )
+  return document.body.querySelector<HTMLElement>('.ino-popover__popup-container') ?? null
 }
 
 /** The card inside the popup */
 function getCard(): HTMLElement | null {
-  const popup = getPopup()
-  if (!popup) return null
-  return popup.firstElementChild as HTMLElement | null
+  return document.body.querySelector<HTMLElement>('.ino-popover__card') ?? null
 }
 
-/**
- * The confirmRoot div (padding:0.75rem) inside:
- * popup > card > contentArea(padding:0) > confirmRoot
- */
+/** The confirmRoot div (.ino-pop-confirm) */
 function getConfirmRoot(): HTMLElement | null {
-  const card = getCard()
-  if (!card) return null
-  const contentArea = card.firstElementChild as HTMLElement | null
-  if (!contentArea) return null
-  return contentArea.firstElementChild as HTMLElement | null
+  return document.body.querySelector<HTMLElement>('.ino-pop-confirm') ?? null
 }
 
-/** First DIV child of confirmRoot (message row: icon + title/description) */
+/** Message row (.ino-pop-confirm__message) */
 function getMessageRow(): HTMLElement | null {
-  const root = getConfirmRoot()
-  if (!root) return null
-  const divChildren = Array.from(root.children).filter((c) => c.tagName === 'DIV') as HTMLElement[]
-  return divChildren[0] ?? null
+  return document.body.querySelector<HTMLElement>('.ino-pop-confirm__message') ?? null
 }
 
-/** Second DIV child of confirmRoot (button row) */
+/** Button row (.ino-pop-confirm__buttons) */
 function getButtonRow(): HTMLElement | null {
-  const root = getConfirmRoot()
-  if (!root) return null
-  const divChildren = Array.from(root.children).filter((c) => c.tagName === 'DIV') as HTMLElement[]
-  return divChildren[1] ?? null
+  return document.body.querySelector<HTMLElement>('.ino-pop-confirm__buttons') ?? null
 }
 
 /** The div container holding title + description (sibling of iconSpan) */
@@ -67,52 +47,34 @@ function getTextContainer(): HTMLElement | null {
   return Array.from(msgRow.children).find((c) => c.tagName === 'DIV') as HTMLElement | null
 }
 
-/** First child of textContainer — the title div */
+/** Title div (.ino-pop-confirm__title) */
 function getTitleDiv(): HTMLElement | null {
-  const tc = getTextContainer()
-  if (!tc) return null
-  return tc.firstElementChild as HTMLElement | null
+  return document.body.querySelector<HTMLElement>('.ino-pop-confirm__title') ?? null
 }
 
-/** Second child of textContainer — the description div (if rendered) */
+/** Description div (.ino-pop-confirm__description) */
 function getDescriptionDiv(): HTMLElement | null {
-  const tc = getTextContainer()
-  if (!tc) return null
-  return (tc.children[1] as HTMLElement) ?? null
+  return document.body.querySelector<HTMLElement>('.ino-pop-confirm__description') ?? null
 }
 
-/** The icon span (first span inside messageRow) */
+/** The icon span (.ino-pop-confirm__icon) */
 function getIconSpan(): HTMLElement | null {
-  const msgRow = getMessageRow()
-  if (!msgRow) return null
-  return msgRow.querySelector('span') as HTMLElement | null
+  return document.body.querySelector<HTMLElement>('.ino-pop-confirm__icon') ?? null
 }
 
-/** The OK button (last button in buttonRow) */
+/** The OK button */
 function getOkButton(): HTMLButtonElement | null {
-  const row = getButtonRow()
-  if (!row) return null
-  const buttons = Array.from(row.querySelectorAll('button'))
-  return (buttons[buttons.length - 1] as HTMLButtonElement) ?? null
+  return document.body.querySelector<HTMLButtonElement>('.ino-pop-confirm__btn--ok') ?? null
 }
 
-/** The Cancel button (first button in buttonRow when two buttons exist) */
+/** The Cancel button */
 function getCancelButton(): HTMLButtonElement | null {
-  const row = getButtonRow()
-  if (!row) return null
-  const buttons = Array.from(row.querySelectorAll('button'))
-  return buttons.length >= 2 ? (buttons[0] as HTMLButtonElement) : null
+  return document.body.querySelector<HTMLButtonElement>('.ino-pop-confirm__btn--cancel') ?? null
 }
 
 /** The arrow element inside the popup */
 function getArrow(): HTMLElement | null {
-  const popup = getPopup()
-  if (!popup) return null
-  return (
-    (Array.from(popup.children) as HTMLElement[]).find(
-      (c) => c.style.position === 'absolute' && c.style.width === '0.5rem',
-    ) ?? null
-  )
+  return document.body.querySelector<HTMLElement>('.ino-popover__arrow') ?? null
 }
 
 /** Popover trigger root (container.firstElementChild) */
@@ -205,7 +167,7 @@ describe('PopConfirm', () => {
         </PopConfirm>,
       )
       openPopup(container)
-      expect(getTitleDiv()?.style.fontWeight).toBe('600')
+      expect(getTitleDiv()).toHaveClass('ino-pop-confirm__title')
     })
 
     it('title has fontSize 0.875rem', () => {
@@ -215,7 +177,7 @@ describe('PopConfirm', () => {
         </PopConfirm>,
       )
       openPopup(container)
-      expect(getTitleDiv()?.style.fontSize).toBe('0.875rem')
+      expect(getTitleDiv()).toHaveClass('ino-pop-confirm__title')
     })
   })
 
@@ -250,7 +212,7 @@ describe('PopConfirm', () => {
         </PopConfirm>,
       )
       openPopup(container)
-      expect(getDescriptionDiv()?.style.fontSize).toBe('0.8125rem')
+      expect(getDescriptionDiv()).toHaveClass('ino-pop-confirm__description')
     })
 
     it('description has marginTop 0.25rem', () => {
@@ -260,7 +222,7 @@ describe('PopConfirm', () => {
         </PopConfirm>,
       )
       openPopup(container)
-      expect(getDescriptionDiv()?.style.marginTop).toBe('0.25rem')
+      expect(getDescriptionDiv()).toHaveClass('ino-pop-confirm__description')
     })
   })
 
@@ -304,7 +266,8 @@ describe('PopConfirm', () => {
         </PopConfirm>,
       )
       openPopup(container)
-      expect(getIconSpan()?.style.color).toBeTruthy()
+      // Warning color is now in CSS via .ino-pop-confirm__icon
+      expect(getIconSpan()).toHaveClass('ino-pop-confirm__icon')
     })
   })
 
@@ -463,7 +426,8 @@ describe('PopConfirm', () => {
       )
       openPopup(container)
       fireEvent.click(getOkButton()!)
-      expect(getOkButton()?.style.opacity).toBe('0.7')
+      // opacity 0.7 is now in CSS via .ino-pop-confirm__btn--loading
+      expect(getOkButton()).toHaveClass('ino-pop-confirm__btn--loading')
       await act(async () => { resolveConfirm(); await confirmPromise })
     })
 

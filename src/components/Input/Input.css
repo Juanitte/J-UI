@@ -1,0 +1,521 @@
+/* ================================================================
+   Input – BEM classes
+   Covers Input, TextArea, Search, Password, OTP sub-components.
+   ================================================================ */
+
+/* --- Block: root wrappers --- */
+.ino-input {
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.ino-input--has-addons {
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: stretch;
+}
+
+/* --- Element: input wrapper (the bordered container) --- */
+.ino-input__wrapper {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* --- Sizes --- */
+.ino-input--small .ino-input__wrapper {
+  height: 1.5rem;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+}
+
+.ino-input--middle .ino-input__wrapper {
+  height: 2rem;
+  font-size: 0.875rem;
+  line-height: 2rem;
+}
+
+.ino-input--large .ino-input__wrapper {
+  height: 2.5rem;
+  font-size: 1rem;
+  line-height: 2.5rem;
+}
+
+/* --- Variants --- */
+.ino-input--outlined .ino-input__wrapper {
+  border: 1px solid var(--j-border);
+  background-color: var(--j-bg);
+}
+
+.ino-input--filled .ino-input__wrapper {
+  border: 1px solid transparent;
+  background-color: var(--j-bg-muted);
+}
+
+.ino-input--borderless .ino-input__wrapper {
+  border: 1px solid transparent;
+  background-color: transparent;
+}
+
+.ino-input--underlined .ino-input__wrapper {
+  border: none;
+  border-bottom: 1px solid var(--j-border);
+  background-color: transparent;
+}
+
+/* Border radius by size and variant */
+.ino-input--small .ino-input__wrapper { border-radius: 0.25rem; }
+.ino-input--middle .ino-input__wrapper { border-radius: 0.375rem; }
+.ino-input--large .ino-input__wrapper { border-radius: 0.5rem; }
+.ino-input--underlined .ino-input__wrapper { border-radius: 0; }
+
+/* --- Hover (non-underlined, non-borderless) --- */
+.ino-input--outlined .ino-input__wrapper:hover:not(.ino-input__wrapper--disabled):not(.ino-input__wrapper--focused) {
+  border-color: var(--j-border-hover);
+}
+
+.ino-input--filled .ino-input__wrapper:hover:not(.ino-input__wrapper--disabled):not(.ino-input__wrapper--focused) {
+  border-color: var(--j-border-hover);
+}
+
+.ino-input--underlined .ino-input__wrapper:hover:not(.ino-input__wrapper--disabled):not(.ino-input__wrapper--focused) {
+  border-bottom-color: var(--j-border-hover);
+}
+
+/* --- Focus-within --- */
+.ino-input--outlined .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-color: var(--j-primary);
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+.ino-input--filled .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-color: var(--j-primary);
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+
+.ino-input--underlined .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-bottom-color: var(--j-primary);
+  box-shadow: 0 1px 0 0 var(--j-primary);
+}
+
+.ino-input--borderless .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  /* borderless has no visible focus ring */
+}
+
+/* --- Status: error --- */
+.ino-input--error .ino-input__wrapper {
+  border-color: var(--j-error);
+}
+.ino-input--error.ino-input--underlined .ino-input__wrapper {
+  border-bottom-color: var(--j-error);
+}
+.ino-input--error .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-color: var(--j-error);
+  box-shadow: 0 0 0 2px var(--j-error-bg);
+}
+.ino-input--error.ino-input--underlined .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-bottom-color: var(--j-error);
+  box-shadow: 0 1px 0 0 var(--j-error);
+}
+.ino-input--error .ino-input__wrapper:hover:not(.ino-input__wrapper--disabled):not(.ino-input__wrapper--focused) {
+  border-color: var(--j-error);
+}
+
+/* --- Status: warning --- */
+.ino-input--warning .ino-input__wrapper {
+  border-color: var(--j-warning);
+}
+.ino-input--warning.ino-input--underlined .ino-input__wrapper {
+  border-bottom-color: var(--j-warning);
+}
+.ino-input--warning .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-color: var(--j-warning);
+  box-shadow: 0 0 0 2px var(--j-warning-bg);
+}
+.ino-input--warning.ino-input--underlined .ino-input__wrapper:focus-within:not(.ino-input__wrapper--disabled) {
+  border-bottom-color: var(--j-warning);
+  box-shadow: 0 1px 0 0 var(--j-warning);
+}
+.ino-input--warning .ino-input__wrapper:hover:not(.ino-input__wrapper--disabled):not(.ino-input__wrapper--focused) {
+  border-color: var(--j-warning);
+}
+
+/* --- Disabled --- */
+.ino-input--disabled .ino-input__wrapper {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Native input element --- */
+.ino-input__native {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: var(--j-text);
+  box-sizing: border-box;
+}
+
+.ino-input--disabled .ino-input__native {
+  color: var(--j-text-subtle);
+  cursor: not-allowed;
+}
+
+/* Input padding by size */
+.ino-input--small .ino-input__native { padding-left: 0.5rem; padding-right: 0.5rem; }
+.ino-input--middle .ino-input__native { padding-left: 0.75rem; padding-right: 0.75rem; }
+.ino-input--large .ino-input__native { padding-left: 0.75rem; padding-right: 0.75rem; }
+
+/* Remove side padding when prefix/suffix present */
+.ino-input__native--has-prefix { padding-left: 0 !important; }
+.ino-input__native--has-suffix { padding-right: 0 !important; }
+
+/* --- Prefix / Suffix --- */
+.ino-input__prefix {
+  display: inline-flex;
+  align-items: center;
+  padding-right: 0.25rem;
+  color: var(--j-text-muted);
+  flex-shrink: 0;
+}
+
+.ino-input--small .ino-input__prefix { padding-left: 0.5rem; }
+.ino-input--middle .ino-input__prefix { padding-left: 0.75rem; }
+.ino-input--large .ino-input__prefix { padding-left: 0.75rem; }
+
+.ino-input__suffix {
+  display: inline-flex;
+  align-items: center;
+  padding-left: 0.25rem;
+  color: var(--j-text-muted);
+  flex-shrink: 0;
+  gap: 0.25rem;
+}
+
+.ino-input--small .ino-input__suffix { padding-right: 0.5rem; }
+.ino-input--middle .ino-input__suffix { padding-right: 0.75rem; }
+.ino-input--large .ino-input__suffix { padding-right: 0.75rem; }
+
+/* --- Clear button --- */
+.ino-input__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--j-text-muted);
+  transition: color 0.15s ease;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 1;
+}
+
+.ino-input__clear:hover {
+  color: var(--j-text);
+}
+
+/* --- Addon --- */
+.ino-input__addon {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  background-color: var(--j-bg-muted);
+  border: 1px solid var(--j-border);
+  color: var(--j-text);
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.ino-input--small .ino-input__addon { padding: 0 0.5rem; height: 1.5rem; font-size: 0.75rem; }
+.ino-input--middle .ino-input__addon { padding: 0 0.75rem; height: 2rem; font-size: 0.875rem; }
+.ino-input--large .ino-input__addon { padding: 0 0.75rem; height: 2.5rem; font-size: 1rem; }
+
+.ino-input__addon--before {
+  border-right: none;
+}
+
+.ino-input__addon--after {
+  border-left: none;
+}
+
+.ino-input--small .ino-input__addon--before { border-radius: 0.25rem 0 0 0.25rem; }
+.ino-input--small .ino-input__addon--after { border-radius: 0 0.25rem 0.25rem 0; }
+.ino-input--middle .ino-input__addon--before { border-radius: 0.375rem 0 0 0.375rem; }
+.ino-input--middle .ino-input__addon--after { border-radius: 0 0.375rem 0.375rem 0; }
+.ino-input--large .ino-input__addon--before { border-radius: 0.5rem 0 0 0.5rem; }
+.ino-input--large .ino-input__addon--after { border-radius: 0 0.5rem 0.5rem 0; }
+
+/* Wrapper border radius with addons */
+.ino-input--has-addons .ino-input__wrapper { border-radius: 0; }
+.ino-input--has-addon-before:not(.ino-input--has-addon-after) .ino-input__wrapper {
+  border-radius: 0;
+}
+.ino-input--has-addon-after:not(.ino-input--has-addon-before) .ino-input__wrapper {
+  border-radius: 0;
+}
+
+.ino-input--small.ino-input--has-addon-before:not(.ino-input--has-addon-after) .ino-input__wrapper { border-radius: 0 0.25rem 0.25rem 0; }
+.ino-input--small.ino-input--has-addon-after:not(.ino-input--has-addon-before) .ino-input__wrapper { border-radius: 0.25rem 0 0 0.25rem; }
+.ino-input--middle.ino-input--has-addon-before:not(.ino-input--has-addon-after) .ino-input__wrapper { border-radius: 0 0.375rem 0.375rem 0; }
+.ino-input--middle.ino-input--has-addon-after:not(.ino-input--has-addon-before) .ino-input__wrapper { border-radius: 0.375rem 0 0 0.375rem; }
+.ino-input--large.ino-input--has-addon-before:not(.ino-input--has-addon-after) .ino-input__wrapper { border-radius: 0 0.5rem 0.5rem 0; }
+.ino-input--large.ino-input--has-addon-after:not(.ino-input--has-addon-before) .ino-input__wrapper { border-radius: 0.5rem 0 0 0.5rem; }
+
+/* --- Count --- */
+.ino-input__count {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--j-text-muted);
+  white-space: nowrap;
+  margin-left: 0.25rem;
+  flex-shrink: 0;
+}
+
+.ino-input__count--exceeded {
+  color: var(--j-error);
+}
+
+/* --- TextArea --- */
+.ino-textarea {
+  position: relative;
+  width: 100%;
+}
+
+.ino-textarea__wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Variant styles for textarea */
+.ino-textarea--outlined .ino-textarea__wrapper {
+  border: 1px solid var(--j-border);
+  background-color: var(--j-bg);
+}
+
+.ino-textarea--filled .ino-textarea__wrapper {
+  border: 1px solid transparent;
+  background-color: var(--j-bg-muted);
+}
+
+.ino-textarea--borderless .ino-textarea__wrapper {
+  border: 1px solid transparent;
+  background-color: transparent;
+}
+
+.ino-textarea--underlined .ino-textarea__wrapper {
+  border: none;
+  border-bottom: 1px solid var(--j-border);
+  background-color: transparent;
+}
+
+/* TextArea border radius */
+.ino-textarea--small .ino-textarea__wrapper { border-radius: 0.25rem; }
+.ino-textarea--middle .ino-textarea__wrapper { border-radius: 0.375rem; }
+.ino-textarea--large .ino-textarea__wrapper { border-radius: 0.5rem; }
+.ino-textarea--underlined .ino-textarea__wrapper { border-radius: 0; }
+
+/* TextArea hover */
+.ino-textarea--outlined .ino-textarea__wrapper:hover:not(.ino-textarea__wrapper--disabled) {
+  border-color: var(--j-border-hover);
+}
+.ino-textarea--filled .ino-textarea__wrapper:hover:not(.ino-textarea__wrapper--disabled) {
+  border-color: var(--j-border-hover);
+}
+.ino-textarea--underlined .ino-textarea__wrapper:hover:not(.ino-textarea__wrapper--disabled) {
+  border-bottom-color: var(--j-border-hover);
+}
+
+/* TextArea focus-within */
+.ino-textarea--outlined .ino-textarea__wrapper:focus-within:not(.ino-textarea__wrapper--disabled) {
+  border-color: var(--j-primary);
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+.ino-textarea--filled .ino-textarea__wrapper:focus-within:not(.ino-textarea__wrapper--disabled) {
+  border-color: var(--j-primary);
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+.ino-textarea--underlined .ino-textarea__wrapper:focus-within:not(.ino-textarea__wrapper--disabled) {
+  border-bottom-color: var(--j-primary);
+  box-shadow: 0 1px 0 0 var(--j-primary);
+}
+
+/* TextArea status */
+.ino-textarea--error .ino-textarea__wrapper { border-color: var(--j-error); }
+.ino-textarea--error.ino-textarea--underlined .ino-textarea__wrapper { border-bottom-color: var(--j-error); }
+.ino-textarea--error .ino-textarea__wrapper:focus-within { border-color: var(--j-error); box-shadow: 0 0 0 2px var(--j-error-bg); }
+.ino-textarea--warning .ino-textarea__wrapper { border-color: var(--j-warning); }
+.ino-textarea--warning.ino-textarea--underlined .ino-textarea__wrapper { border-bottom-color: var(--j-warning); }
+.ino-textarea--warning .ino-textarea__wrapper:focus-within { border-color: var(--j-warning); box-shadow: 0 0 0 2px var(--j-warning-bg); }
+
+/* TextArea disabled */
+.ino-textarea--disabled .ino-textarea__wrapper {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Native textarea */
+.ino-textarea__native {
+  width: 100%;
+  font-family: inherit;
+  line-height: 1.375rem;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: var(--j-text);
+  box-sizing: border-box;
+}
+
+.ino-textarea--disabled .ino-textarea__native {
+  color: var(--j-text-subtle);
+  cursor: not-allowed;
+}
+
+.ino-textarea--small .ino-textarea__native { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+.ino-textarea--middle .ino-textarea__native { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
+.ino-textarea--large .ino-textarea__native { padding: 0.5rem 0.75rem; font-size: 1rem; }
+
+/* TextArea count */
+.ino-textarea__count {
+  position: absolute;
+  bottom: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  color: var(--j-text-muted);
+  pointer-events: none;
+}
+
+.ino-textarea--small .ino-textarea__count { right: 0.5rem; }
+.ino-textarea--middle .ino-textarea__count { right: 0.75rem; }
+.ino-textarea--large .ino-textarea__count { right: 0.75rem; }
+
+.ino-textarea__count--exceeded {
+  color: var(--j-error);
+}
+
+/* TextArea clear button */
+.ino-textarea__clear {
+  position: absolute;
+  top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--j-text-muted);
+  transition: color 0.15s ease;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 1;
+}
+
+.ino-textarea--small .ino-textarea__clear { right: 0.5rem; }
+.ino-textarea--middle .ino-textarea__clear { right: 0.75rem; }
+.ino-textarea--large .ino-textarea__clear { right: 0.75rem; }
+
+.ino-textarea__clear:hover {
+  color: var(--j-text);
+}
+
+/* --- Search button addon --- */
+.ino-input-search__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: var(--j-primary);
+  color: var(--j-primary-contrast);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.2s ease;
+  gap: 0.25rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ino-input-search__button:hover {
+  background-color: var(--j-primary-hover);
+}
+
+.ino-input-search__button--loading {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.ino-input-search--small .ino-input-search__button { padding: 0 0.5rem; font-size: 0.75rem; border-radius: 0 0.25rem 0.25rem 0; }
+.ino-input-search--middle .ino-input-search__button { padding: 0 0.75rem; font-size: 0.875rem; border-radius: 0 0.375rem 0.375rem 0; }
+.ino-input-search--large .ino-input-search__button { padding: 0 0.75rem; font-size: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
+
+/* --- OTP --- */
+.ino-otp {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.ino-otp__cell {
+  text-align: center;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  color: var(--j-text);
+}
+
+.ino-otp--disabled .ino-otp__cell {
+  opacity: 0.6;
+  cursor: not-allowed;
+  color: var(--j-text-subtle);
+}
+
+.ino-otp--small .ino-otp__cell { width: 1.5rem; height: 1.5rem; font-size: 0.75rem; }
+.ino-otp--middle .ino-otp__cell { width: 2rem; height: 2rem; font-size: 0.875rem; }
+.ino-otp--large .ino-otp__cell { width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+
+/* OTP variant styles */
+.ino-otp--outlined .ino-otp__cell { border: 1px solid var(--j-border); background-color: var(--j-bg); }
+.ino-otp--filled .ino-otp__cell { border: 1px solid transparent; background-color: var(--j-bg-muted); }
+.ino-otp--borderless .ino-otp__cell { border: 1px solid transparent; background-color: transparent; }
+.ino-otp--underlined .ino-otp__cell { border: none; border-bottom: 1px solid var(--j-border); background-color: transparent; border-radius: 0 !important; }
+
+.ino-otp--small .ino-otp__cell { border-radius: 0.25rem; }
+.ino-otp--middle .ino-otp__cell { border-radius: 0.375rem; }
+.ino-otp--large .ino-otp__cell { border-radius: 0.5rem; }
+
+/* OTP focus */
+.ino-otp__cell:focus {
+  border-color: var(--j-primary);
+  box-shadow: 0 0 0 2px var(--j-primary-light);
+}
+.ino-otp--underlined .ino-otp__cell:focus {
+  border-bottom-color: var(--j-primary);
+  box-shadow: 0 1px 0 0 var(--j-primary);
+}
+
+/* OTP status */
+.ino-otp--error .ino-otp__cell { border-color: var(--j-error); }
+.ino-otp--error .ino-otp__cell:focus { border-color: var(--j-error); box-shadow: 0 0 0 2px var(--j-error-bg); }
+.ino-otp--warning .ino-otp__cell { border-color: var(--j-warning); }
+.ino-otp--warning .ino-otp__cell:focus { border-color: var(--j-warning); box-shadow: 0 0 0 2px var(--j-warning-bg); }

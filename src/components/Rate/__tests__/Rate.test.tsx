@@ -147,7 +147,7 @@ describe('Rate', () => {
     const stars = screen.getAllByRole('radio')
     // 3rd star (index 2) should be half-filled: fg layer has clip-path inset(0 50% 0 0)
     const fgSpan = stars[2].querySelectorAll(':scope > span')[1] as HTMLElement
-    expect(fgSpan.style.clipPath).toBe('inset(0 50% 0 0)')
+    expect(fgSpan).toHaveClass('ino-rate__char-fg--half')
   })
 
   it('applies full clip-path for filled stars', () => {
@@ -155,7 +155,7 @@ describe('Rate', () => {
     const stars = screen.getAllByRole('radio')
     // 1st star (index 0) is fully filled
     const fgSpan = stars[0].querySelectorAll(':scope > span')[1] as HTMLElement
-    expect(fgSpan.style.clipPath).toBe('inset(0 0% 0 0)')
+    expect(fgSpan).toHaveClass('ino-rate__char-fg--full')
   })
 
   it('applies empty clip-path for empty stars', () => {
@@ -163,7 +163,7 @@ describe('Rate', () => {
     const stars = screen.getAllByRole('radio')
     // 4th star (index 3) is empty
     const fgSpan = stars[3].querySelectorAll(':scope > span')[1] as HTMLElement
-    expect(fgSpan.style.clipPath).toBe('inset(0 100% 0 0)')
+    expect(fgSpan).toHaveClass('ino-rate__char-fg--empty')
   })
 
   // ---------- Disabled ----------
@@ -171,7 +171,7 @@ describe('Rate', () => {
   it('applies opacity when disabled', () => {
     render(<Rate disabled />)
     const root = screen.getByRole('radiogroup')
-    expect(root.style.opacity).toBe('0.5')
+    expect(root).toHaveClass('ino-rate--disabled')
   })
 
   it('sets tabIndex=-1 when disabled', () => {
@@ -197,27 +197,27 @@ describe('Rate', () => {
 
   it('applies small size font', () => {
     render(<Rate size="small" />)
-    expect(screen.getByRole('radiogroup').style.fontSize).toBe('0.875rem')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-rate--sm')
   })
 
   it('applies middle size font (default)', () => {
     render(<Rate />)
-    expect(screen.getByRole('radiogroup').style.fontSize).toBe('1.25rem')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-rate--md')
   })
 
   it('applies large size font', () => {
     render(<Rate size="large" />)
-    expect(screen.getByRole('radiogroup').style.fontSize).toBe('2rem')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-rate--lg')
   })
 
   it('applies small size gap', () => {
     render(<Rate size="small" />)
-    expect(screen.getByRole('radiogroup').style.gap).toBe('0.25rem')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-rate--sm')
   })
 
   it('applies large size gap', () => {
     render(<Rate size="large" />)
-    expect(screen.getByRole('radiogroup').style.gap).toBe('0.625rem')
+    expect(screen.getByRole('radiogroup')).toHaveClass('ino-rate--lg')
   })
 
   // ---------- Character ----------
@@ -327,7 +327,7 @@ describe('Rate', () => {
     render(<Rate />)
     hoverStar(1)
     const stars = screen.getAllByRole('radio')
-    expect(stars[1].style.transform).toBe('scale(1.15)')
+    expect(stars[1]).toHaveClass('ino-rate__star--hovered')
   })
 
   it('does not hover when disabled', () => {
@@ -450,13 +450,13 @@ describe('Rate', () => {
     render(<Rate defaultValue={1} />)
     const stars = screen.getAllByRole('radio')
     const fgSpan = stars[0].querySelectorAll(':scope > span')[1] as HTMLElement
-    expect(fgSpan.style.color).toContain('var(--j-warning)')
+    expect(fgSpan).toHaveClass('ino-rate__char-fg')
   })
 
   it('uses border color for empty stars by default', () => {
     render(<Rate defaultValue={0} />)
     const stars = screen.getAllByRole('radio')
     const bgSpan = stars[0].querySelector(':scope > span') as HTMLElement
-    expect(bgSpan.style.color).toContain('var(--j-border)')
+    expect(bgSpan).toHaveClass('ino-rate__char-bg')
   })
 })
