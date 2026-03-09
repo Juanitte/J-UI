@@ -983,7 +983,7 @@ describe('PopAlert', () => {
       render(<Wrapper />)
       act(() => { apiRef.info('Enter') })
       const item = getItems()[0]
-      expect(item.style.maxHeight).toBe('0')
+      expect(parseFloat(item.style.maxHeight)).toBe(0)
     })
 
     it('exiting state has maxHeight 0', () => {
@@ -994,7 +994,7 @@ describe('PopAlert', () => {
       flushEnterAnimation()
       fireEvent.click(getCloseButton()!)
       const item = getItems()[0]
-      expect(item.style.maxHeight).toBe('0')
+      expect(parseFloat(item.style.maxHeight)).toBe(0)
     })
   })
 
