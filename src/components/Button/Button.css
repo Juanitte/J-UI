@@ -56,10 +56,6 @@
   box-shadow: 0 0 0 3px var(--_200);
 }
 
-.ino-btn--primary:active:not(:disabled) {
-  background-color: var(--_dark);
-}
-
 /* --- Variant: secondary --- */
 .ino-btn--secondary {
   background-color: var(--_light);
@@ -72,10 +68,6 @@
 
 .ino-btn--secondary:focus-visible {
   box-shadow: 0 0 0 3px var(--_200);
-}
-
-.ino-btn--secondary:active:not(:disabled) {
-  background-color: var(--_300);
 }
 
 /* --- Variant: outline --- */
@@ -93,10 +85,6 @@
   box-shadow: 0 0 0 3px var(--_200);
 }
 
-.ino-btn--outline:active:not(:disabled) {
-  background-color: var(--_200);
-}
-
 /* --- Variant: dashed --- */
 .ino-btn--dashed {
   background-color: transparent;
@@ -112,10 +100,6 @@
   box-shadow: 0 0 0 3px var(--_200);
 }
 
-.ino-btn--dashed:active:not(:disabled) {
-  background-color: var(--_200);
-}
-
 /* --- Variant: ghost --- */
 .ino-btn--ghost {
   background-color: transparent;
@@ -128,10 +112,6 @@
 
 .ino-btn--ghost:focus-visible {
   box-shadow: 0 0 0 3px var(--_200);
-}
-
-.ino-btn--ghost:active:not(:disabled) {
-  background-color: var(--_200);
 }
 
 /* --- Variant: link --- */
