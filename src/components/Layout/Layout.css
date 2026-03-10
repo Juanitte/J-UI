@@ -8,7 +8,7 @@
   flex: auto;
   flex-direction: column;
   min-height: 0;
-  background-color: var(--j-colorBgSubtle);
+  background-color: var(--j-bgSubtle);
 }
 
 .ino-layout--has-sider {
@@ -20,7 +20,7 @@
   flex: 0 0 auto;
   height: 4rem;
   padding: 0 1.5rem;
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
   display: flex;
   align-items: center;
 }
@@ -29,7 +29,7 @@
 .ino-layout__footer {
   flex: 0 0 auto;
   padding: 1.5rem 3.125rem;
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
 }
 
 /* --- Content --- */
@@ -53,8 +53,8 @@
 }
 
 .ino-layout__sider--light {
-  background-color: var(--j-colorBg);
-  color: var(--j-colorText);
+  background-color: var(--j-bg);
+  color: var(--j-text);
 }
 
 /* --- Sider content wrapper --- */
@@ -82,7 +82,7 @@
 }
 
 .ino-layout__sider-trigger--light {
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
 }
 
 /* --- Zero-width trigger --- */
@@ -106,7 +106,7 @@
 }
 
 .ino-layout__sider-trigger--zero.ino-layout__sider-trigger--light {
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
 }
 
 /* --- Trigger icon --- */

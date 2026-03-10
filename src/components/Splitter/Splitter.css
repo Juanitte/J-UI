@@ -40,7 +40,7 @@
 .ino-splitter__lazy-indicator {
   display: none;
   position: absolute;
-  background-color: var(--j-colorBorder);
+  background-color: var(--j-border);
   z-index: 10;
   pointer-events: none;
 }
@@ -99,12 +99,12 @@
 .ino-splitter__bar-line {
   border-radius: 1px;
   transition: background-color 0.15s ease, height 0.15s ease, width 0.15s ease;
-  background-color: var(--j-colorBorder);
+  background-color: var(--j-border);
 }
 
 .ino-splitter__bar:hover .ino-splitter__bar-line,
 .ino-splitter__bar-line--hovered {
-  background-color: var(--j-colorPrimary);
+  background-color: var(--j-primary);
 }
 
 .ino-splitter__bar-line--horizontal {
@@ -134,11 +134,11 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 1px solid var(--j-colorBorder);
-  background-color: var(--j-colorBg);
+  border: 1px solid var(--j-border);
+  background-color: var(--j-bg);
   cursor: pointer;
   font-size: 0.625rem;
-  color: var(--j-colorTextMuted);
+  color: var(--j-textMuted);
   opacity: 0;
   transition: opacity 0.15s ease;
   z-index: 2;

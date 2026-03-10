@@ -22,7 +22,7 @@
 /* --- Track --- */
 .ino-anchor__track {
   position: absolute;
-  background-color: var(--j-colorBorder);
+  background-color: var(--j-border);
   border-radius: 1px;
 }
 
@@ -43,7 +43,7 @@
 /* --- Indicator --- */
 .ino-anchor__indicator {
   position: absolute;
-  background-color: var(--j-colorPrimary);
+  background-color: var(--j-primary);
   border-radius: 1px;
   opacity: 0;
   z-index: 1;
@@ -71,11 +71,11 @@
   line-height: 1.375rem;
   transition: color 0.15s ease;
   cursor: pointer;
-  color: var(--j-colorTextMuted);
+  color: var(--j-textMuted);
 }
 
 .ino-anchor__link--active {
-  color: var(--j-colorPrimary);
+  color: var(--j-primary);
 }
 
 .ino-anchor__link--vertical {

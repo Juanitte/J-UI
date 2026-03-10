@@ -9,8 +9,8 @@
   list-style: none;
   margin: 0;
   padding: 0.25rem 0;
-  background-color: var(--j-colorBg);
-  color: var(--j-colorText);
+  background-color: var(--j-bg);
+  color: var(--j-text);
   font-size: 0.875rem;
   overflow: hidden;
 }
@@ -20,15 +20,15 @@
   display: flex;
   align-items: center;
   padding: 0;
-  border-bottom: 1px solid var(--j-colorBorder);
+  border-bottom: 1px solid var(--j-border);
 }
 
 .ino-menu--vertical {
-  border-right: 1px solid var(--j-colorBorder);
+  border-right: 1px solid var(--j-border);
 }
 
 .ino-menu--inline {
-  border-right: 1px solid var(--j-colorBorder);
+  border-right: 1px solid var(--j-border);
 }
 
 .ino-menu--collapsed {
@@ -41,7 +41,7 @@
   margin: 0.25rem 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--j-colorBorder);
+  border-top: 1px solid var(--j-border);
 }
 
 .ino-menu__divider--dashed {
@@ -57,7 +57,7 @@
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--j-colorTextSubtle);
+  color: var(--j-textSubtle);
   line-height: 1.5;
 }
 
@@ -75,7 +75,7 @@
   padding: 0.5rem 1rem;
   line-height: 1.375rem;
   cursor: pointer;
-  color: var(--j-colorText);
+  color: var(--j-text);
   background-color: transparent;
   transition: color 0.2s, background-color 0.2s;
   list-style: none;
@@ -94,21 +94,21 @@
 }
 
 .ino-menu__item--danger {
-  color: var(--j-colorError);
+  color: var(--j-error);
 }
 
 .ino-menu__item--selected {
-  color: var(--j-colorPrimary);
-  background-color: var(--j-colorPrimaryLight);
+  color: var(--j-primary);
+  background-color: var(--j-primary-light);
 }
 
 .ino-menu__item--selected.ino-menu__item--horizontal {
   background-color: transparent;
-  border-bottom: 2px solid var(--j-colorPrimary);
+  border-bottom: 2px solid var(--j-primary);
 }
 
 .ino-menu__item--selected.ino-menu__item--vertical {
-  border-right: 3px solid var(--j-colorPrimary);
+  border-right: 3px solid var(--j-primary);
 }
 
 .ino-menu__item--collapsed {
@@ -117,19 +117,19 @@
 }
 
 .ino-menu__item:hover:not(.ino-menu__item--disabled):not(.ino-menu__item--selected) {
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
 }
 
 .ino-menu__item--danger:hover:not(.ino-menu__item--disabled) {
-  background-color: var(--j-colorErrorBg);
+  background-color: var(--j-error-dark);
 }
 
 .ino-menu__item--horizontal:hover:not(.ino-menu__item--disabled):not(.ino-menu__item--selected) {
-  color: var(--j-colorPrimary);
+  color: var(--j-primary);
 }
 
 .ino-menu__item--selected.ino-menu__item--horizontal:hover {
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
 }
 
 /* --- Item icon --- */
@@ -163,7 +163,7 @@
   padding: 0.5rem 1rem;
   line-height: 1.375rem;
   cursor: pointer;
-  color: var(--j-colorText);
+  color: var(--j-text);
   transition: color 0.2s, background-color 0.2s;
   list-style: none;
   position: relative;
@@ -181,11 +181,11 @@
 }
 
 .ino-menu__submenu-trigger--active {
-  color: var(--j-colorPrimary);
+  color: var(--j-primary);
 }
 
 .ino-menu__submenu-trigger--active.ino-menu__submenu-trigger--horizontal {
-  border-bottom: 2px solid var(--j-colorPrimary);
+  border-bottom: 2px solid var(--j-primary);
 }
 
 .ino-menu__submenu-trigger--collapsed {
@@ -194,11 +194,11 @@
 }
 
 .ino-menu__submenu-trigger:hover:not(.ino-menu__submenu-trigger--disabled) {
-  background-color: var(--j-colorBgMuted);
+  background-color: var(--j-bgMuted);
 }
 
 .ino-menu__submenu-trigger--horizontal:hover:not(.ino-menu__submenu-trigger--disabled) {
-  color: var(--j-colorPrimary);
+  color: var(--j-primary);
 }
 
 /* --- Expand icon --- */
@@ -220,8 +220,8 @@
   margin: 0;
   padding: 0.25rem 0;
   min-width: 10rem;
-  background-color: var(--j-colorBg);
-  border: 1px solid var(--j-colorBorder);
+  background-color: var(--j-bg);
+  border: 1px solid var(--j-border);
   border-radius: 0.5rem;
   box-shadow: var(--j-shadowMd);
 }

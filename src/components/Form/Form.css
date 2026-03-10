@@ -32,7 +32,7 @@
 .ino-form-item__label {
   font-size: 0.875rem;
   line-height: 2rem;
-  color: var(--j-colorText);
+  color: var(--j-text);
 }
 
 .ino-form-item__label--horizontal {
@@ -64,11 +64,11 @@
 
 /* --- Required mark --- */
 .ino-form-item__required-mark {
-  color: var(--j-colorError);
+  color: var(--j-error);
 }
 
 .ino-form-item__optional-mark {
-  color: var(--j-colorTextMuted);
+  color: var(--j-textMuted);
   font-size: 0.75rem;
   font-weight: 400;
 }
@@ -113,28 +113,28 @@
   line-height: 1.25rem;
   margin-top: 0.25rem;
   transition: color 0.2s ease;
-  color: var(--j-colorTextMuted);
+  color: var(--j-textMuted);
 }
 
 .ino-form-item__help--error {
-  color: var(--j-colorError);
+  color: var(--j-error);
 }
 
 .ino-form-item__help--warning {
-  color: var(--j-colorWarning);
+  color: var(--j-warning);
 }
 
 /* --- Extra text --- */
 .ino-form-item__extra {
   font-size: 0.75rem;
   line-height: 1.25rem;
-  color: var(--j-colorTextMuted);
+  color: var(--j-textMuted);
   margin-top: 0.25rem;
 }
 
 /* --- ErrorList --- */
 .ino-form-error-list {
-  color: var(--j-colorError);
+  color: var(--j-error);
   font-size: 0.75rem;
   line-height: 1.25rem;
 }
