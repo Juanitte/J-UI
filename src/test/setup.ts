@@ -2,6 +2,9 @@ import * as matchers from '@testing-library/jest-dom/matchers'
 
 expect.extend(matchers)
 
+// jsdom does not implement Element.scrollTo
+Element.prototype.scrollTo ??= function () {}
+
 // jsdom does not implement window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
