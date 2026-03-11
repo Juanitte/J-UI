@@ -430,9 +430,9 @@ export function DropdownComponent({
     }
   }, [])
 
-  // Click outside to close
+  // Click outside to close (for click and contextMenu triggers)
   useEffect(() => {
-    if (!isOpen || !trigger.includes('click')) return
+    if (!isOpen || (!trigger.includes('click') && !trigger.includes('contextMenu'))) return
 
     const handleClickOutside = (e: MouseEvent) => {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
