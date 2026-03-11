@@ -480,7 +480,7 @@ function StepComponent({
         style={{
           flex: isLast ? 'none' : 1,
           display: 'flex',
-          alignItems: 'flex-start',
+          flexDirection: 'column',
           cursor: cursorStyle,
           opacity: item.disabled ? 0.5 : 1,
           ...styles?.step,
@@ -488,22 +488,49 @@ function StepComponent({
         className={classNames?.step}
         onClick={clickHandler}
       >
-        {iconElement}
-        {buildContent({
-          display: 'flex',
-          flexDirection: 'column',
-          marginLeft: '0.5rem',
-        })}
-        {!isLast && (
+        {/* Title row: icon + title + tail */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {iconElement}
+          <div
+            style={{ marginLeft: '0.5rem', ...styles?.content }}
+            className={classNames?.content}
+          >
+            <div style={titleStyle}>
+              {item.title}
+              {item.subTitle && (
+                <span style={{
+                  fontSize: descFontSize,
+                  color: tokens.colorTextMuted,
+                  marginLeft: '0.5rem',
+                  fontWeight: 400,
+                }}>
+                  {item.subTitle}
+                </span>
+              )}
+            </div>
+          </div>
+          {!isLast && (
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              minWidth: '1.5rem',
+              padding: '0 0.5rem',
+            }}>
+              {tailLine(colors.tailColor)}
+            </div>
+          )}
+        </div>
+        {/* Description below, aligned with title */}
+        {item.description && (
           <div style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            height: iconDim,
-            minWidth: '1.5rem',
-            padding: '0 0.5rem',
+            fontSize: descFontSize,
+            color: colors.descColor,
+            marginTop: '0.125rem',
+            lineHeight: 1.5,
+            marginLeft: `calc(${iconDim} + 0.5rem)`,
           }}>
-            {tailLine(colors.tailColor)}
+            {item.description}
           </div>
         )}
       </div>
